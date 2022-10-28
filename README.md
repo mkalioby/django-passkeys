@@ -15,7 +15,7 @@ Passkeys are now supported on
 
 `pip install django-passkeys`
 
-Currently, it support Django 2.2+, Python 3.7+
+Currently, it support Django 2.0+, Python 3.7+
 
 # Usage
 1. in your settings.py add the application to your installed apps
