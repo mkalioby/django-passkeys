@@ -48,10 +48,10 @@ Currently, it support Django 2.0+, Python 3.7+
 5. To match the look and feel of your project, Passkeys includes `base.html` but it needs blocks named `head` & `content` to added its content to it.
    **Note:** You can override `PassKeys_base.html` which is used by `Passkeys.html` so you can control the styling better and current `Passkeys_base.html` extends `base.html`
 
-6. Somewhere in your app, add a link to 'mfa_home'
-```<li><a href="{% url 'passkeys:home' %}">Passkeys</a> </li>```
+6. Somewhere in your app, add a link to 'passkeys:home'
+    ```<li><a href="{% url 'passkeys:home' %}">Passkeys</a> </li>```
 
-7. In your `login.html`
+7. Finally, In your `login.html`
    * Give an id to your login form e.g 'loginForm'
    * Inside the form, add 
      ```html
