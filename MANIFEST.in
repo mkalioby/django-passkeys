@@ -1,0 +1,2 @@
+recursive-include passkeys/templates *
+recursive-include passkeys/static *
