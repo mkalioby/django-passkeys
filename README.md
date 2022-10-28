@@ -1,6 +1,6 @@
 # django-passkeys
 
-An extension to Django ModelBackend backend to support passkeys.
+An extension to Django ModelBackend to support passkeys.
 
 Passkeys is an extension to Web Authentication API that will allow the user to login to a service using another device.
 
@@ -59,6 +59,10 @@ Currently, it support Django 2.0+, Python 3.7+
       <button class="btn btn-block btn-dark" type="button" onclick="authn('loginForm')"><img src="{% static 'passkeys/imgs/FIDO-Passkey_Icon-White.png' %}" style="width: 24px">
      {%include 'passkeys.js' %}
      ```
+8. In authentication view, just pass the request as first parameter in authenticate
+   ```python
+    user=authenticate(request, username=request.POST["username"],password=request.POST["password"])
+   ```
 For Example, See 'example' app and look at EXAMPLE.md to see how to set it up.
 
 
