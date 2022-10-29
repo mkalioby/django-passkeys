@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 
 @login_required()
 def home(request):
+    print(request.session['passkey'])
     return render(request,"home.html",{})
 
 @login_required()

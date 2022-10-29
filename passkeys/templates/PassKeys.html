@@ -43,7 +43,7 @@
     }).then(function (res)
         {
       if (res["status"] =='OK')
-        $("#res").html("<div class='alert alert-success'>Registered Successfully, <a href='javascript:void(0)' onclick='location.reload()'> Refresh</a></div>")
+        $("#res").html("<div class='alert alert-success'>Registered Successfully, <a href='{% url "passkeys:home"%}'> Refresh</a></div>")
       else
         $("#res").html("<div class='alert alert-danger'>Registration Failed as " + res["message"] + ", <a href='javascript:void(0)' onclick='begin_reg()'> try again </a> </div>")
 
@@ -62,7 +62,7 @@
             data:{"id":id},
             success:function (data) {
                 alert(data)
-                window.location.reload();
+                window.location= "{%url 'passkeys:home'%}";
             }
         })
     }
@@ -99,6 +99,10 @@
             }
         })
     }
+    {%if enroll%}
+        $(document).ready(start)
+    {%endif%}
+
     </script>
     <link href="{% static  'passkeys/css/bootstrap-toggle.min.css' %}" rel="stylesheet">
     <script src="{% static 'passkeys/js/bootstrap-toggle.min.js'%}"></script>
