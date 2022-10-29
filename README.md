@@ -97,7 +97,7 @@ check_passkey function paramters are as follows
 
 
 # Contributors
-* @mahmoodnasr
+* [mahmoodnasr](https://github.com/mahmoodnasr)
 
 
 
