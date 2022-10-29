@@ -18,7 +18,7 @@ def enable_json_mapping():
         pass
 
 def getUserCredentials(user):
-    return [AttestedCredentialData(websafe_decode(uk.properties["device"])) for uk in UserPasskey.objects.filter(user = user)]
+    return [AttestedCredentialData(websafe_decode(uk.token)) for uk in UserPasskey.objects.filter(user = user)]
 
 
 
@@ -32,7 +32,7 @@ def reg_begin(request):
     """Starts registering a new FIDO Device, called from API"""
     enable_json_mapping()
     server = getServer()
-    auth_attachment = getattr(settings,'MFA_FIDO2_AUTHENTICATOR_ATTACHMENT', None)
+    auth_attachment = getattr(settings,'KEY_ATTACHMENT', None)
     registration_data, state = server.register_begin({
         u'id': request.user.username.encode("utf8"),
         u'name': request.user.username,
