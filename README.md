@@ -52,7 +52,7 @@ Currently, it support Django 2.0+, Python 3.7+
     ```<li><a href="{% url 'passkeys:home' %}">Passkeys</a> </li>```
 
 7. Finally, In your `login.html`
-   * Give an id to your login form e.g 'loginForm'
+   * Give an id to your login form e.g 'loginForm', the id should be provided when calling `auth` function
    * Inside the form, add 
      ```html
       <input type="hidden" name="passkeys" id="passkeys"/>
