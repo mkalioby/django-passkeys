@@ -132,4 +132,4 @@ AUTHENTICATION_BACKENDS = ['passkeys.backend.PasskeyModelBackend']
 
 FIDO_SERVER_ID="localhost"      # Server rp id for FIDO2, it the full domain of your project
 FIDO_SERVER_NAME="TestApp"
-KEY_ATTACHMENT = passkeys.Attachment.CROSS_PLATFORM
+KEY_ATTACHMENT = passkeys.Attachment.PLATFORM

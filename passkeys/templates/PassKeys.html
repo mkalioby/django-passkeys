@@ -70,7 +70,8 @@
     function start(){
         $("#modal-title").html("Enter a token name")
         $("#modal-body").html(`<p>Please enter a name for your new token</p>
-                                <input type="text" placeholder="e.g Laptop, PC" id="key_name" class="form-control"/>
+                                <input type="text" placeholder="e.g Laptop, PC" id="key_name" class="form-control"/><br/>
+                                <div id="res"></div>
                                 `)
         $("#actionBtn").remove();
         $("#modal-footer").prepend(`<button id='actionBtn' class='btn btn-success' onclick="begin_reg()">Start</button>`)
