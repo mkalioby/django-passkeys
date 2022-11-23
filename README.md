@@ -2,7 +2,7 @@
 
 [![Downloads](https://pepy.tech/badge/leopards/month)](https://pepy.tech/project/leopards)
 
-An extension to Django ModelBackend backend to support passkeys.
+An extension to Django *ModelBackend* backend to support passkeys.
 
 Passkeys is an extension to Web Authentication API that will allow the user to login to a service using another device.
 
