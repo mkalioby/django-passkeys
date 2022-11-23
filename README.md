@@ -52,6 +52,10 @@ Currently, it support Django 2.0+, Python 3.7+
 
 7. Somewhere in your app, add a link to 'passkeys:home'
     ```<li><a href="{% url 'passkeys:home' %}">Passkeys</a> </li>```
+8. In your login view, change the authenticate call to include the request as follows
+   ```python
+    user=authenticate(request, username=request.POST["username"],password=request.POST["password"])
+    ```
 
 8. Finally, In your `login.html`
    * Give an id to your login form e.g 'loginForm', the id should be provided when calling `authn` function
