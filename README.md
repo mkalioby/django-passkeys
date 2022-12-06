@@ -1,6 +1,6 @@
 # django-passkeys
 
-[![Downloads](https://pepy.tech/badge/leopards/month)](https://pepy.tech/project/leopards)
+[![Downloads](https://pepy.tech/badge/django-passkeys/month)](https://pepy.tech/project/django-passkeys)
 
 An extension to Django *ModelBackend* backend to support passkeys.
 
