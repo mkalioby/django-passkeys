@@ -1,6 +1,8 @@
 # django-passkeys
 
-An extension to Django ModelBackend to support passkeys.
+[![Downloads](https://pepy.tech/badge/django-passkeys/month)](https://pepy.tech/project/django-passkeys)
+
+An extension to Django *ModelBackend* backend to support passkeys.
 
 Passkeys is an extension to Web Authentication API that will allow the user to login to a service using another device.
 
@@ -27,7 +29,9 @@ Currently, it support Django 2.0+, Python 3.7+
    ```
 2. Collect Static Files
 `python manage.py collectstatic`
-3. Add the following settings to your file
+3. Run migrate
+`python manage.py migrate`
+4. Add the following settings to your file
 
    ```python
     AUTHENTICATION_BACKENDS = ['passkeys.backend.PasskeyModelBackend'] # Change your authentication backend
@@ -36,7 +40,7 @@ Currently, it support Django 2.0+, Python 3.7+
     import passkeys
     KEY_ATTACHMENT = NONE | passkeys.Attachment.CROSS_PLATFORM | passkeys.Attachment.PLATFORM
    ```
-4. Add passkeys to urls.py
+5. Add passkeys to urls.py
    ```python 
 
    urls_patterns= [
@@ -45,14 +49,18 @@ Currently, it support Django 2.0+, Python 3.7+
    '....',
     ]
     ```
-5. To match the look and feel of your project, Passkeys includes `base.html` but it needs blocks named `head` & `content` to added its content to it.
+6. To match the look and feel of your project, Passkeys includes `base.html` but it needs blocks named `head` & `content` to added its content to it.
    **Note:** You can override `PassKeys_base.html` which is used by `Passkeys.html` so you can control the styling better and current `Passkeys_base.html` extends `base.html`
 
-6. Somewhere in your app, add a link to 'passkeys:home'
+7. Somewhere in your app, add a link to 'passkeys:home'
     ```<li><a href="{% url 'passkeys:home' %}">Passkeys</a> </li>```
+8. In your login view, change the authenticate call to include the request as follows
+   ```python
+    user=authenticate(request, username=request.POST["username"],password=request.POST["password"])
+    ```
 
-7. Finally, In your `login.html`
-   * Give an id to your login form e.g 'loginForm'
+8. Finally, In your `login.html`
+   * Give an id to your login form e.g 'loginForm', the id should be provided when calling `authn` function
    * Inside the form, add 
      ```html
       <input type="hidden" name="passkeys" id="passkeys"/>
@@ -64,6 +72,42 @@ Currently, it support Django 2.0+, Python 3.7+
     user=authenticate(request, username=request.POST["username"],password=request.POST["password"])
    ```
 For Example, See 'example' app and look at EXAMPLE.md to see how to set it up.
+
+# Detect if user is using passkeys
+Once the backend is used, there will be a `passkey` key in request.session. 
+If the user used a passkey then `request.session['passkey']['passkey']` will be True and the key information will be there like this
+```python
+{'passkey': True, 'name': 'Chrome', 'id': 2, 'platform': 'Chrome on Apple', 'cross_platform': False}
+```
+`cross_platform`: means that the user used a key from another platform so there is no key local to the device used to login e.g used an Android phone on Mac OS X or iPad.
+If the user didn't use a passkey then it will be set to False
+```python
+{'passkey':False}
+```
+
+# Check if the user can be enrolled for a platform authenticator
+
+If you want to check if the user can be enrolled to use a platform authenticator, you can do the following in your main page.
+
+```html
+<div id="pk" class="alert alert-info" style="display: none">Your device supports passkeys, <a href="{%url 'passkeys:enroll'%}">Enroll</a> </div>
+<script type="text/javascript">
+function register_pk()
+    {
+        $('#pk').show();
+    }
+{% include 'check_passkeys.js'%}
+$(document).ready(check_passkey(true,register_pk))
+</script>
+```
+check_passkey function paramters are as follows 
+* `platform_authenticator`: if the service requires only a platform authenticator (e.g TouchID, Windows Hello or Android SafetyNet)
+* `success_func`: function to call if a platform authenticator is found or if the user didn't login by a passkey
+* `fail_func`: function to call if no platform authenticator is found (optional).
+
+
+# Contributors
+* [mahmoodnasr](https://github.com/mahmoodnasr)
 
 
 

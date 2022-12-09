@@ -8,6 +8,7 @@ urlpatterns = [
     path('reg/begin',FIDO2.reg_begin,name = 'reg_begin'),
     path('reg/complete',FIDO2.reg_complete,name = 'reg_complete'),
     path('',views.index, name='home'),
+    path('enroll/',views.index, name='enroll',kwargs={'enroll':True}),
 
 
     path('del/',views.delKey, name='delKey'),

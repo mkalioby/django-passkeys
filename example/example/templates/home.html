@@ -16,7 +16,18 @@
               <div class="alert alert-success">Registered Successfully</div>
           {% endif %}
         <h1>Welcome {{ request.user.username }}!</h1>
-        <hr>
+          <hr/>
+          <div id="pk" class="alert alert-info" style="display: none">Your device supports passkeys, <a href="{%url 'passkeys:enroll'%}">Enroll</a> </div>
+
 
       </div>
+        <script type="application/javascript">
+            function register_pk()
+            {
+                $('#pk').show();
+            }
+            {% include 'check_passkeys.js'%}
+            $(document).ready(check_passkey(true,register_pk))
+
+        </script>
       {% endblock %}

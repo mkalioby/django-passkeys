@@ -5,9 +5,10 @@ from django.shortcuts import render
 from .models import UserPasskey
 
 @login_required
-def index(request):
+def index(request,enroll=False):
     keys = UserPasskey.objects.filter(user=request.user)
-    return render(request,'PassKeys.html',{"keys":keys})
+    return render(request,'PassKeys.html',{"keys":keys,"enroll":enroll})
+
 
 @login_required
 def delKey(request):

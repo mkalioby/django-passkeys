@@ -9,7 +9,7 @@ from fido2.server import Fido2Server
 from fido2.utils import websafe_decode, websafe_encode
 from fido2.webauthn import PublicKeyCredentialRpEntity, AttestedCredentialData, RegistrationResponse
 from .models import UserPasskey
-
+from user_agents.parsers import parse as ua_parse
 
 def enable_json_mapping():
     try:
@@ -18,7 +18,7 @@ def enable_json_mapping():
         pass
 
 def getUserCredentials(user):
-    return [AttestedCredentialData(websafe_decode(uk.properties["device"])) for uk in UserPasskey.objects.filter(user = user)]
+    return [AttestedCredentialData(websafe_decode(uk.token)) for uk in UserPasskey.objects.filter(user = user)]
 
 
 
@@ -27,12 +27,23 @@ def getServer():
     rp = PublicKeyCredentialRpEntity(id=settings.FIDO_SERVER_ID, name=settings.FIDO_SERVER_NAME)
     return Fido2Server(rp)
 
+def get_current_platform(request):
+    ua = ua_parse(request.META["HTTP_USER_AGENT"])
+    if 'Safari' in ua.browser.family:
+        return "Apple"
+    elif 'Chrome' in ua.browser.family and ua.os.family == "Mac OS X":
+        return "Chrome on Apple"
+    elif 'Android' in ua.os.family:
+        return "Google"
+    elif "Windows" in ua.os.family:
+        return "Microsoft"
+
 
 def reg_begin(request):
     """Starts registering a new FIDO Device, called from API"""
     enable_json_mapping()
     server = getServer()
-    auth_attachment = getattr(settings,'MFA_FIDO2_AUTHENTICATOR_ATTACHMENT', None)
+    auth_attachment = getattr(settings,'KEY_ATTACHMENT', None)
     registration_data, state = server.register_begin({
         u'id': request.user.username.encode("utf8"),
         u'name': request.user.username,
@@ -55,10 +66,10 @@ def reg_complete(request):
         server = getServer()
         auth_data = server.register_complete(request.session.pop("fido2_state"), response = data)
         encoded = websafe_encode(auth_data.credential_data)
-        uk = UserPasskey(user=request.user, token=encoded, name = name)
+        uk = UserPasskey(user=request.user, token=encoded, name = name,platform=get_current_platform(request))
         if data.get("id"):
             uk.credential_id = data.get('id')
-        #TODO: Detect the key platform
+
         uk.save()
         return JsonResponse({'status': 'OK'})
     except Exception as exp:
@@ -123,6 +134,8 @@ def auth_complete(request):
             raise Exception(excep)
         if key:
             key.last_used = timezone.now()
+            request.session["passkey"] = {'passkey': True, 'name': key.name, "id":key.id, "platform": key.platform,
+                                           'cross_platform': get_current_platform(request) != key.platform}
             key.save()
             return key.user
     return None

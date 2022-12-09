@@ -13,7 +13,7 @@ var GetAssertReq = (getAssert) => {
         }
         function authn(form)
         {
-            window.loginForm=form
+            window.loginForm=form;
          fetch('{% url 'passkeys:auth_begin' %}', {
       method: 'GET',
     }).then(function(response) {
@@ -27,10 +27,20 @@ var GetAssertReq = (getAssert) => {
         console.log(options)
       return navigator.credentials.get(options);
     }).then(function(assertion) {
-
-        $("#passkeys").val(JSON.stringify(publicKeyCredentialToJSON(assertion)));
-        document.getElementById(window.loginForm).submit()
-
+        pk = $("#passkeys")
+        if (pk.length == 0)
+        {
+            console.error("Did you add the 'passkeys' hidden input field")
+            return
+        }
+        pk.val(JSON.stringify(publicKeyCredentialToJSON(assertion)));
+        x= document.getElementById(window.loginForm)
+        if (x === null || x === undefined)
+        {
+            console.error("Did you pass the correct form id to auth function")
+            return;
+        }
+            x.submit()
 
         });
     $(document).ready(function () {
