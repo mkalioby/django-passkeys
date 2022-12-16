@@ -67,10 +67,6 @@ Currently, it support Django 2.0+, Python 3.7+
       <button class="btn btn-block btn-dark" type="button" onclick="authn('loginForm')"><img src="{% static 'passkeys/imgs/FIDO-Passkey_Icon-White.png' %}" style="width: 24px">
      {%include 'passkeys.js' %}
      ```
-8. In authentication view, just pass the request as first parameter in authenticate
-   ```python
-    user=authenticate(request, username=request.POST["username"],password=request.POST["password"])
-   ```
 For Example, See 'example' app and look at EXAMPLE.md to see how to set it up.
 
 # Detect if user is using passkeys
@@ -106,8 +102,15 @@ check_passkey function paramters are as follows
 * `fail_func`: function to call if no platform authenticator is found (optional).
 
 
+## Security contact information
+
+To report a security vulnerability, please use the
+[Tidelift security contact](https://tidelift.com/security).
+Tidelift will coordinate the fix and disclosure.
+
 # Contributors
 * [mahmoodnasr](https://github.com/mahmoodnasr)
+
 
 
 
