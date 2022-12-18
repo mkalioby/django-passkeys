@@ -37,6 +37,7 @@ def get_current_platform(request):
         return "Google"
     elif "Windows" in ua.os.family:
         return "Microsoft"
+    else: return "Key"
 
 
 def reg_begin(request):
@@ -66,7 +67,10 @@ def reg_complete(request):
         server = getServer()
         auth_data = server.register_complete(request.session.pop("fido2_state"), response = data)
         encoded = websafe_encode(auth_data.credential_data)
-        uk = UserPasskey(user=request.user, token=encoded, name = name,platform=get_current_platform(request))
+        platform = get_current_platform(request)
+        if name == "":
+            name = platform
+        uk = UserPasskey(user=request.user, token=encoded, name = name,platform=platform)
         if data.get("id"):
             uk.credential_id = data.get('id')
 
