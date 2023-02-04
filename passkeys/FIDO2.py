@@ -11,15 +11,16 @@ from fido2.webauthn import PublicKeyCredentialRpEntity, AttestedCredentialData, 
 from .models import UserPasskey
 from user_agents.parsers import parse as ua_parse
 
+
 def enable_json_mapping():
     try:
         fido2.features.webauthn_json_mapping.enabled = True
     except:
         pass
 
+
 def getUserCredentials(user):
     return [AttestedCredentialData(websafe_decode(uk.token)) for uk in UserPasskey.objects.filter(user = user)]
-
 
 
 def getServer():
@@ -36,6 +37,7 @@ def getServer():
 
     rp = PublicKeyCredentialRpEntity(id=fido_server_id, name=fido_server_name)
     return Fido2Server(rp)
+
 
 def get_current_platform(request):
     ua = ua_parse(request.META["HTTP_USER_AGENT"])
@@ -92,11 +94,6 @@ def reg_complete(request):
         return JsonResponse({'status': 'ERR', "message": "Error on server, please try again later"})
 
 
-
-
-
-
-
 def auth_begin(request):
     enable_json_mapping()
     server = getServer()
@@ -111,7 +108,6 @@ def auth_begin(request):
     auth_data, state = server.authenticate_begin(credentials)
     request.session['fido2_state'] = state
     return JsonResponse(dict(auth_data))
-
 
 
 @csrf_exempt
