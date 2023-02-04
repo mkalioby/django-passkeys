@@ -23,15 +23,15 @@ def getUserCredentials(user):
     return [AttestedCredentialData(websafe_decode(uk.token)) for uk in UserPasskey.objects.filter(user = user)]
 
 
-def getServer():
+def getServer(request=None):
     """Get Server Info from settings and returns a Fido2Server"""
     if callable(settings.FIDO_SERVER_ID):
-        fido_server_id = settings.FIDO_SERVER_ID()
+        fido_server_id = settings.FIDO_SERVER_ID(request)
     else:
         fido_server_id = settings.FIDO_SERVER_ID
 
     if callable(settings.FIDO_SERVER_NAME):
-        fido_server_name = settings.FIDO_SERVER_NAME()
+        fido_server_name = settings.FIDO_SERVER_NAME(request)
     else:
         fido_server_name = settings.FIDO_SERVER_NAME
 
