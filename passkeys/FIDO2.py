@@ -24,7 +24,17 @@ def getUserCredentials(user):
 
 def getServer():
     """Get Server Info from settings and returns a Fido2Server"""
-    rp = PublicKeyCredentialRpEntity(id=settings.FIDO_SERVER_ID, name=settings.FIDO_SERVER_NAME)
+    if callable(settings.FIDO_SERVER_ID):
+        fido_server_id = settings.FIDO_SERVER_ID()
+    else:
+        fido_server_id = settings.FIDO_SERVER_ID
+
+    if callable(settings.FIDO_SERVER_NAME):
+        fido_server_name = settings.FIDO_SERVER_NAME()
+    else:
+        fido_server_name = settings.FIDO_SERVER_NAME
+
+    rp = PublicKeyCredentialRpEntity(id=fido_server_id, name=fido_server_name)
     return Fido2Server(rp)
 
 def get_current_platform(request):
