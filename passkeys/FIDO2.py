@@ -55,7 +55,7 @@ def get_current_platform(request):
 def reg_begin(request):
     """Starts registering a new FIDO Device, called from API"""
     enable_json_mapping()
-    server = getServer()
+    server = getServer(request)
     auth_attachment = getattr(settings,'KEY_ATTACHMENT', None)
     registration_data, state = server.register_begin({
         u'id': request.user.username.encode("utf8"),
@@ -76,7 +76,7 @@ def reg_complete(request):
         enable_json_mapping()
         data = json.loads(request.body)
         name = data.pop("key_name",'')
-        server = getServer()
+        server = getServer(request)
         auth_data = server.register_complete(request.session.pop("fido2_state"), response = data)
         encoded = websafe_encode(auth_data.credential_data)
         platform = get_current_platform(request)
@@ -96,7 +96,7 @@ def reg_complete(request):
 
 def auth_begin(request):
     enable_json_mapping()
-    server = getServer()
+    server = getServer(request)
     credentials=[]
     username = None
     if "base_username" in request.session:
@@ -114,7 +114,7 @@ def auth_begin(request):
 def auth_complete(request):
     enable_json_mapping()
     credentials = []
-    server = getServer()
+    server = getServer(request)
     data = json.loads(request.POST["passkeys"])
     key = None
     #userHandle = data.get("response",{}).get('userHandle')
