@@ -11,7 +11,9 @@ This app is a slim-down version of [django-mfa2](https://github.com/mkalioby/dja
 Passkeys are now supported on 
 * Apple Ecosystem (iPhone 16.0+, iPadOS 16.1, Mac OS X Ventura)
 * Chromium based browsers (on PC and Laptop) allows picking up credentials from Android and iPhone/iPadOS.
-* Android Credentials creation for ResidentKeys is currently in Beta.
+* Android Credentials creation for ResidentKeys is currently in live now
+
+On May 3, 2023, Google allowed the use of Passkeys for the users to login, killing the password for enrolled users. 
 
 # Installation
 
