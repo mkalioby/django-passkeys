@@ -1,4 +1,5 @@
 import json
+from base64 import urlsafe_b64encode
 
 import fido2.features
 from django.conf import settings
@@ -46,7 +47,7 @@ def reg_begin(request):
     server = getServer()
     auth_attachment = getattr(settings,'KEY_ATTACHMENT', None)
     registration_data, state = server.register_begin({
-        u'id': request.user.username.encode("utf8"),
+        u'id':  urlsafe_b64encode(request.user.username.encode("utf8")),
         u'name': request.user.username,
         u'displayName': request.user.username,
     }, getUserCredentials(request.user), authenticator_attachment = auth_attachment, resident_key_requirement=fido2.webauthn.ResidentKeyRequirement.PREFERRED)
