@@ -1,5 +1,6 @@
 # django-passkeys
 
+[![PyPI version](https://badge.fury.io/py/django-passkeys.svg)](https://badge.fury.io/py/django-passkeys)
 [![Downloads](https://pepy.tech/badge/django-passkeys/month)](https://pepy.tech/project/django-passkeys)
 
 An extension to Django *ModelBackend* backend to support passkeys.
@@ -11,7 +12,7 @@ This app is a slim-down version of [django-mfa2](https://github.com/mkalioby/dja
 Passkeys are now supported on 
 * Apple Ecosystem (iPhone 16.0+, iPadOS 16.1, Mac OS X Ventura)
 * Chromium based browsers (on PC and Laptop) allows picking up credentials from Android and iPhone/iPadOS.
-* Android Credentials creation for ResidentKeys is currently in live now
+* Android Credentials creation for ResidentKeys is currently in live now.
 
 On May 3, 2023, Google allowed the use of Passkeys for the users to login, killing the password for enrolled users. 
 
@@ -42,7 +43,7 @@ Currently, it support Django 2.0+, Python 3.7+
     import passkeys
     KEY_ATTACHMENT = NONE | passkeys.Attachment.CROSS_PLATFORM | passkeys.Attachment.PLATFORM
    ```
-   **Note**: Starting v1.1, `FIDO_SERVER_ID` and/or `FIDO_SERVER_NAME` can be callable to support multi-tenants web applications.
+   **Note**: Starting v1.1, `FIDO_SERVER_ID` and/or `FIDO_SERVER_NAME` can be a callable to support multi-tenants web applications, the `request` is passed to the called function.
 5. Add passkeys to urls.py
    ```python 
 
