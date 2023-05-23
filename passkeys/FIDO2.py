@@ -118,11 +118,8 @@ def auth_complete(request):
     #         if keys.exists():
     #             credentials = [AttestedCredentialData(websafe_decode(keys[0].properties["device"]))]
 
-    keys = UserPasskey.objects.filter(credential_id = credential_id)
+    keys = UserPasskey.objects.filter(credential_id = credential_id,enabled=1)
     if keys.exists():
-
-        if keys[0].enabled == 0:
-            return None
 
         credentials=[AttestedCredentialData(websafe_decode(keys[0].token))]
         key = keys[0]
