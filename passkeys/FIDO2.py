@@ -11,21 +11,33 @@ from fido2.webauthn import PublicKeyCredentialRpEntity, AttestedCredentialData, 
 from .models import UserPasskey
 from user_agents.parsers import parse as ua_parse
 
+
 def enable_json_mapping():
     try:
         fido2.features.webauthn_json_mapping.enabled = True
     except:
         pass
 
+
 def getUserCredentials(user):
     return [AttestedCredentialData(websafe_decode(uk.token)) for uk in UserPasskey.objects.filter(user = user)]
 
 
-
-def getServer():
+def getServer(request=None):
     """Get Server Info from settings and returns a Fido2Server"""
-    rp = PublicKeyCredentialRpEntity(id=settings.FIDO_SERVER_ID, name=settings.FIDO_SERVER_NAME)
+    if callable(settings.FIDO_SERVER_ID):
+        fido_server_id = settings.FIDO_SERVER_ID(request)
+    else:
+        fido_server_id = settings.FIDO_SERVER_ID
+
+    if callable(settings.FIDO_SERVER_NAME):
+        fido_server_name = settings.FIDO_SERVER_NAME(request)
+    else:
+        fido_server_name = settings.FIDO_SERVER_NAME
+
+    rp = PublicKeyCredentialRpEntity(id=fido_server_id, name=fido_server_name)
     return Fido2Server(rp)
+
 
 def get_current_platform(request):
     ua = ua_parse(request.META["HTTP_USER_AGENT"])
@@ -43,7 +55,7 @@ def get_current_platform(request):
 def reg_begin(request):
     """Starts registering a new FIDO Device, called from API"""
     enable_json_mapping()
-    server = getServer()
+    server = getServer(request)
     auth_attachment = getattr(settings,'KEY_ATTACHMENT', None)
     registration_data, state = server.register_begin({
         u'id': request.user.username.encode("utf8"),
@@ -64,7 +76,7 @@ def reg_complete(request):
         enable_json_mapping()
         data = json.loads(request.body)
         name = data.pop("key_name",'')
-        server = getServer()
+        server = getServer(request)
         auth_data = server.register_complete(request.session.pop("fido2_state"), response = data)
         encoded = websafe_encode(auth_data.credential_data)
         platform = get_current_platform(request)
@@ -84,7 +96,7 @@ def reg_complete(request):
 
 def auth_begin(request):
     enable_json_mapping()
-    server = getServer()
+    server = getServer(request)
     credentials=[]
     username = None
     if "base_username" in request.session:
@@ -102,7 +114,7 @@ def auth_begin(request):
 def auth_complete(request):
     enable_json_mapping()
     credentials = []
-    server = getServer()
+    server = getServer(request)
     data = json.loads(request.POST["passkeys"])
     key = None
     #userHandle = data.get("response",{}).get('userHandle')
