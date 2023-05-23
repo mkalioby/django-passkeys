@@ -42,6 +42,7 @@ Currently, it support Django 2.0+, Python 3.7+
     import passkeys
     KEY_ATTACHMENT = NONE | passkeys.Attachment.CROSS_PLATFORM | passkeys.Attachment.PLATFORM
    ```
+   **Note**: Starting v1.1, `FIDO_SERVER_ID` and/or `FIDO_SERVER_NAME` can be callable to support multi-tenants web applications.
 5. Add passkeys to urls.py
    ```python 
 
@@ -52,7 +53,10 @@ Currently, it support Django 2.0+, Python 3.7+
     ]
     ```
 6. To match the look and feel of your project, Passkeys includes `base.html` but it needs blocks named `head` & `content` to added its content to it.
-   **Note:** You can override `PassKeys_base.html` which is used by `Passkeys.html` so you can control the styling better and current `Passkeys_base.html` extends `base.html`
+   **Notes:** 
+    
+    1. You can override `PassKeys_base.html` which is used by `Passkeys.html` so you can control the styling better and current `Passkeys_base.html` extends `base.html`
+    1. Currently, `PassKeys_base.html` needs JQuery and bootstrap. 
 
 7. Somewhere in your app, add a link to 'passkeys:home'
     ```<li><a href="{% url 'passkeys:home' %}">Passkeys</a> </li>```
@@ -112,6 +116,8 @@ Tidelift will coordinate the fix and disclosure.
 
 # Contributors
 * [mahmoodnasr](https://github.com/mahmoodnasr)
+* [jacopsd](https://github.com/jacopsd)   
+* [gasparbrogueira](https://github.com/gasparbrogueira)
 
 
 
