@@ -82,11 +82,6 @@ def reg_complete(request):
         return JsonResponse({'status': 'ERR', "message": "Error on server, please try again later"})
 
 
-
-
-
-
-
 def auth_begin(request):
     enable_json_mapping()
     server = getServer()
@@ -101,7 +96,6 @@ def auth_begin(request):
     auth_data, state = server.authenticate_begin(credentials)
     request.session['fido2_state'] = state
     return JsonResponse(dict(auth_data))
-
 
 
 @csrf_exempt
@@ -125,6 +119,10 @@ def auth_complete(request):
 
     keys = UserPasskey.objects.filter(credential_id = credential_id)
     if keys.exists():
+
+        if keys[0].enabled == 0:
+            return None
+
         credentials=[AttestedCredentialData(websafe_decode(keys[0].token))]
         key = keys[0]
 
