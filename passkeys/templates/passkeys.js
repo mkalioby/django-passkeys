@@ -3,13 +3,15 @@
 <script type="application/javascript" src="{% static 'passkeys/js/helpers.js' %}"></script>
 <script type="text/javascript">
     window.conditionalUI=false;
+    window.conditionUIAbortController = new AbortController();
+    window.conditionUIAbortSignal = conditionUIAbortController.signal;
     function checkConditionalUI(form) {
     if (window.PublicKeyCredential && PublicKeyCredential.isConditionalMediationAvailable) {
     // Check if conditional mediation is available.
     PublicKeyCredential.isConditionalMediationAvailable().then((result) => {
     window.conditionalUI = result;
     if (window.conditionalUI) {
-    authn(form)
+    pk_login(form,true)
 }
 });
 }
@@ -26,6 +28,12 @@ var GetAssertReq = (getAssert) => {
         }
         function authn(form)
         {
+            window.conditionUIAbortController.abort();
+            pk_login(form,false);
+        }
+
+        function pk_login(form,conditionalUI)
+        {
             window.loginForm=form;
          fetch('{% url 'passkeys:auth_begin' %}', {
       method: 'GET',
@@ -37,8 +45,9 @@ var GetAssertReq = (getAssert) => {
       }
       throw new Error('No credential available to authenticate!');
     }).then(function(options) {
-        if (window.conditionalUI) {
+        if (conditionalUI) {
             options.mediation= 'conditional';
+            options.signal = conditionUIAbortSignal;
         }
         console.log(options)
       return navigator.credentials.get(options);
@@ -58,7 +67,7 @@ var GetAssertReq = (getAssert) => {
         }
             x.submit()
 
-        });
+        }).catch(function(err) {})
     $(document).ready(function () {
         if (location.protocol != 'https:') {
             console.error("Passkeys must work under secure context")
