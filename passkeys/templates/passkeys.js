@@ -2,6 +2,19 @@
 <script type="application/javascript" src="{% static 'passkeys/js/base64url.js' %}"></script>
 <script type="application/javascript" src="{% static 'passkeys/js/helpers.js' %}"></script>
 <script type="text/javascript">
+    window.conditionalUI=false;
+    function checkConditionalUI(form) {
+    if (window.PublicKeyCredential && PublicKeyCredential.isConditionalMediationAvailable) {
+    // Check if conditional mediation is available.
+    window.conditionalUI = PublicKeyCredential.isConditionalMediationAvailable().then((result) => {
+    window.conditionalUI = result;
+    if (window.conditionalUI) {
+    authn(form)
+}
+});
+}
+}
+
 var GetAssertReq = (getAssert) => {
            getAssert.publicKey.challenge = base64url.decode(getAssert.publicKey.challenge);
 
@@ -24,6 +37,9 @@ var GetAssertReq = (getAssert) => {
       }
       throw new Error('No credential available to authenticate!');
     }).then(function(options) {
+        if window.conditionalUI {
+            options.mediation= 'conditional';
+        }
         console.log(options)
       return navigator.credentials.get(options);
     }).then(function(assertion) {
