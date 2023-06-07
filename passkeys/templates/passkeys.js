@@ -6,7 +6,7 @@
     function checkConditionalUI(form) {
     if (window.PublicKeyCredential && PublicKeyCredential.isConditionalMediationAvailable) {
     // Check if conditional mediation is available.
-    window.conditionalUI = PublicKeyCredential.isConditionalMediationAvailable().then((result) => {
+    PublicKeyCredential.isConditionalMediationAvailable().then((result) => {
     window.conditionalUI = result;
     if (window.conditionalUI) {
     authn(form)
@@ -37,7 +37,7 @@ var GetAssertReq = (getAssert) => {
       }
       throw new Error('No credential available to authenticate!');
     }).then(function(options) {
-        if window.conditionalUI {
+        if (window.conditionalUI) {
             options.mediation= 'conditional';
         }
         console.log(options)

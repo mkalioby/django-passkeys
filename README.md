@@ -41,7 +41,7 @@ Currently, it support Django 2.0+, Python 3.7+
     FIDO_SERVER_ID="localhost"      # Server rp id for FIDO2, it the full domain of your project
     FIDO_SERVER_NAME="TestApp"
     import passkeys
-    KEY_ATTACHMENT = NONE | passkeys.Attachment.CROSS_PLATFORM | passkeys.Attachment.PLATFORM
+    KEY_ATTACHMENT = None | passkeys.Attachment.CROSS_PLATFORM | passkeys.Attachment.PLATFORM
    ```
    **Note**: Starting v1.1, `FIDO_SERVER_ID` and/or `FIDO_SERVER_NAME` can be a callable to support multi-tenants web applications, the `request` is passed to the called function.
 5. Add passkeys to urls.py
@@ -88,6 +88,7 @@ If the user didn't use a passkey then it will be set to False
 {'passkey':False}
 ```
 
+
 # Check if the user can be enrolled for a platform authenticator
 
 If you want to check if the user can be enrolled to use a platform authenticator, you can do the following in your main page.
@@ -108,6 +109,25 @@ check_passkey function paramters are as follows
 * `success_func`: function to call if a platform authenticator is found or if the user didn't login by a passkey
 * `fail_func`: function to call if no platform authenticator is found (optional).
 
+
+## Using Conditional UI
+
+Conditional UI is a way for the browser to prompt the user to use the passkey to login to the system as shown in 
+
+![conditionalUI.png](imgs%2FconditionalUI.png)
+
+Starting version v1.2. you can use Conditional UI by adding the following to your login page
+
+1. Add `webauthn` to autocomplete of the username field as shown below.
+```html
+<input name="username" placeholder="username" autocomplete="username webauthn">
+```
+add the following to the page js.
+
+```js
+window.onload = checkConditionalUI('loginForm');
+```
+where `loginForm` is name of your login form.
 
 ## Security contact information
 
