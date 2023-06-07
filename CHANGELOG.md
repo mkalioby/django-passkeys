@@ -1,3 +1,7 @@
+## v1.2
+
+* Add support for Conditional UI.
+
 ## v1.1
 
 * `FIDO_SERVER_ID` and `FIDO_SERVER_NAME` call be callable now to multi tenants application
