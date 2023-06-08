@@ -1,3 +1,7 @@
+## v1.2.1.1
+
+* Allow aborting the conditionalUI.
+
 ## v1.2
 
 * Add support for Conditional UI.
