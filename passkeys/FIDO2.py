@@ -104,9 +104,9 @@ def auth_begin(request):
     if "base_username" in request.session:
         username = request.session["base_username"]
     if request.user.is_authenticated:
-        username = request.user.username
+        username = request.user.get_username()
     if username:
-        credentials = getUserCredentials(request.session.get("base_username", request.user.username))
+        credentials = getUserCredentials(request.session.get("base_username", request.user.get_username()))
     auth_data, state = server.authenticate_begin(credentials)
     request.session['fido2_state'] = state
     return JsonResponse(dict(auth_data))
