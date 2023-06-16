@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.views.decorators.http import require_POST
 
 from .models import UserPasskey
 
@@ -11,8 +12,9 @@ def index(request,enroll=False):
 
 
 @login_required
+@require_POST
 def delKey(request):
-    key=UserPasskey.objects.get(user=request.user, id=request.GET["id"])
+    key=UserPasskey.objects.get(user=request.user, id=request.POST["id"])
     key.delete()
     return HttpResponse("Deleted Successfully")
 

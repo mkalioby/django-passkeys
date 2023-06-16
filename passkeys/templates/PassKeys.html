@@ -59,6 +59,8 @@
     function confirmDel(id) {
         $.ajax({
             url:"{% url 'passkeys:delKey' %}",
+            method:"POST",
+            headers:{"X-CSRFToken":"{{ csrf_token }}"},
             data:{"id":id},
             success:function (data) {
                 alert(data)
