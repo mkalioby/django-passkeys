@@ -58,10 +58,11 @@ def reg_begin(request):
     enable_json_mapping()
     server = getServer(request)
     auth_attachment = getattr(settings,'KEY_ATTACHMENT', None)
+    username = request.user.get_username()
     registration_data, state = server.register_begin({
-        u'id':  urlsafe_b64encode(request.user.username.encode("utf8")),
-        u'name': request.user.username,
-        u'displayName': request.user.username,
+        u'id':  urlsafe_b64encode(username.encode("utf8")),
+        u'name': username,
+        u'displayName': username,
     }, getUserCredentials(request.user), authenticator_attachment = auth_attachment, resident_key_requirement=fido2.webauthn.ResidentKeyRequirement.PREFERRED)
     request.session['fido2_state'] = state
     return JsonResponse(dict(registration_data))
