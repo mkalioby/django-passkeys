@@ -12,11 +12,9 @@ def index(request,enroll=False):
 
 @login_required
 def delKey(request):
-    key=UserPasskey.objects.get(id=request.GET["id"])
-    if key.user.pk  == request.user.pk:
-        key.delete()
-        return HttpResponse("Deleted Successfully")
-    return HttpResponse("Error: You own this token so you can't delete it")
+    key=UserPasskey.objects.get(user=request.user, id=request.GET["id"])
+    key.delete()
+    return HttpResponse("Deleted Successfully")
 
 @login_required
 def toggleKey(request):
