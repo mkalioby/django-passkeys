@@ -28,5 +28,6 @@ jobs:
           python manage.py migrate
       - name: Run Tests
         run: |
+          cd example
           coverage run manage.py test
           coverage report
