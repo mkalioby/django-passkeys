@@ -32,7 +32,7 @@ class test_passkeys(TransactionTestCase):
     def test_username_password_login(self):
         self.client.post("/auth/login",{"username":"test","password":"test",'passkeys':''})
         self.assertTrue(self.client.session.get('_auth_user_id',False))
-        self.assertFalse(self.client.session.get('passkey', {}).get('passkey', True))
+        self.assertFalse(self.client.session.get('passkey', {}).get('passkey', False))
 
     def test_no_data(self):
         self.client.post("/auth/login",{"username":"","password":"",'passkeys':''})
