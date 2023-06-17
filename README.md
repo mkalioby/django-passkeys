@@ -2,6 +2,7 @@
 
 [![PyPI version](https://badge.fury.io/py/django-passkeys.svg)](https://badge.fury.io/py/django-passkeys)
 [![Downloads](https://pepy.tech/badge/django-passkeys/month)](https://pepy.tech/project/django-passkeys)
+![Coverage](coverage.svg)
 
 An extension to Django *ModelBackend* backend to support passkeys.
 
