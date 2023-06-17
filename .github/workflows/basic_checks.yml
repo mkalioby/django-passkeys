@@ -1,4 +1,4 @@
-name: Django Basic Dev Tests
+name: build
 
 on: [ pull_request, workflow_dispatch, push ]
 
