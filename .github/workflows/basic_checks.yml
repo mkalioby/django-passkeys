@@ -1,0 +1,31 @@
+name: Django Basic Dev Tests
+
+on: [ pull_request ]
+
+env:
+  MODE: GIT_ACTIONS_DEV
+  DJANGO_SETTINGS_MODULE: test_app.test_settings
+
+jobs:
+  basic_checks:
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: Install requirements
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements_test.txt
+      - name: Run Migrations
+        run: |
+          cd example
+          python manage.py migrate
+      - name: Run Tests
+        run: |
+          coverage run manage.py test
+          coverage report

@@ -13,7 +13,7 @@ class PasskeyModelBackend(ModelBackend):
 
         passkeys = request.POST.get('passkeys')
         if passkeys is None:
-            raise Exception("Can't find '%s' key in request.POST, did you add the hidden input?")
+            raise Exception("Can't find 'passkeys' key in request.POST, did you add the hidden input?")
         if passkeys != '':
             return auth_complete(request)
         return None

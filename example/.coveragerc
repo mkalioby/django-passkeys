@@ -1,0 +1,12 @@
+[run]
+omit =
+    */tests/*
+    */migrations/*
+
+
+[report]
+skip_covered = True
+show_missing = True
+omit =
+    */tests/*
+    */migrations/*
