@@ -38,7 +38,7 @@ class test_fido(TransactionTestCase):
 
     def test_passkey_login(self):
         authenticator = self.test_key_reg()
-        self.client.logout()
+        self.client.get('/auth/logout')
         r = self.client.get(reverse('passkeys:auth_begin'))
         self.assertEquals(r.status_code, 200)
         j = json.loads(r.content)
