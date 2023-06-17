@@ -139,6 +139,7 @@ Tidelift will coordinate the fix and disclosure.
 * [mahmoodnasr](https://github.com/mahmoodnasr)
 * [jacopsd](https://github.com/jacopsd)   
 * [gasparbrogueira](https://github.com/gasparbrogueira)
+* [ashokdelphia](https://github.com/ashokdelphia)
 
 
 

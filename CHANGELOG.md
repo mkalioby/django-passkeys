@@ -1,3 +1,10 @@
+## v1.3.0
+
+* Fix: Change the hardcoded username field, thanks @ashokdelphia
+* Fix: Change Grammer for empty keys cases, thanks @ashokdelphia
+* Fix: Show user provided key name when deleting key, thanks @ashokdelphia
+
+
 ## v1.2.1.1
 
 * Allow aborting the conditionalUI.
