@@ -80,7 +80,7 @@
     function deleteKey(id,name)
     {
         $("#modal-title").html("Confirm Delete")
-        $("#modal-body").html("Are you sure you want to delete '"+name+"'? you may lose access to your system if this your only 2FA.");
+        $("#modal-body").text("Are you sure you want to delete '"+name+"'? you may lose access to your system if this your only 2FA.");
         $("#actionBtn").remove()
         $("#modal-footer").prepend("<button id='actionBtn' class='btn btn-danger' onclick='confirmDel("+id+")'>Confirm Deletion</button>")
         $("#popUpModal").modal('show')
@@ -138,7 +138,7 @@
                     <td>{{ key.platform }}</td>
                     <td>{% if key.last_used %}{{ key.last_used }}{% else %}Never{% endif %}</td>
                     <td><input type="checkbox" id="toggle_{{ key.id }}" {% if key.enabled %}checked{% endif %} data-onstyle="success" data-offstyle="danger"  onchange="toggleKey({{ key.id }})" data-toggle="toggle" class="status_chk"></td>
-                    <td><a href="javascript:void(0)" onclick="deleteKey({{ key.id }},'{{ key.key_type }}')"> <span class="fa fa-trash fa-solid fa-trash-can bi bi-trash-fill"></span></a></td>
+                    <td><a href="javascript:void(0)" onclick="deleteKey({{ key.id }},'{{ key.name }}')"> <span class="fa fa-trash fa-solid fa-trash-can bi bi-trash-fill"></span></a></td>
                 </tr>
                 {% endfor %}
             {% else %}
