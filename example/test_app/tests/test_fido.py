@@ -1,26 +1,37 @@
 import json
+from base64 import urlsafe_b64encode
 from importlib import import_module
 
 from django.http import HttpRequest
 from django.test import RequestFactory,TransactionTestCase, Client
 from django.urls import reverse
 
-from test_app import settings
+from django.conf import settings
 from test_app.soft_webauthn import SoftWebauthnDevice
 
 from passkeys.models import UserPasskey
 
 
+def get_server_id(request):
+    return request.META["SERVER_NAME"] + "1"
+
+def get_server_name(request):
+    return "MySite"
+
 class test_fido(TransactionTestCase):
     def setUp(self) -> None:
         from django.contrib.auth import get_user_model
         self.user_model = get_user_model()
-        self.user = self.user_model.objects.create_user(username="test",password="test")
+        if self.user_model.objects.filter(username="test").count()==0:
+            self.user = self.user_model.objects.create_user(username="test",password="test")
+        else:
+            self.user = self.user_model.objects.get(username="test")
         self.client = Client()
         settings.SESSION_ENGINE = 'django.contrib.sessions.backends.file'
         engine = import_module(settings.SESSION_ENGINE)
+        #settings.SESSION_FILE_PATH = "/"
         store = engine.SessionStore()
-        store.save()
+        store.save(must_create=True)
         self.session = store
         self.client.cookies["sessionid"] = store.session_key
 
@@ -102,11 +113,30 @@ class test_fido(TransactionTestCase):
         self.client.get('/auth/logout')
         session = self.session
         session["base_username"]= "test"
-        session.save()
+        session.save(must_create=True)
+        self.client.cookies["sessionid"] = session.session_key
         r = self.client.get(reverse('passkeys:auth_begin'))
         self.assertEquals(r.status_code, 200)
         j = json.loads(r.content)
         print(j)
+        self.assertEquals(j['publicKey']['allowCredentials'][0]['id'],urlsafe_b64encode(authenticator.credential_id).decode("utf8").strip('='))
 
     def test_passkey_login_no_session(self):
         pass
+
+
+    def test_server_id_callable(self):
+        from test_app.tests.test_fido import get_server_id
+        settings.FIDO_SERVER_ID = get_server_id
+        r = self.client.get(reverse('passkeys:auth_begin'))
+        self.assertEquals(r.status_code, 200)
+        j = json.loads(r.content)
+        self.assertEquals(j['publicKey']['rpId'],'testserver1')
+
+    def test_server_name_callable(self):
+        from test_app.tests.test_fido import get_server_name
+        settings.FIDO_SERVER_NAME = get_server_name
+        r = self.client.get(reverse('passkeys:reg_begin'))
+        self.assertEquals(r.status_code, 200)
+        j = json.loads(r.content)
+        self.assertEquals(j['publicKey']['rp']["name"],'MySite')
