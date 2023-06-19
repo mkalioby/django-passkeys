@@ -6,6 +6,10 @@
 [![build](https://github.com/mkalioby/django-passkeys/actions/workflows/basic_checks.yml/badge.svg)](https://github.com/mkalioby/django-passkeys/actions/workflows/basic_checks.yml)
 ![Coverage](https://raw.githubusercontent.com/mkalioby/django-passkeys/main/coverage.svg)
 
+![Django Versions](https://img.shields.io/pypi/frameworkversions/django/django-passkeys)
+![Python Versions](https://img.shields.io/pypi/pyversions/django-passkeys)
+
+
 An extension to Django *ModelBackend* backend to support passkeys.
 
 Passkeys is an extension to Web Authentication API that will allow the user to login to a service using another device.
