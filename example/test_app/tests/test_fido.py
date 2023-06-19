@@ -118,7 +118,6 @@ class test_fido(TransactionTestCase):
         r = self.client.get(reverse('passkeys:auth_begin'))
         self.assertEquals(r.status_code, 200)
         j = json.loads(r.content)
-        print(j)
         self.assertEquals(j['publicKey']['allowCredentials'][0]['id'],urlsafe_b64encode(authenticator.credential_id).decode("utf8").strip('='))
 
     def test_passkey_login_no_session(self):
