@@ -1,2 +1,6 @@
 recursive-include passkeys/templates *
 recursive-include passkeys/static *
+recursive-include passkeys *
+recursive-exclude example *
+recursive-exclude passkeys *.pyc
+recursive-exclude env *.pyo

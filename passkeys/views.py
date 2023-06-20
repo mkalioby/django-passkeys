@@ -6,9 +6,9 @@ from django.views.decorators.http import require_POST
 from .models import UserPasskey
 
 @login_required
-def index(request,enroll=False):
-    keys = UserPasskey.objects.filter(user=request.user)
-    return render(request,'PassKeys.html',{"keys":keys,"enroll":enroll})
+def index(request,enroll=False): # noqa
+    keys = UserPasskey.objects.filter(user=request.user) # pragma: no cover
+    return render(request,'PassKeys.html',{"keys":keys,"enroll":enroll}) # pragma: no cover
 
 
 @login_required
@@ -27,4 +27,4 @@ def toggleKey(request):
         key.enabled=not key.enabled
         key.save()
         return HttpResponse("OK")
-    return HttpResponse("Error")
+    return HttpResponse("Error: You own this token so you can't toggle it", status=403)

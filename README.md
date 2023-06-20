@@ -1,7 +1,14 @@
 # django-passkeys
 
 [![PyPI version](https://badge.fury.io/py/django-passkeys.svg)](https://badge.fury.io/py/django-passkeys)
-[![Downloads](https://pepy.tech/badge/django-passkeys/month)](https://pepy.tech/project/django-passkeys)
+[![Downloads](https://static.pepy.tech/badge/django-passkeys)](https://pepy.tech/project/django-passkeys)
+[![Downloads / Month ](https://pepy.tech/badge/django-passkeys/month)](https://pepy.tech/project/django-passkeys)
+[![build](https://github.com/mkalioby/django-passkeys/actions/workflows/basic_checks.yml/badge.svg)](https://github.com/mkalioby/django-passkeys/actions/workflows/basic_checks.yml)
+![Coverage](https://raw.githubusercontent.com/mkalioby/django-passkeys/main/coverage.svg)
+
+![Django Versions](https://img.shields.io/pypi/frameworkversions/django/django-passkeys)
+![Python Versions](https://img.shields.io/pypi/pyversions/django-passkeys)
+
 
 An extension to Django *ModelBackend* backend to support passkeys.
 
