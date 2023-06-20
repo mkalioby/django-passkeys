@@ -1,5 +1,6 @@
 import json
 from base64 import urlsafe_b64encode
+import traceback
 
 import fido2.features
 from django.conf import settings
@@ -21,7 +22,7 @@ def enable_json_mapping():
 
 
 def getUserCredentials(user):
-    return [AttestedCredentialData(websafe_decode(uk.token)) for uk in UserPasskey.objects.filter(user = user)]
+    return [AttestedCredentialData(websafe_decode(uk.token)) for uk in UserPasskey.objects.filter(user__username = user)]
 
 
 def getServer(request=None):
@@ -89,10 +90,9 @@ def reg_complete(request):
 
         uk.save()
         return JsonResponse({'status': 'OK'})
-    except Exception as exp:
-        import traceback
-        print(traceback.format_exc())
-        return JsonResponse({'status': 'ERR', "message": "Error on server, please try again later"})
+    except Exception as exp: # pragma: no cover
+        print(traceback.format_exc()) # pragma: no cover
+        return JsonResponse({'status': 'ERR', "message": "Error on server, please try again later"}) # pragma: no cover
 
 
 def auth_begin(request):
@@ -105,7 +105,7 @@ def auth_begin(request):
     if request.user.is_authenticated:
         username = request.user.username
     if username:
-        credentials = getUserCredentials(request.session.get("base_username", request.user.username))
+        credentials = getUserCredentials(username)
     auth_data, state = server.authenticate_begin(credentials)
     request.session['fido2_state'] = state
     return JsonResponse(dict(auth_data))
@@ -140,14 +140,14 @@ def auth_complete(request):
             cred = server.authenticate_complete(
                     request.session.pop('fido2_state'), credentials = credentials, response = data
             )
-        except ValueError:
-            return None
-        except Exception as excep:
-            raise Exception(excep)
+        except ValueError:   # pragma: no cover
+            return None      # pragma: no cover
+        except Exception as excep:              # pragma: no cover
+            raise Exception(excep)              # pragma: no cover
         if key:
             key.last_used = timezone.now()
             request.session["passkey"] = {'passkey': True, 'name': key.name, "id":key.id, "platform": key.platform,
                                            'cross_platform': get_current_platform(request) != key.platform}
             key.save()
             return key.user
-    return None
+    return None                           # pragma: no cover
