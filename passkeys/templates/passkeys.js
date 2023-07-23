@@ -45,7 +45,7 @@ var GetAssertReq = (getAssert) => {
             options.signal = window.conditionUIAbortSignal;
         }
         else
-            conditionUIAbortController.abort()
+            window.conditionUIAbortController.abort()
         console.log(options)
       return navigator.credentials.get(options);
     }).then(function(assertion) {
