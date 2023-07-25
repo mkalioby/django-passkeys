@@ -5,6 +5,15 @@
 * Fix: Show user provided key name when deleting key, thanks @ashokdelphia
 
 
+## 1.2.5
+
+* Fix: Aborting the conditional UI was not working when 'Login by Passkeys' is clicked.
+
+## v1.2.3
+
+* No Change just updating README.md
+
+
 ## v1.2.1.1
 
 * Allow aborting the conditionalUI.

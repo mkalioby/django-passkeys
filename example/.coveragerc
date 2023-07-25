@@ -1,0 +1,18 @@
+[run]
+omit =
+    */tests/*
+    */migrations/*
+include=
+    */passkeys/*
+    test_app/*
+
+[report]
+skip_covered = True
+show_missing = True
+omit =
+    */tests/*
+    */migrations/*
+    test_app/soft_webauthn.py
+include=
+    */passkeys/*
+    test_app/*
