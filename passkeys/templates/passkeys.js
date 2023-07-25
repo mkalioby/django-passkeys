@@ -3,13 +3,15 @@
 <script type="application/javascript" src="{% static 'passkeys/js/helpers.js' %}"></script>
 <script type="text/javascript">
     window.conditionalUI=false;
+    window.conditionUIAbortController = new AbortController();
+    window.conditionUIAbortSignal = conditionUIAbortController.signal;
     function checkConditionalUI(form) {
     if (window.PublicKeyCredential && PublicKeyCredential.isConditionalMediationAvailable) {
     // Check if conditional mediation is available.
     PublicKeyCredential.isConditionalMediationAvailable().then((result) => {
     window.conditionalUI = result;
     if (window.conditionalUI) {
-    authn(form)
+    start_authn(form,true)
 }
 });
 }
@@ -24,7 +26,8 @@ var GetAssertReq = (getAssert) => {
 
             return getAssert
         }
-        function authn(form)
+
+        function start_authn(form,conditionalUI=false)
         {
             window.loginForm=form;
          fetch('{% url 'passkeys:auth_begin' %}', {
@@ -37,9 +40,12 @@ var GetAssertReq = (getAssert) => {
       }
       throw new Error('No credential available to authenticate!');
     }).then(function(options) {
-        if (window.conditionalUI) {
-            options.mediation= 'conditional';
+        if (conditionalUI) {
+            options.mediation = 'conditional';
+            options.signal = window.conditionUIAbortSignal;
         }
+        else
+            window.conditionUIAbortController.abort()
         console.log(options)
       return navigator.credentials.get(options);
     }).then(function(assertion) {
@@ -65,6 +71,9 @@ var GetAssertReq = (getAssert) => {
         }
     });
         }
-
+      function authn(form)
+    {
+        start_authn(form,false)
+    }
 
     </script>

@@ -1,3 +1,7 @@
+## 1.2.5
+
+* Fix: Aborting the conditional UI was not working when 'Login by Passkeys' is clicked.
+
 ## v1.2.3
 
 * No Change just updating README.md
