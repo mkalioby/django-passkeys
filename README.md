@@ -78,7 +78,7 @@ Currently, it support Django 2.0+, Python 3.7+
    * Inside the form, add 
      ```html
       <input type="hidden" name="passkeys" id="passkeys"/>
-      <button class="btn btn-block btn-dark" type="button" onclick="authn('loginForm')"><img src="{% static 'passkeys/imgs/FIDO-Passkey_Icon-White.png' %}" style="width: 24px">
+      <button class="btn btn-block btn-dark" type="button" onclick="authn('loginForm')"><img src="{% static 'passkeys/imgs/FIDO-Passkey_Icon-White.png' %}" style="width: 24px"></button>
      {%include 'passkeys.js' %}
      ```
 For Example, See 'example' app and look at EXAMPLE.md to see how to set it up.
@@ -146,6 +146,7 @@ Tidelift will coordinate the fix and disclosure.
 * [mahmoodnasr](https://github.com/mahmoodnasr)
 * [jacopsd](https://github.com/jacopsd)   
 * [gasparbrogueira](https://github.com/gasparbrogueira)
+* [pulse-mind](https://github.com/pulse-mind)
 
 
 
