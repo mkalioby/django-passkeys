@@ -75,7 +75,8 @@
                                 `)
         $("#actionBtn").remove();
         $("#modal-footer").prepend(`<button id='actionBtn' class='btn btn-success' onclick="begin_reg()">Start</button>`)
-        $("#popUpModal").modal('show')
+        $("#popUpModal").modal('show');
+        $('.modal-backdrop').remove();
     }
     function deleteKey(id,name)
     {
@@ -83,7 +84,8 @@
         $("#modal-body").html("Are you sure you want to delete '"+name+"'? you may lose access to your system if this your only 2FA.");
         $("#actionBtn").remove()
         $("#modal-footer").prepend("<button id='actionBtn' class='btn btn-danger' onclick='confirmDel("+id+")'>Confirm Deletion</button>")
-        $("#popUpModal").modal('show')
+        $("#popUpModal").modal('show');
+        $('.modal-backdrop').remove();
     }
 
     function toggleKey(id) {
