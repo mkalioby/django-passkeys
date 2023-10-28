@@ -1,6 +1,15 @@
+## v1.2.6
+
+* Adding Django 5.0 to test matrix and pypi classifiers
+
 ## 1.2.5
 
 * Fix: Aborting the conditional UI was not working when 'Login by Passkeys' is clicked.
+
+
+## v1.2.4
+
+* No Change just updating README.md
 
 ## v1.2.3
 

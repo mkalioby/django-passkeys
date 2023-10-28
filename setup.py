@@ -4,7 +4,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='django-passkeys',
-    version='1.2.5',
+    version='1.2.6',
     description='A Django Authentication Backend for Passkeys',
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
@@ -37,6 +37,7 @@ setup(
         "Framework :: Django :: 4.0",
         "Framework :: Django :: 4.1",
         "Framework :: Django :: 4.2",
+        "Framework :: Django :: 5.0",
         "Intended Audience :: Developers",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
