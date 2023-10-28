@@ -133,7 +133,4 @@ AUTHENTICATION_BACKENDS = ['passkeys.backend.PasskeyModelBackend']
 FIDO_SERVER_ID="testserver"      # Server rp id for FIDO2, it the full domain of your project
 FIDO_SERVER_NAME="TestApp"
 KEY_ATTACHMENT = passkeys.Attachment.PLATFORM
-<<<<<<< Updated upstream
-=======
 CSRF_TRUSTED_ORIGINS = ['http://localhost:8000','https://localhost:8000']
->>>>>>> Stashed changes
