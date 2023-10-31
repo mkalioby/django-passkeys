@@ -1,3 +1,7 @@
+## v1.2.7
+
+* Fix: issue if the user isn't defined by username field #25.
+
 ## v1.2.6
 
 * Adding Django 5.0 to test matrix and pypi classifiers
