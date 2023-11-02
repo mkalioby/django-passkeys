@@ -49,7 +49,7 @@ var GetAssertReq = (getAssert) => {
         console.log(options)
       return navigator.credentials.get(options);
     }).then(function(assertion) {
-        pk = document.getElementById("passkeys");
+        pk = document.getElementById("passkeys")
         if (pk.length == 0)
         {
             console.error("Did you add the 'passkeys' hidden input field")
