@@ -63,8 +63,8 @@ Currently, it support Django 2.0+, Python 3.7+
 6. To match the look and feel of your project, Passkeys includes `base.html` but it needs blocks named `head` & `content` to added its content to it.
    **Notes:** 
     
-    1. You can override `PassKeys_base.html` which is used by `Passkeys.html` so you can control the styling better and current `Passkeys_base.html` extends `base.html`
-    1. Currently, `PassKeys_base.html` needs JQuery and bootstrap. 
+    1. You can override `passkeys/PassKeys_base.html` which is used by `passkeys/Passkeys.html` so you can control the styling better and current `passkeys/Passkeys_base.html` extends `base.html`
+    1. Currently, `passkeys/PassKeys_base.html` needs JQuery and bootstrap. 
 
 7. Somewhere in your app, add a link to 'passkeys:home'
     ```<li><a href="{% url 'passkeys:home' %}">Passkeys</a> </li>```
@@ -79,7 +79,7 @@ Currently, it support Django 2.0+, Python 3.7+
      ```html
       <input type="hidden" name="passkeys" id="passkeys"/>
       <button class="btn btn-block btn-dark" type="button" onclick="authn('loginForm')"><img src="{% static 'passkeys/imgs/FIDO-Passkey_Icon-White.png' %}" style="width: 24px"></button>
-     {%include 'passkeys.js' %}
+     {%include 'passkeys/passkeys.js' %}
      ```
 For Example, See 'example' app and look at EXAMPLE.md to see how to set it up.
 
@@ -107,7 +107,7 @@ function register_pk()
     {
         $('#pk').show();
     }
-{% include 'check_passkeys.js'%}
+{% include 'passkeys/check_passkeys.js'%}
 $(document).ready(check_passkey(true,register_pk))
 </script>
 ```
