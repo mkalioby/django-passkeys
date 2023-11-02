@@ -49,13 +49,13 @@ var GetAssertReq = (getAssert) => {
         console.log(options)
       return navigator.credentials.get(options);
     }).then(function(assertion) {
-        pk = $("#passkeys")
+        pk = document.getElementById("passkeys");
         if (pk.length == 0)
         {
             console.error("Did you add the 'passkeys' hidden input field")
             return
         }
-        pk.val(JSON.stringify(publicKeyCredentialToJSON(assertion)));
+        pk.value = JSON.stringify(publicKeyCredentialToJSON(assertion));
         x= document.getElementById(window.loginForm)
         if (x === null || x === undefined)
         {
@@ -65,11 +65,13 @@ var GetAssertReq = (getAssert) => {
             x.submit()
 
         });
-    $(document).ready(function () {
-        if (location.protocol != 'https:') {
-            console.error("Passkeys must work under secure context")
-        }
-    });
+
+         document.addEventListener("DOMContentLoaded", ()=>{
+            if (location.protocol != 'https:') {
+                console.error("Passkeys must work under secure context");
+            }
+        });
+
         }
       function authn(form)
     {

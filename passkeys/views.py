@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.views.decorators.http import require_http_methods
 
 from .models import UserPasskey
 
@@ -9,15 +10,16 @@ def index(request,enroll=False): # noqa
     keys = UserPasskey.objects.filter(user=request.user) # pragma: no cover
     return render(request,'passkeys/PassKeys.html',{"keys":keys,"enroll":enroll}) # pragma: no cover
 
-
+@require_http_methods(["POST"])
 @login_required
 def delKey(request):
     key=UserPasskey.objects.get(id=request.GET["id"])
-    if key.user.pk  == request.user.pk:
+    if key.user.pk == request.user.pk:
         key.delete()
         return HttpResponse("Deleted Successfully")
     return HttpResponse("Error: You own this token so you can't delete it", status=403)
 
+# @require_http_methods(["POST"])
 @login_required
 def toggleKey(request):
     id=request.GET["id"]
