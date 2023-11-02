@@ -62,7 +62,9 @@
 
 
     function confirmDel(id) {
-        fetch(`{% url 'passkeys:delKey' %}?id=${id}`)
+        fetch(`{% url 'passkeys:delKey' %}`,{method: "post",
+                                            headers: {"X-CSRFToken":"{{csrf_token}}","Content-Type": "application/x-www-form-urlencoded",},
+                                            body:`id=${id}`})
             .then(response => response.text())
             .then(data=>{alert(data);window.location="{%url 'passkeys:home'%}";});
     }
@@ -103,7 +105,10 @@
     }
 
     function toggleKey(id) {
-        fetch("{% url 'passkeys:toggle' %}?id="+id).then(response => response.text()).then((response)=>{
+        fetch("{% url 'passkeys:toggle' %}",{method: "post",
+                                            headers: {"X-CSRFToken":"{{csrf_token}}","Content-Type": "application/x-www-form-urlencoded",},
+                                            body:`id=${id}`}
+        ).then(response => response.text()).then((response)=>{
             if (response=="Error")
                 document.querySelector("#toggle_"+id).toggle();
         }).catch(()=>{
