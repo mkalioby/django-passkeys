@@ -20,15 +20,19 @@ class test_views(TransactionTestCase):
 
     def test_disabling_key(self):
         key =UserPasskey.objects.filter(user=self.user).latest('id')
-        self.client.get(reverse('passkeys:toggle') + "?id=" + str(key.id))
+        self.client.post(reverse('passkeys:toggle') ,data={"id":str(key.id)})
         self.assertFalse(UserPasskey.objects.get(id=key.id).enabled)
 
-        self.client.get(reverse('passkeys:toggle') + "?id=" + str(key.id))
+        self.client.post(reverse('passkeys:toggle'), {"id":str(key.id)})
         self.assertTrue(UserPasskey.objects.get(id=key.id).enabled)
 
     def test_deleting_key(self):
         key = UserPasskey.objects.filter(user=self.user).latest('id')
-        self.client.get(reverse('passkeys:delKey') + "?id=" + str(key.id))
+        self.client.post("/auth/login", {"username": "test2", "password": "test2", 'passkeys': ''})
+        r = self.client.get(reverse('passkeys:delKey') + "?id=" + str(key.id))
+        self.assertEquals(r.status_code, 405)
+
+        self.client.post(reverse('passkeys:delKey'), {"id":str(key.id)})
         self.assertEquals(UserPasskey.objects.filter(id=key.id).count(), 0)
 
     def test_wrong_ownership(self):
@@ -38,9 +42,10 @@ class test_views(TransactionTestCase):
         key = UserPasskey.objects.filter(user=self.user).latest('id')
         self.user = self.user_model.objects.create_user(username="test2", password="test2")
         self.client.post("/auth/login", {"username": "test2", "password": "test2", 'passkeys': ''})
-        r = self.client.get(reverse('passkeys:delKey') + "?id="+str(key.id))
+
+        r = self.client.post(reverse('passkeys:delKey'), {"id":str(key.id)})
         self.assertEquals(r.status_code, 403)
         self.assertEquals(r.content,b"Error: You own this token so you can't delete it")
-        r = self.client.get(reverse('passkeys:toggle') + "?id=" + str(key.id))
+        r = self.client.post(reverse('passkeys:toggle'), {"id":str(key.id)})
         self.assertEquals(r.status_code, 403)
         self.assertEquals(r.content, b"Error: You own this token so you can't toggle it")

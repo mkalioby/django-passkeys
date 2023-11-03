@@ -10,9 +10,10 @@ def index(request,enroll=False): # noqa
     keys = UserPasskey.objects.filter(user=request.user) # pragma: no cover
     return render(request,'passkeys/PassKeys.html',{"keys":keys,"enroll":enroll}) # pragma: no cover
 
-@require_http_methods(["POST"])
 @login_required
 def delKey(request):
+    if request.method != "POST":
+        return HttpResponse("Error: You must use a POST request", status=405)
     id=request.POST.get("id")
     if not id:
         return HttpResponse("Error: You are missing a key", status=403)
