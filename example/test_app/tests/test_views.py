@@ -15,6 +15,8 @@ class test_views(TransactionTestCase):
         test = test_fido()
         test.setUp()
         self.authenticator = test.test_key_reg()
+        if not getattr(self, "assertEquals", None):
+            self.assertEquals = self.assertEqual
         self.client.post("/auth/login", {"username": "test", "password": "test", 'passkeys': ''})
         self.user = self.user_model.objects.get(username="test")
 
