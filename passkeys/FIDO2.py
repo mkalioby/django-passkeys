@@ -4,6 +4,7 @@ import traceback
 
 import fido2.features
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.http import JsonResponse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
@@ -22,7 +23,10 @@ def enable_json_mapping():
 
 
 def getUserCredentials(user):
-    return [AttestedCredentialData(websafe_decode(uk.token)) for uk in UserPasskey.objects.filter(user__username = user)]
+    User = get_user_model()
+    username_field = User.USERNAME_FIELD
+    filter_args = {"user__"+username_field : user}
+    return [AttestedCredentialData(websafe_decode(uk.token)) for uk in UserPasskey.objects.filter(**filter_args)]
 
 
 def getServer(request=None):
@@ -61,8 +65,8 @@ def reg_begin(request):
     auth_attachment = getattr(settings,'KEY_ATTACHMENT', None)
     registration_data, state = server.register_begin({
         u'id':  urlsafe_b64encode(request.user.username.encode("utf8")),
-        u'name': request.user.username,
-        u'displayName': request.user.username,
+        u'name': request.user.get_username(),
+        u'displayName': request.user.get_full_name()
     }, getUserCredentials(request.user), authenticator_attachment = auth_attachment, resident_key_requirement=fido2.webauthn.ResidentKeyRequirement.PREFERRED)
     request.session['fido2_state'] = state
     return JsonResponse(dict(registration_data))
