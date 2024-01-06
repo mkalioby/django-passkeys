@@ -9,14 +9,16 @@ class TestCurrentPlatform(TestCase):
         if not getattr(self, "assertEquals", None):
             self.assertEquals = self.assertEqual
 
-    def check_platform(self,user_agent, platform):
-        request = self.request_factory.get('/', HTTP_USER_AGENT=user_agent)
-        self.assertEquals(get_current_platform(request), platform)
+    def check_platform(self, user_agent, platform):
+        request = self.request_factory.get("/", HTTP_USER_AGENT=user_agent)
+        self.assertEqual(get_current_platform(request), platform)
 
     def test_mac(self):
         self.check_platform("Mozilla/5.0 (Macintosh; Intel Mac OS X 13_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Safari/605.1.15","Apple")
+
     def test_ios(self):
         self.check_platform("Mozilla/5.0 (Macintosh; Intel Mac OS X 13_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Safari/605.1.15","Apple")
+
     def test_ipad(self):
         self.check_platform("Mozilla/5.0 (iPad; CPU OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Mobile/15E148 Safari/604.1","Apple")
 
