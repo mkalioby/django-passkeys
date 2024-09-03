@@ -28,6 +28,8 @@ Currently, django-passkeys supports Django 2.0+ and Python 3.7+.
 
 ## Usage
 
+**Important note**: Passkeys only work in a secure context, i.e., when using SSL/HTTPS.
+
 ### Setup
 
 1. In your `settings.py`, add the application to your installed apps.
