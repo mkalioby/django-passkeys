@@ -28,6 +28,8 @@ Currently, django-passkeys supports Django 2.0+ and Python 3.7+.
 
 ## Usage
 
+### Setup
+
 1. In your `settings.py`, add the application to your installed apps.
    ```python
     INSTALLED_APPS=(
@@ -67,22 +69,12 @@ Currently, django-passkeys supports Django 2.0+ and Python 3.7+.
         '....',
     ]
     ```
-6. To match the look and feel of your project, Passkeys includes `base.html`, but it needs blocks named `head` &
-   `content` to add its content to them.
-   **Notes:**
-    1. `Passkeys_base.html` extends `base.html`.
-    2. You can override `PassKeys_base.html`, which is used by `Passkeys.html` so you can control the styling better.
-    3. Currently, `PassKeys_base.html` depends on JQuery and Bootstrap.
-7. Somewhere in your app, add a link to 'passkeys:home'
-   ```html
-    <a href="{% url 'passkeys:home' %}">Manage Passkeys</a>
-   ```
-8. In your login view, change the authenticate call to include the request as follows:
+6. In your login view, change the authenticate call to include the request as follows:
     ```python
     user = authenticate(request, username=request.POST["username"], password=request.POST["password"])
     ```
    **Note**: If you use `django.contrib.auth`'s LoginView, you must override the `form_class` used.
-9. Finally, in your login template (e.g. `login.html`):
+7. Integrate passkey login in your login template (e.g. `login.html`):
     * Give an id to your login form, e.g 'loginForm', which will be used below.
     * Inside the form, add
       ```html
@@ -92,6 +84,16 @@ Currently, django-passkeys supports Django 2.0+ and Python 3.7+.
        </button>
        {% include 'passkeys.js' %}
       ```
+8. To match the look and feel of your project, Passkeys includes `base.html`, but it needs blocks named `head` &
+   `content` to add its content to them.
+   **Notes:**
+    1. `Passkeys_base.html` extends `base.html`.
+    2. You can override `PassKeys_base.html`, which is used by `Passkeys.html` so you can control the styling better.
+    3. Currently, `PassKeys_base.html` depends on JQuery and Bootstrap.
+9. Somewhere in your app, add a link to 'passkeys:home'
+   ```html
+    <a href="{% url 'passkeys:home' %}">Manage Passkeys</a>
+   ```
 
 For more information about how to set it up, please see the 'example' app and the EXAMPLE.md document.
 
