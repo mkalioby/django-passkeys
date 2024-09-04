@@ -147,6 +147,7 @@ Tidelift will coordinate the fix and disclosure.
 * [jacopsd](https://github.com/jacopsd)   
 * [gasparbrogueira](https://github.com/gasparbrogueira)
 * [pulse-mind](https://github.com/pulse-mind)
+* [smark-1](https://github.com/smark-1)
 
 
 
