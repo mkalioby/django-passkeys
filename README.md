@@ -63,8 +63,8 @@ Currently, it support Django 2.0+, Python 3.7+
 6. To match the look and feel of your project, Passkeys includes `base.html` but it needs blocks named `head` & `content` to added its content to it.
    **Notes:** 
     
-    1. You can override `passkeys/PassKeys_base.html` which is used by `passkeys/Passkeys.html` so you can control the styling better and current `passkeys/Passkeys_base.html` extends `base.html`
-    1. Currently, `passkeys/PassKeys_base.html` needs bootstrap 5. 
+    1. You can override `passkeys/passkeys_base.html` which is used by `passkeys/passkeys.html` so you can control the styling better and current `passkeys/passkeys_base.html` extends `base.html`
+    1. Currently, `passkeys/passkeys_base.html` needs bootstrap 5. 
 
 7. Somewhere in your app, add a link to 'passkeys:home'
     ```<li><a href="{% url 'passkeys:home' %}">Passkeys</a> </li>```

@@ -8,7 +8,7 @@ from .models import UserPasskey
 @login_required
 def index(request,enroll=False): # noqa
     keys = UserPasskey.objects.filter(user=request.user) # pragma: no cover
-    return render(request,'passkeys/PassKeys.html',{"keys":keys,"enroll":enroll}) # pragma: no cover
+    return render(request,'passkeys/passkeys.html',{"keys":keys,"enroll":enroll}) # pragma: no cover
 
 @require_http_methods(["POST"])
 @login_required
