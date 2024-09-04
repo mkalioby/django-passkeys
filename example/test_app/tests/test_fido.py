@@ -20,6 +20,8 @@ def get_server_name(request):
 
 class test_fido(TransactionTestCase):
     def setUp(self) -> None:
+        if not getattr(self,"assertEquals",None):
+            self.assertEquals = self.assertEqual
         from django.contrib.auth import get_user_model
         self.user_model = get_user_model()
         if self.user_model.objects.filter(username="test").count()==0:
