@@ -8,6 +8,8 @@ class TestCurrentPlatform(TestCase):
         if not getattr(self, "assertEquals", None):
             self.assertEquals = self.assertEqual
         self.request_factory = RequestFactory()
+        if not getattr(self, "assertEquals", None):
+            self.assertEquals = self.assertEqual
 
     def check_platform(self,user_agent, platform):
         request = self.request_factory.get('/', HTTP_USER_AGENT=user_agent)

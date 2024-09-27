@@ -3,6 +3,9 @@ from django.test import RequestFactory,TransactionTestCase, Client
 class test_passkeys(TransactionTestCase):
     def setUp(self) -> None:
         from django.contrib.auth import get_user_model
+        if not getattr(self, "assertEquals", None):
+            self.assertEquals = self.assertEqual
+
         self.user_model = get_user_model()
         self.user = self.user_model.objects.create_user(username="test",password="test")
         self.client = Client()
