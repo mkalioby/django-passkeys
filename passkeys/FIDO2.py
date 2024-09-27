@@ -5,6 +5,7 @@ import traceback
 import fido2.features
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
@@ -58,6 +59,7 @@ def get_current_platform(request):
     else: return "Key"
 
 
+@login_required()
 def reg_begin(request):
     """Starts registering a new FIDO Device, called from API"""
     enable_json_mapping()
@@ -74,6 +76,7 @@ def reg_begin(request):
 
 
 @csrf_exempt
+@login_required()
 def reg_complete(request):
     """Completes the registeration, called by API"""
     try:
