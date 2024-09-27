@@ -20,8 +20,7 @@ def get_server_name(request):
 
 class test_fido(TransactionTestCase):
     def setUp(self) -> None:
-        if not getattr(self,"assertEquals",None):
-            self.assertEquals = self.assertEqual
+
         from django.contrib.auth import get_user_model
         self.user_model = get_user_model()
         if self.user_model.objects.filter(username="test").count()==0:
@@ -44,7 +43,7 @@ class test_fido(TransactionTestCase):
     def test_key_reg(self):
         self.client.post('auth/login',{"usernaame":"test","password":"test","passkeys":""})
         r = self.client.get(reverse('passkeys:reg_begin'))
-        self.assertEquals(r.status_code, 200)
+        self.assertEqual(r.status_code, 200)
         j = json.loads(r.content)
         j['publicKey']['challenge'] = j['publicKey']['challenge'].encode("ascii")
         s = SoftWebauthnDevice()
@@ -58,14 +57,14 @@ class test_fido(TransactionTestCase):
             raise AssertionError("Failed to get the required JSON after reg_completed")
         self.assertTrue("status" in j)
 
-        self.assertEquals(j["status"], "OK")
-        self.assertEquals(UserPasskey.objects.latest('id').name, "testKey")
+        self.assertEqual(j["status"], "OK")
+        self.assertEqual(UserPasskey.objects.latest('id').name, "testKey")
         return s
 
 
     def test_auto_key_name(self):
         r = self.client.get(reverse('passkeys:reg_begin'))
-        self.assertEquals(r.status_code, 200)
+        self.assertEqual(r.status_code, 200)
         j = json.loads(r.content)
         j['publicKey']['challenge'] = j['publicKey']['challenge'].encode("ascii")
         s = SoftWebauthnDevice()
@@ -77,8 +76,8 @@ class test_fido(TransactionTestCase):
         except Exception:
             raise AssertionError("Failed to get the required JSON after reg_completed")
         self.assertTrue("status" in j)
-        self.assertEquals(j["status"], "OK")
-        self.assertEquals(UserPasskey.objects.latest('id').name,"Apple")
+        self.assertEqual(j["status"], "OK")
+        self.assertEqual(UserPasskey.objects.latest('id').name,"Apple")
         return s
 
     def test_error_when_no_session(self):
@@ -92,14 +91,14 @@ class test_fido(TransactionTestCase):
         except Exception:
             raise AssertionError("Failed to get the required JSON after reg_completed")
         self.assertTrue("status" in j)
-        self.assertEquals(j["status"], "ERR")
-        self.assertEquals(j["message"], "FIDO Status can't be found, please try again")
+        self.assertEqual(j["status"], "ERR")
+        self.assertEqual(j["message"], "FIDO Status can't be found, please try again")
 
     def test_passkey_login(self):
         authenticator = self.test_key_reg()
         self.client.get('/auth/logout')
         r = self.client.get(reverse('passkeys:auth_begin'))
-        self.assertEquals(r.status_code, 200)
+        self.assertEqual(r.status_code, 200)
         j = json.loads(r.content)
         j['publicKey']['challenge'] = j['publicKey']['challenge'].encode("ascii")
 
@@ -108,7 +107,7 @@ class test_fido(TransactionTestCase):
         self.client.post(u, {'passkeys': json.dumps(res), "username": "", "password": ""},headers={"USER_AGENT":""}, HTTP_USER_AGENT="")
         self.assertTrue(self.client.session.get('_auth_user_id',False))
         self.assertTrue(self.client.session.get("passkey",{}).get("passkey",False))
-        self.assertEquals(self.client.session.get("passkey",{}).get("name"),"testKey")
+        self.assertEqual(self.client.session.get("passkey",{}).get("name"),"testKey")
 
     def test_base_username(self):
         authenticator = self.test_key_reg()
@@ -118,9 +117,9 @@ class test_fido(TransactionTestCase):
         session.save(must_create=True)
         self.client.cookies["sessionid"] = session.session_key
         r = self.client.get(reverse('passkeys:auth_begin'))
-        self.assertEquals(r.status_code, 200)
+        self.assertEqual(r.status_code, 200)
         j = json.loads(r.content)
-        self.assertEquals(j['publicKey']['allowCredentials'][0]['id'],urlsafe_b64encode(authenticator.credential_id).decode("utf8").strip('='))
+        self.assertEqual(j['publicKey']['allowCredentials'][0]['id'],urlsafe_b64encode(authenticator.credential_id).decode("utf8").strip('='))
 
     def test_passkey_login_no_session(self):
         pass
@@ -130,14 +129,14 @@ class test_fido(TransactionTestCase):
         from test_app.tests.test_fido import get_server_id
         settings.FIDO_SERVER_ID = get_server_id
         r = self.client.get(reverse('passkeys:auth_begin'))
-        self.assertEquals(r.status_code, 200)
+        self.assertEqual(r.status_code, 200)
         j = json.loads(r.content)
-        self.assertEquals(j['publicKey']['rpId'],'testserver1')
+        self.assertEqual(j['publicKey']['rpId'],'testserver1')
 
     def test_server_name_callable(self):
         from test_app.tests.test_fido import get_server_name
         settings.FIDO_SERVER_NAME = get_server_name
         r = self.client.get(reverse('passkeys:reg_begin'))
-        self.assertEquals(r.status_code, 200)
+        self.assertEqual(r.status_code, 200)
         j = json.loads(r.content)
-        self.assertEquals(j['publicKey']['rp']["name"],'MySite')
+        self.assertEqual(j['publicKey']['rp']["name"],'MySite')
