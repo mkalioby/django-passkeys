@@ -1,3 +1,16 @@
+## 2.0
+
+This is backward incompatible version, as the templates moved to `passkeys` folder
+and the names are lowercase now. please check the README.md for more details.
+
+* Upgraded the FIDO2 dependency to be >1.1.1.
+* Added `login_required` to some functions
+* `delKey` accepts POST now not GET.
+
+Thanks for [smark-1](https://github.com/smark-1) and [rafaelurben](https://github.com/rafaelurben) for the work done in the release 
+ 
+
+
 ## v1.2.7
 
 * Fix: issue if the user isn't defined by username field #25.

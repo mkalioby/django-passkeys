@@ -6,6 +6,8 @@ import fido2.features
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from fido2.server import Fido2Server
@@ -57,7 +59,7 @@ def get_current_platform(request):
         return "Microsoft"
     else: return "Key"
 
-
+@login_required
 def reg_begin(request):
     """Starts registering a new FIDO Device, called from API"""
     enable_json_mapping()
@@ -72,13 +74,13 @@ def reg_begin(request):
     return JsonResponse(dict(registration_data))
     #return HttpResponse(cbor.encode(registration_data), content_type = 'application/octet-stream')
 
-
+@login_required
 @csrf_exempt
 def reg_complete(request):
     """Completes the registeration, called by API"""
     try:
         if not "fido2_state" in request.session:
-            return JsonResponse({'status': 'ERR', "message": "FIDO Status can't be found, please try again"})
+            return JsonResponse({'status': 'ERR', "message": "FIDO Status can't be found, please try again"}, status=401)
         enable_json_mapping()
         data = json.loads(request.body)
         name = data.pop("key_name",'')
@@ -96,7 +98,7 @@ def reg_complete(request):
         return JsonResponse({'status': 'OK'})
     except Exception as exp: # pragma: no cover
         print(traceback.format_exc()) # pragma: no cover
-        return JsonResponse({'status': 'ERR', "message": "Error on server, please try again later"}) # pragma: no cover
+        return JsonResponse({'status': 'ERR', "message": "Error on server, please try again later"}, status=500 ) # pragma: no cover
 
 
 def auth_begin(request):

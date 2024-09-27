@@ -1,7 +1,12 @@
-{% extends "PassKeys_base.html" %}
+{% extends "passkeys/passkeys_base.html" %}
 {% load static %}
 {% block head %}
 {{block.super}}
+    <style>
+        .toggle-group > .toggle-handle.btn{
+            display: none;
+        }
+    </style>
         <script type="application/javascript" src="{% static 'passkeys/js/base64url.js'%}"></script>
     <script type="application/javascript" src="{% static 'passkeys/js/helpers.js'%}"></script>
     <script type="application/javascript">
@@ -31,25 +36,25 @@
 
       return navigator.credentials.create(options);
     }).then(function(attestation) {
-        attestation["key_name"] = $("#key_name").val();
+        attestation["key_name"] = document.getElementById("key_name").value;
       return fetch('{% url 'passkeys:reg_complete' %}', {
         method: 'POST',
         body: JSON.stringify(publicKeyCredentialToJSON(attestation))
       });
     }).then(function(response) {
 
-        var stat = response.ok ? 'successful' : 'unsuccessful';
+        const stat = response.ok ? 'successful' : 'unsuccessful';
         return response.json()
     }).then(function (res)
         {
-      if (res["status"] =='OK')
-        $("#res").html("<div class='alert alert-success'>Registered Successfully, <a href='{% url "passkeys:home"%}'> Refresh</a></div>")
-      else
-        $("#res").html("<div class='alert alert-danger'>Registration Failed as " + res["message"] + ", <a href='javascript:void(0)' onclick='begin_reg()'> try again </a> </div>")
-
+      if (res["status"] === 'OK'){
+          document.getElementById("res").innerHTML ="<div class='alert alert-success'>Registered Successfully, <a href='{% url "passkeys:home"%}'> Refresh</a></div>";
+      }else {
+          document.getElementById("res").innerHTML = "<div class='alert alert-danger'>Registration Failed as " + res["message"] + ", <a href='javascript:void(0)' onclick='begin_reg()'> try again </a> </div>";
+      }
 
     }, function(reason) {
-       $("#res").html("<div class='alert alert-danger'>Registration Failed as " +reason +", <a href='javascript:void(0)' onclick='begin_reg()'> try again </a> </div>")
+        document.getElementById("res").innerHTML="<div class='alert alert-danger'>Registration Failed as " +reason +", <a href='javascript:void(0)' onclick='begin_reg()'> try again </a> </div>";
     })
     }
 
@@ -57,50 +62,61 @@
 
 
     function confirmDel(id) {
-        $.ajax({
-            url:"{% url 'passkeys:delKey' %}",
-            data:{"id":id},
-            success:function (data) {
-                alert(data)
-                window.location= "{%url 'passkeys:home'%}";
-            }
-        })
+        fetch(`{% url 'passkeys:delKey' %}`,{method: "post",
+                                            headers: {"X-CSRFToken":"{{csrf_token}}","Content-Type": "application/x-www-form-urlencoded",},
+                                            body:`id=${id}`})
+            .then(response => response.text())
+            .then(data=>{alert(data);window.location="{%url 'passkeys:home'%}";});
     }
 
     function start(){
-        $("#modal-title").html("Enter a token name")
-        $("#modal-body").html(`<p>Please enter a name for your new token</p>
-                                <input type="text" placeholder="e.g Laptop, PC" id="key_name" class="form-control"/><br/>
-                                <div id="res"></div>
-                                `)
-        $("#actionBtn").remove();
-        $("#modal-footer").prepend(`<button id='actionBtn' class='btn btn-success' onclick="begin_reg()">Start</button>`)
-        $("#popUpModal").modal('show')
+        document.getElementById("modal-title").innerText = "Enter a token name"
+        document.getElementById("modal-body").innerHTML = `<p>Please enter a name for your new token</p>
+                                <input type="text" placeholder="e.g Laptop, PC" id="key_name" class="form-control"/><br/><div id="res"></div>`;
+        document.getElementById("actionBtn")?.remove();
+        const button = document.createElement('button');
+        button.id = 'actionBtn';
+        button.classList = 'btn btn-success';
+        button.onclick=begin_reg;
+        button.innerText="Start";
+        document.getElementById("modal-footer").prepend(button);
+
+        const popUpModal = new bootstrap.Modal('#popUpModal',{});
+        popUpModal.show();
     }
     function deleteKey(id,name)
     {
-        $("#modal-title").html("Confirm Delete")
-        $("#modal-body").html("Are you sure you want to delete '"+name+"'? you may lose access to your system if this your only 2FA.");
-        $("#actionBtn").remove()
-        $("#modal-footer").prepend("<button id='actionBtn' class='btn btn-danger' onclick='confirmDel("+id+")'>Confirm Deletion</button>")
-        $("#popUpModal").modal('show')
+        document.getElementById("modal-title").innerText="Confirm Delete";
+        document.getElementById("modal-body").innerHTML = "Are you sure you want to delete '"+name+"'? you may lose access to your system if this your only 2FA."+`<div id="res"></div>`;
+        document.getElementById("actionBtn")?.remove();
+
+
+        const button = document.createElement('button');
+        button.id = 'actionBtn';
+        button.classList = 'btn btn-danger';
+        button.onclick=()=> confirmDel(id);
+        button.innerText="Confirm Deletion";
+        document.getElementById("modal-footer").prepend(button);
+
+        const popUpModal = new bootstrap.Modal('#popUpModal',{});
+        popUpModal.show();
+        $("#modal-footer").prepend(button);
+        $("#popUpModal").modal('show');
     }
 
     function toggleKey(id) {
-        $.ajax({
-            url:"{% url 'passkeys:toggle' %}?id="+id,
-            success:function (data) {
-                if (data == "Error")
-                    $("#toggle_"+id).toggle()
-
-            },
-            error:function (data) {
-                $("#toggle_"+id).toggle()
-            }
+        fetch("{% url 'passkeys:toggle' %}",{method: "post",
+                                            headers: {"X-CSRFToken":"{{csrf_token}}","Content-Type": "application/x-www-form-urlencoded",},
+                                            body:`id=${id}`}
+        ).then(response => response.text()).then((response)=>{
+            if (response=="Error")
+                document.querySelector("#toggle_"+id).toggle();
+        }).catch(()=>{
+            document.querySelector("#toggle_"+id).toggle();
         })
     }
     {%if enroll%}
-        $(document).ready(start)
+        document.addEventListener("DOMContentLoaded", start);
     {%endif%}
 
     </script>
@@ -148,5 +164,5 @@
         {% endif %}
         </table>
     </div>
-    {% include "modal.html" %}
+    {% include "passkeys/modal.html" %}
 {% endblock %}
