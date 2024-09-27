@@ -5,6 +5,8 @@ from passkeys.FIDO2 import get_current_platform
 
 class TestCurrentPlatform(TestCase):
     def setUp(self) -> None:
+        if not getattr(self, "assertEquals", None):
+            self.assertEquals = self.assertEqual
         self.request_factory = RequestFactory()
         if not getattr(self, "assertEquals", None):
             self.assertEquals = self.assertEqual

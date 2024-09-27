@@ -1,3 +1,6 @@
+## v1.3.0
+* Add Support for Python 3.12 and Django 5.0
+
 ## v1.2.7
 
 * Fix: issue if the user isn't defined by username field #25.

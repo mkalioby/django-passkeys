@@ -9,6 +9,8 @@ class test_passkeys(TransactionTestCase):
         self.user_model = get_user_model()
         self.user = self.user_model.objects.create_user(username="test",password="test")
         self.client = Client()
+        if not getattr(self, "assertEquals", None):
+            self.assertEquals = self.assertEqual
         self.factory = RequestFactory()
 
     def test_raiseException(self):
