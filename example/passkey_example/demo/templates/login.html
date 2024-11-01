@@ -1,0 +1,63 @@
+{% extends 'bootstrap.html' %}
+{% load static %}
+
+{% block header %}
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Django PassKeys</a>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block main %}
+    <div class="container my-5" style="width: 500px;">
+
+        <div class="card">
+            <div class="card-header">Login</div>
+
+            <div class="card-body">
+                {% if invalid %}
+                    <div class="alert alert-danger">Invalid Username or password</div>
+                {% endif %}
+                <form action="{% url 'login' %}" method="post" id="loginForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="passkeys" id="passkeys"/>
+
+                    <div class="form-floating mb-3">
+                        <input type="text" id="id_username" name="username" class="form-control"
+                               placeholder="username" autocomplete="username webauthn" autofocus="autofocus">
+                        <label for="id_username">Username</label>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input type="password" id="id_password" name="password" class="form-control"
+                               placeholder="Password">
+                        <label for="id_password">Password</label>
+                    </div>
+
+                    <div class="mb-3">
+
+                        <button class="btn btn-primary" type="submit">Login</button>
+
+                        <button class="btn btn-secondary" type="button" id="passkey-button">
+                            <img src="{% static 'passkeys/images/fido-passkey-icon-white.png' %}" style="width: 24px">
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script type="application/javascript" src="{% static 'passkeys/js/login.js' %}"></script>
+    <script type="application/javascript">
+        window.addEventListener('load', function () {
+            const passkeyLogin = new PassKeyLogin('{% url "passkeys:home" %}', 'loginForm');
+            passkeyLogin.checkConditionalUI();
+            document.querySelector('#passkey-button').onclick = function () {
+                passkeyLogin.authn(false);
+            };
+        })
+    </script>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'bootstrap.html' %}
+
+{% block header %}
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Django PassKeys</a>
+        </div>
+    </nav>
+{% endblock %}
+
+
+{% block main %}
+    <div class="container my-5">
+        <div class="card card-login mx-auto" style="max-width: 500px;">
+            <div class="card-header">Logout</div>
+            <div class="card-body">
+                <p>You have logged out successfully, <a href="{% url 'login' %}">Login again</a></p>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

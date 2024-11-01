@@ -1,168 +1,90 @@
-{% extends "passkeys/passkeys_base.html" %}
+{% extends "base.html" %}
 {% load static %}
-{% block head %}
-{{block.super}}
-    <style>
-        .toggle-group > .toggle-handle.btn{
-            display: none;
-        }
-    </style>
-        <script type="application/javascript" src="{% static 'passkeys/js/base64url.js'%}"></script>
-    <script type="application/javascript" src="{% static 'passkeys/js/helpers.js'%}"></script>
-    <script type="application/javascript">
-    var MakeCredReq = (makeCredReq) => {
-            makeCredReq.publicKey.challenge = base64url.decode(makeCredReq.publicKey.challenge);
-            makeCredReq.publicKey.user.id   = base64url.decode(makeCredReq.publicKey.user.id);
 
-            for(let excludeCred of makeCredReq.publicKey.excludeCredentials) {
-                excludeCred.id = base64url.decode(excludeCred.id);
-            }
-
-            return makeCredReq
-        }
-    function begin_reg(){
-    fetch('{% url 'passkeys:reg_begin' %}',{}).then(function(response) {
-      if(response.ok)
-      {
-          return response.json().then(function (req){
-              return MakeCredReq(req)
-          });
-      }
-      throw new Error('Error getting registration data!');
-    }).then(function(options) {
-
-        //options.publicKey.attestation="direct"
-        console.log(options)
-
-      return navigator.credentials.create(options);
-    }).then(function(attestation) {
-        attestation["key_name"] = document.getElementById("key_name").value;
-      return fetch('{% url 'passkeys:reg_complete' %}', {
-        method: 'POST',
-        body: JSON.stringify(publicKeyCredentialToJSON(attestation))
-      });
-    }).then(function(response) {
-
-        const stat = response.ok ? 'successful' : 'unsuccessful';
-        return response.json()
-    }).then(function (res)
-        {
-      if (res["status"] === 'OK'){
-          document.getElementById("res").innerHTML ="<div class='alert alert-success'>Registered Successfully, <a href='{% url "passkeys:home"%}'> Refresh</a></div>";
-      }else {
-          document.getElementById("res").innerHTML = "<div class='alert alert-danger'>Registration Failed as " + res["message"] + ", <a href='javascript:void(0)' onclick='begin_reg()'> try again </a> </div>";
-      }
-
-    }, function(reason) {
-        document.getElementById("res").innerHTML="<div class='alert alert-danger'>Registration Failed as " +reason +", <a href='javascript:void(0)' onclick='begin_reg()'> try again </a> </div>";
-    })
-    }
-
-
-
-
-    function confirmDel(id) {
-        fetch(`{% url 'passkeys:delKey' %}`,{method: "post",
-                                            headers: {"X-CSRFToken":"{{csrf_token}}","Content-Type": "application/x-www-form-urlencoded",},
-                                            body:`id=${id}`})
-            .then(response => response.text())
-            .then(data=>{alert(data);window.location="{%url 'passkeys:home'%}";});
-    }
-
-    function start(){
-        document.getElementById("modal-title").innerText = "Enter a token name"
-        document.getElementById("modal-body").innerHTML = `<p>Please enter a name for your new token</p>
-                                <input type="text" placeholder="e.g Laptop, PC" id="key_name" class="form-control"/><br/><div id="res"></div>`;
-        document.getElementById("actionBtn")?.remove();
-        const button = document.createElement('button');
-        button.id = 'actionBtn';
-        button.classList = 'btn btn-success';
-        button.onclick=begin_reg;
-        button.innerText="Start";
-        document.getElementById("modal-footer").prepend(button);
-
-        const popUpModal = new bootstrap.Modal('#popUpModal',{});
-        popUpModal.show();
-    }
-    function deleteKey(id,name)
-    {
-        document.getElementById("modal-title").innerText="Confirm Delete";
-        document.getElementById("modal-body").innerHTML = "Are you sure you want to delete '"+name+"'? you may lose access to your system if this your only 2FA."+`<div id="res"></div>`;
-        document.getElementById("actionBtn")?.remove();
-
-
-        const button = document.createElement('button');
-        button.id = 'actionBtn';
-        button.classList = 'btn btn-danger';
-        button.onclick=()=> confirmDel(id);
-        button.innerText="Confirm Deletion";
-        document.getElementById("modal-footer").prepend(button);
-
-        const popUpModal = new bootstrap.Modal('#popUpModal',{});
-        popUpModal.show();
-        $("#modal-footer").prepend(button);
-        $("#popUpModal").modal('show');
-    }
-
-    function toggleKey(id) {
-        fetch("{% url 'passkeys:toggle' %}",{method: "post",
-                                            headers: {"X-CSRFToken":"{{csrf_token}}","Content-Type": "application/x-www-form-urlencoded",},
-                                            body:`id=${id}`}
-        ).then(response => response.text()).then((response)=>{
-            if (response=="Error")
-                document.querySelector("#toggle_"+id).toggle();
-        }).catch(()=>{
-            document.querySelector("#toggle_"+id).toggle();
-        })
-    }
-    {%if enroll%}
-        document.addEventListener("DOMContentLoaded", start);
-    {%endif%}
-
-    </script>
-    <link href="{% static  'passkeys/css/bootstrap-toggle.min.css' %}" rel="stylesheet">
-    <script src="{% static 'passkeys/js/bootstrap-toggle.min.js'%}"></script>
-{% endblock %}
-{% block content %}
-{{block.super}}
-    <br/>
-    <br/>
-    <div class="container">
+{% block main %}
+    {{ block.super }}
+    <div class="container my-5">
         <div class="row">
             <div class="offset-5 col-2" style="text-align: center">
                 <div class="btn-group">
-                    <button class="btn btn-success" onclick='start()'> Add Key</button>
+                    <button class="btn btn-success" id="key-add"> Add Key</button>
                 </div>
             </div>
         </div>
         <br/>
-       <table class="table table-striped">
-           <tr>
-               <th>Name</th>
-               <th>Date Added</th>
-               <th>Platform</th>
-               <th>Last Used</th>
-               <th>Status</th>
-               <th>Delete</th>
-           </tr>
+        <table class="table">
+            <tr>
+                <th>Name</th>
+                <th>Date Added</th>
+                <th>Platform</th>
+                <th>Last Used</th>
+                <th>Active</th>
+                <th>Delete</th>
+            </tr>
             {% if keys %}
                 {% for key in keys %}
-                <tr>
-
-                    <td>{{ key.name }}</td>
-                    <td>{{ key.added_on }}</td>
-                    <td>{{ key.platform }}</td>
-                    <td>{% if key.last_used %}{{ key.last_used }}{% else %}Never{% endif %}</td>
-                    <td><input type="checkbox" id="toggle_{{ key.id }}" {% if key.enabled %}checked{% endif %} data-onstyle="success" data-offstyle="danger"  onchange="toggleKey({{ key.id }})" data-toggle="toggle" class="status_chk"></td>
-                    <td><a href="javascript:void(0)" onclick="deleteKey({{ key.id }},'{{ key.key_type }}')"> <span class="fa fa-trash fa-solid fa-trash-can bi bi-trash-fill"></span></a></td>
-                </tr>
+                    <tr>
+                        <td>{{ key.name }}</td>
+                        <td>{{ key.added_on }}</td>
+                        <td>{{ key.platform }}</td>
+                        <td>{% if key.last_used %}{{ key.last_used }}{% else %}Never{% endif %}</td>
+                        <td>
+                            <input type="checkbox" id="toggle_{{ key.id }}" {% if key.enabled %}checked{% endif %}
+                                   data-onstyle="success" data-offstyle="danger" onchange="toggleKey({{ key.id }})"
+                                   data-toggle="toggle" class="status_chk">
+                        </td>
+                        <td>
+                            <a href="javascript:void(0)" onclick="deleteKey({{ key.id }},'{{ key.key_type }}')">
+                                🗑
+                            </a>
+                        </td>
+                    </tr>
                 {% endfor %}
             {% else %}
-            <tr>
-                <td colspan="7" align="center">You didn't have any keys yet.</td>
-            </tr>
-        {% endif %}
+                <tr>
+                    <td colspan="7" align="center">You didn't have any keys yet.</td>
+                </tr>
+            {% endif %}
         </table>
     </div>
-    {% include "passkeys/modal.html" %}
+
+
+    <div class="modal " tabindex="-1" role="dialog" id="popUpModal" style=" top: 40px;">
+        <div class="modal-dialog" style="height: 80%;width: 80%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal-title"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modal-body">
+
+
+                </div>
+                <div class="modal-footer" id="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div
+{% endblock %}
+
+
+{% block javascript %}
+    {{ block.super }}
+    <script type="application/javascript" src="{% static 'passkeys/js/manage.js' %}"></script>
+    <script type="application/javascript">
+        const manager = PasskeyManager('{% url 'passkeys:home' %}');
+        document.querySelector('#key-add').onclick = function () {
+            manager.start();
+        };
+
+        function deleteKey(id, name) {
+            manager.delete(id, name);
+        }
+
+        function toggleKey(id) {
+            manager.toggle(id);
+        }
+    </script>
 {% endblock %}

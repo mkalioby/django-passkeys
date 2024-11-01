@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block main %}
+    <div class="container my-5">
+        <!-- Page Content -->
+        {% if registered %}
+            <div class="alert alert-success">Registered Successfully</div>
+        {% endif %}
+        <h1>Welcome {{ request.user.username }}!</h1>
+        <hr/>
+
+        <div id="passkey-success" style="display: none">
+            <div class="alert alert-success">
+                Your device supports passkeys!
+            </div>
+            <a href="{% url 'passkeys:home' %}">Manage passkeys</a>
+        </div>
+
+        <div id="passkey-fail" style="display: none">
+            <div class="alert alert-danger">
+                Unfortunately your device does not support passkeys.
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script type="application/javascript" src="{% static 'passkeys/js/manage.js' %}"></script>
+
+
+    <script type="application/javascript">
+        function check_passkey_success() {
+            document.querySelector("#passkey-success").style.display = 'block';
+        }
+
+        function check_passkey_fail() {
+            document.querySelector("#passkey-fail").style.display = 'block';
+        }
+
+        const manager = PasskeyManager('{% url 'passkeys:home' %}');
+        manager.check_passkey_support(check_passkey_success, check_passkey_fail)
+    </script>
+{% endblock %}
