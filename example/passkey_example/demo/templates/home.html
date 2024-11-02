@@ -26,7 +26,7 @@
 {% endblock %}
 
 {% block javascript %}
-    <script type="application/javascript" src="{% static 'passkeys/js/manage.js' %}"></script>
+    <script type="application/javascript" src="{% static 'passkeys/js/passkey.js' %}"></script>
 
 
     <script type="application/javascript">
@@ -38,7 +38,6 @@
             document.querySelector("#passkey-fail").style.display = 'block';
         }
 
-        const manager = PasskeyManager('{% url 'passkeys:home' %}');
-        manager.check_passkey_support(check_passkey_success, check_passkey_fail)
+        DjangoPasskey.checkPasskeySupport(check_passkey_success, check_passkey_fail)
     </script>
 {% endblock %}

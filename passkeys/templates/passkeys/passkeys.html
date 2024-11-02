@@ -1,90 +1,74 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block main %}
+{% block content %}
     {{ block.super }}
-    <div class="container my-5">
-        <div class="row">
-            <div class="offset-5 col-2" style="text-align: center">
-                <div class="btn-group">
-                    <button class="btn btn-success" id="key-add"> Add Key</button>
-                </div>
-            </div>
-        </div>
-        <br/>
-        <table class="table">
-            <tr>
-                <th>Name</th>
-                <th>Date Added</th>
-                <th>Platform</th>
-                <th>Last Used</th>
-                <th>Active</th>
-                <th>Delete</th>
-            </tr>
-            {% if keys %}
-                {% for key in keys %}
-                    <tr>
-                        <td>{{ key.name }}</td>
-                        <td>{{ key.added_on }}</td>
-                        <td>{{ key.platform }}</td>
-                        <td>{% if key.last_used %}{{ key.last_used }}{% else %}Never{% endif %}</td>
-                        <td>
-                            <input type="checkbox" id="toggle_{{ key.id }}" {% if key.enabled %}checked{% endif %}
-                                   data-onstyle="success" data-offstyle="danger" onchange="toggleKey({{ key.id }})"
-                                   data-toggle="toggle" class="status_chk">
-                        </td>
-                        <td>
-                            <a href="javascript:void(0)" onclick="deleteKey({{ key.id }},'{{ key.key_type }}')">
-                                🗑
-                            </a>
-                        </td>
-                    </tr>
-                {% endfor %}
-            {% else %}
-                <tr>
-                    <td colspan="7" align="center">You didn't have any keys yet.</td>
-                </tr>
-            {% endif %}
-        </table>
+    <div class="d-flex justify-content-between my-3">
+        <h2>Passkeys</h2>
+        <button class="btn btn-primary" onclick="DjangoPasskey.keyCreate()"> Add Key</button>
     </div>
 
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Date Added</th>
+            <th>Platform</th>
+            <th>Last Used</th>
+            <th>Active</th>
+            <th>Delete</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if keys %}
+            {% for key in keys %}
+                <tr>
+                    <td>{{ key.name }}</td>
+                    <td>{{ key.added_on }}</td>
+                    <td>{{ key.platform }}</td>
+                    <td>{% if key.last_used %}{{ key.last_used }}{% else %}Never{% endif %}</td>
+                    <td>
+                        <input type="checkbox" id="toggle_{{ key.id }}" {% if key.enabled %}checked{% endif %}
+                               data-onstyle="success" data-offstyle="danger"
+                               onchange="DjangoPasskey.keyToggle({{ key.id }})"
+                               data-toggle="toggle" class="status_chk">
+                    </td>
+                    <td>
+                        <button onclick="DjangoPasskey.keyDelete({{ key.id }},'{{ key.name }}')">
+                            🗑
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="7" align="center">You don't have any keys yet.</td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
 
-    <div class="modal " tabindex="-1" role="dialog" id="popUpModal" style=" top: 40px;">
-        <div class="modal-dialog" style="height: 80%;width: 80%;">
+    <div class="modal " tabindex="-1" role="dialog" id="passkey-modal">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modal-title"></h5>
+                    <h5 class="modal-title"></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body" id="modal-body">
 
+                <div class="modal-body"></div>
 
-                </div>
-                <div class="modal-footer" id="modal-footer">
+                <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
 
             </div>
         </div>
-    </div
+    </div>
 {% endblock %}
 
 
 {% block javascript %}
     {{ block.super }}
-    <script type="application/javascript" src="{% static 'passkeys/js/manage.js' %}"></script>
-    <script type="application/javascript">
-        const manager = PasskeyManager('{% url 'passkeys:home' %}');
-        document.querySelector('#key-add').onclick = function () {
-            manager.start();
-        };
-
-        function deleteKey(id, name) {
-            manager.delete(id, name);
-        }
-
-        function toggleKey(id) {
-            manager.toggle(id);
-        }
-    </script>
+    <script type="application/javascript" src="{% static 'passkeys/js/passkey.js' %}"></script>
 {% endblock %}

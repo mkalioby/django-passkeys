@@ -123,10 +123,10 @@ LOGIN_URL = "/auth/login"
 
 AUTHENTICATION_BACKENDS = ['passkeys.backend.PasskeyModelBackend']
 
-FIDO_SERVER_ID = "190c-217-9-48-50.ngrok-free.app"  # Server rp id for FIDO2, it the full domain of your project
+FIDO_SERVER_ID = "8c9f-95-91-215-201.ngrok-free.app"  # Server rp id for FIDO2, it the full domain of your project
 FIDO_SERVER_NAME = "TestApp"
 KEY_ATTACHMENT = None  # Set None to allow all authenticator attachment
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://190c-217-9-48-50.ngrok-free.app"
+    "https://8c9f-95-91-215-201.ngrok-free.app"
 ]

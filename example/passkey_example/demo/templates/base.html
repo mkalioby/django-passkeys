@@ -30,3 +30,9 @@
         </div>
     </nav>
 {% endblock %}
+
+{% block main %}
+    <div id="content" class="container my-5">
+        {% block content %}{% endblock %}
+    </div>
+{% endblock %}

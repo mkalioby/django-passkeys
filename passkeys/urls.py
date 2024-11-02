@@ -2,6 +2,7 @@ from django.urls import path
 from . import FIDO2, views
 
 app_name = 'passkeys'
+
 urlpatterns = [
     path('auth/begin/', FIDO2.auth_begin, name='auth_begin'),
     path('auth/complete/', FIDO2.auth_complete, name='auth_complete'),
