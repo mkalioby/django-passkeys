@@ -13,38 +13,28 @@ def index(request):  # noqa
     return render(request, 'passkeys/passkeys.html', {"keys": keys})  # pragma: no cover
 
 
-@require_http_methods(["POST"])
-@csrf_exempt
 @login_required
-def delete(request):
-    pk = request.POST.get("id")
-    if pk is None:
-        return HttpResponse("Error: You are missing a key", status=403)
-
+@require_http_methods(["DELETE"])
+def delete(request, pk):
     key = UserPasskey.objects.filter(user=request.user, pk=pk).first()
 
     if key is None:
-        return HttpResponse("Unknown key.", status=403)
+        return HttpResponse("", status=400)
 
     key.delete()
 
-    return HttpResponse("Key successfully deleted.")
+    return HttpResponse("")
 
 
 @require_http_methods(["POST"])
-@csrf_exempt
 @login_required
-def toggle(request):
-    pk = request.POST.get("id")
-    if pk is None:
-        return HttpResponse("Error: You are missing a key", status=403)
-
+def toggle(request, pk):
     key = UserPasskey.objects.filter(user=request.user, pk=pk).first()
 
     if key is None:
-        return HttpResponse("Unknown key.", status=403)
+        return HttpResponse("", status=400)
 
     key.enabled = not key.enabled
     key.save()
 
-    return HttpResponse("OK")
+    return HttpResponse("")

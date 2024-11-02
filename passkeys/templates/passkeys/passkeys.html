@@ -5,18 +5,18 @@
     {{ block.super }}
     <div class="d-flex justify-content-between my-3">
         <h2>Passkeys</h2>
-        <button class="btn btn-primary" onclick="DjangoPasskey.keyCreate()"> Add Key</button>
+        <button class="btn btn-primary" onclick="DjangoPasskey.keyCreate()">Add Key</button>
     </div>
 
     <table class="table">
         <thead>
         <tr>
             <th>Name</th>
-            <th>Date Added</th>
             <th>Platform</th>
-            <th>Last Used</th>
-            <th>Active</th>
-            <th>Delete</th>
+            <th class="text-end">Date Added</th>
+            <th class="text-end">Last Used</th>
+            <th class="text-end">Active</th>
+            <th class="text-end">Delete</th>
         </tr>
         </thead>
         <tbody>
@@ -24,25 +24,25 @@
             {% for key in keys %}
                 <tr>
                     <td>{{ key.name }}</td>
-                    <td>{{ key.added_on }}</td>
                     <td>{{ key.platform }}</td>
-                    <td>{% if key.last_used %}{{ key.last_used }}{% else %}Never{% endif %}</td>
-                    <td>
+                    <td class="text-end">{{ key.added_on }}</td>
+                    <td class="text-end">{% if key.last_used %}{{ key.last_used }}{% else %}Never{% endif %}</td>
+                    <td class="text-end">
                         <input type="checkbox" id="toggle_{{ key.id }}" {% if key.enabled %}checked{% endif %}
                                data-onstyle="success" data-offstyle="danger"
                                onchange="DjangoPasskey.keyToggle({{ key.id }})"
                                data-toggle="toggle" class="status_chk">
                     </td>
-                    <td>
-                        <button onclick="DjangoPasskey.keyDelete({{ key.id }},'{{ key.name }}')">
-                            🗑
-                        </button>
+                    <td class="text-end">
+                        <a onclick="DjangoPasskey.keyDelete({{ key.id }},'{{ key.name }}')">
+                            &#10060;
+                        </a>
                     </td>
                 </tr>
             {% endfor %}
         {% else %}
             <tr>
-                <td colspan="7" align="center">You don't have any keys yet.</td>
+                <td colspan="6">You don't have any keys.</td>
             </tr>
         {% endif %}
         </tbody>
@@ -61,14 +61,14 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
-
             </div>
         </div>
     </div>
+    {% csrf_token %}
 {% endblock %}
 
 
 {% block javascript %}
     {{ block.super }}
-    <script type="application/javascript" src="{% static 'passkeys/js/passkey.js' %}"></script>
+    <script type="application/javascript" src="{% static 'passkeys/js/passkeys.js' %}"></script>
 {% endblock %}

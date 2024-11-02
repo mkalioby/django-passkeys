@@ -11,6 +11,6 @@ urlpatterns = [
     path('reg/complete/', FIDO2.reg_complete, name='reg_complete'),
 
     path('', views.index, name='home'),
-    path('delete/', views.delete, name='delete'),
-    path('toggle/', views.toggle, name='toggle'),
+    path('delete/<int:pk>/', views.delete, name='delete'),
+    path('toggle/<int:pk>/', views.toggle, name='toggle'),
 ]

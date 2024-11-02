@@ -39,7 +39,7 @@
 
                         <button class="btn btn-primary" type="submit">Login</button>
 
-                        <button class="btn btn-secondary" type="button" id="passkey-button">
+                        <button class="btn btn-secondary" type="button" onclick="DjangoPasskey.authn(false)">
                             <img src="{% static 'passkeys/images/fido-passkey-icon-white.png' %}" style="width: 24px">
                         </button>
                     </div>
@@ -50,14 +50,10 @@
 {% endblock %}
 
 {% block javascript %}
-    <script type="application/javascript" src="{% static 'passkeys/js/login.js' %}"></script>
+    <script type="application/javascript" src="{% static 'passkeys/js/passkeys.js' %}"></script>
     <script type="application/javascript">
-        window.addEventListener('load', function () {
-            const passkeyLogin = new PassKeyLogin('{% url "passkeys:home" %}', 'loginForm');
-            passkeyLogin.checkConditionalUI();
-            document.querySelector('#passkey-button').onclick = function () {
-                passkeyLogin.authn(false);
-            };
-        })
+        (function() {
+            DjangoPasskey.checkConditionalUI();
+        })();
     </script>
 {% endblock %}
