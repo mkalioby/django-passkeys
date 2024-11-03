@@ -34,7 +34,7 @@
                                data-toggle="toggle" class="status_chk">
                     </td>
                     <td class="text-end">
-                        <a onclick="DjangoPasskey.keyDelete({{ key.id }},'{{ key.name }}')">
+                        <a onclick="DjangoPasskey.keyDelete({{ key.id }},'{{ key.name }}')" style="cursor:pointer;">
                             &#10060;
                         </a>
                     </td>
@@ -48,8 +48,8 @@
         </tbody>
     </table>
 
-    <div class="modal " tabindex="-1" role="dialog" id="passkey-modal">
-        <div class="modal-dialog">
+    <div class="modal fade" tabindex="-1" role="dialog" id="passkey-modal">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title"></h5>

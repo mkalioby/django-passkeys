@@ -3,7 +3,7 @@
 {% block header %}
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Django PassKeys</a>
+            <a class="navbar-brand" href="#">Django Passkeys</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent"
                     aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,6 +21,11 @@
                 </ul>
 
                 <ul class="navbar-nav ml-auto ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link">
+                            {% now "DATETIME_FORMAT" %}
+                        </a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}">Logout</a>
                     </li>

@@ -72,7 +72,7 @@
     }
 })();
 
-function djangoPasskey() {
+(function () {
     let baseUrl = '/passkeys/'
 
     const passkeyModalDiv = document.querySelector('#passkey-modal');
@@ -361,18 +361,16 @@ function djangoPasskey() {
     * EXPORTS
      */
 
-
-    return {
-        'init': init,
-        'checkPasskeySupport': checkPasskeySupport,
-        'keyCreate': keyCreate,
-        'keyDelete': keyDelete,
-        'keyToggle': keyToggle,
-        'checkConditionalUI': checkConditionalUI,
-        'authn': authn
+    if (typeof window.DjangoPasskey === 'undefined') {
+        window.DjangoPasskey = {
+            'init': init,
+            'checkPasskeySupport': checkPasskeySupport,
+            'keyCreate': keyCreate,
+            'keyDelete': keyDelete,
+            'keyToggle': keyToggle,
+            'checkConditionalUI': checkConditionalUI,
+            'authn': authn
+        }
     }
-}
 
-if (typeof window.DjangoPasskey === 'undefined') {
-    window.DjangoPasskey = djangoPasskey();
-}
+})();

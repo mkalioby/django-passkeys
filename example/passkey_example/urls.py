@@ -14,3 +14,6 @@ urlpatterns = [
 
     path('passkeys/', include('passkeys.urls')),
 ]
+
+admin.site.site_title = 'Django-Passkeys'
+admin.site.site_header = 'Django-Passkeys'
