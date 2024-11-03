@@ -18,6 +18,10 @@ class KeyManagementTestcase(TransactionTestCase):
 
         self.client.login(username="a", password="a")
 
+    def test_home(self):
+        response = self.client.get(reverse('passkeys:home'))
+        self.assertEqual(response.status_code, 200)
+
     def test_toggle(self):
         # wrong http method
         response = self.client.get(reverse('passkeys:toggle', args=[1]))
