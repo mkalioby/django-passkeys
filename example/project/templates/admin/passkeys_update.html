@@ -24,7 +24,7 @@
 
     <div class="module">
 
-        <table  style="width: 100%;">
+        <table style="width: 100%;">
             <thead>
             <tr>
                 <th>Name</th>
@@ -36,31 +36,30 @@
             </tr>
             </thead>
             <tbody>
-            {% if keys %}
-                {% for key in keys %}
-                    <tr>
-                        <td>{{ key.name }}</td>
-                        <td>{{ key.platform }}</td>
-                        <td class="text-end">{{ key.added_on }}</td>
-                        <td class="text-end">{% if key.last_used %}{{ key.last_used }}{% else %}Never{% endif %}</td>
-                        <td class="text-end">
-                            <input type="checkbox" id="toggle_{{ key.id }}" {% if key.enabled %}checked{% endif %}
-                                   data-onstyle="success" data-offstyle="danger"
-                                   onchange="DjangoPasskey.keyToggle({{ key.id }})"
-                                   data-toggle="toggle" class="status_chk">
-                        </td>
-                        <td class="text-end">
-                            <a onclick="DjangoPasskey.keyDelete({{ key.id }},'{{ key.name }}')" style="cursor:pointer;">
-                                &#10060;
-                            </a>
-                        </td>
-                    </tr>
-                {% endfor %}
-            {% else %}
+
+            {% for key in keys %}
+                <tr>
+                    <td>{{ key.name }}</td>
+                    <td>{{ key.platform }}</td>
+                    <td class="text-end">{{ key.added_on }}</td>
+                    <td class="text-end">{% if key.last_used %}{{ key.last_used }}{% else %}Never{% endif %}</td>
+                    <td class="text-end">
+                        <input type="checkbox" id="toggle_{{ key.id }}" {% if key.enabled %}checked{% endif %}
+                               data-onstyle="success" data-offstyle="danger"
+                               onchange="DjangoPasskey.keyToggle({{ key.id }})"
+                               data-toggle="toggle" class="status_chk">
+                    </td>
+                    <td class="text-end">
+                        <a onclick="DjangoPasskey.keyDelete({{ key.id }},'{{ key.name }}')" style="cursor:pointer;">
+                            &#10060;
+                        </a>
+                    </td>
+                </tr>
+            {% empty %}
                 <tr>
                     <td colspan="6">You don't have any keys.</td>
                 </tr>
-            {% endif %}
+            {% endfor %}
             </tbody>
         </table>
     </div>
