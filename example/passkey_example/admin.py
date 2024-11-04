@@ -8,6 +8,7 @@ from django.shortcuts import render
 
 from passkeys.models import UserPasskey
 
+
 class MyAdminAuthenticationForm(AdminAuthenticationForm):
     username = UsernameField(widget=forms.TextInput(attrs={"autofocus": True}), required=False)
     password = forms.CharField(
