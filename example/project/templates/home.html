@@ -27,16 +27,14 @@
 
 {% block javascript %}
     <script type="application/javascript" src="{% static 'passkeys/js/passkeys.js' %}"></script>
-
     <script type="application/javascript">
-        function check_passkey_success() {
-            document.querySelector("#passkey-success").style.display = 'block';
-        }
-
-        function check_passkey_fail() {
-            document.querySelector("#passkey-fail").style.display = 'block';
-        }
-
-        DjangoPasskey.checkPasskeySupport(check_passkey_success, check_passkey_fail)
+        DjangoPasskey.checkPasskeySupport(
+            () => {
+                document.querySelector("#passkey-success").style.display = 'block';
+            },
+            () => {
+                document.querySelector("#passkey-fail").style.display = 'block';
+            }
+        )
     </script>
 {% endblock %}
