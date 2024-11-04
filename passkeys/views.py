@@ -1,5 +1,4 @@
 import json
-import traceback
 from base64 import urlsafe_b64encode
 
 import fido2.features
@@ -13,8 +12,8 @@ from django.views.decorators.http import require_http_methods
 from fido2.utils import websafe_encode
 from fido2.webauthn import PublicKeyCredentialRpEntity
 
-from .util import getServer, enable_json_mapping, getUserCredentials, get_current_platform
 from .models import UserPasskey
+from .util import getServer, enable_json_mapping, getUserCredentials, get_current_platform
 
 
 #

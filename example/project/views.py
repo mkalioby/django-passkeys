@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.shortcuts import render
 
-from passkey_example.forms import MyAuthenticationForm
+from project.forms import MyAuthenticationForm
 
 
 class MyLoginView(LoginView):

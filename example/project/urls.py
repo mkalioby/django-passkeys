@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 
-from passkey_example import views
+from project import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
