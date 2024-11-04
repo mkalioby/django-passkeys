@@ -47,7 +47,13 @@ class AppAdminSite(AdminSite):
         return my_urls + urlpatterns
 
     def passkeys_update(self, request):
-        keys = UserPasskey.objects.filter(user=request.user)
-        return render(request, 'admin_passkeys.html', {
-            'keys': keys, "title": "Your personal passkeys"
-        })
+        context = {
+            **self.each_context(request),
+            "title": _("Your personal passkeys"),
+            "subtitle": None,
+            "app_path": request.get_full_path(),
+            "username": request.user.get_username(),
+            "keys": UserPasskey.objects.filter(user=request.user)
+        }
+
+        return render(request, 'admin_passkeys.html', context)
