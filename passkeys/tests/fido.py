@@ -1,143 +1,113 @@
 import json
 from base64 import urlsafe_b64encode
-from importlib import import_module
-
-from django.test import RequestFactory, TransactionTestCase, Client
-from django.urls import reverse
 
 from django.conf import settings
-from .softwebauthn import SoftWebauthnDevice
+from django.contrib.auth import get_user_model
+from django.test import TransactionTestCase
+from django.urls import reverse
 
 from passkeys.models import UserPasskey
+from .softwebauthn import SoftWebauthnDevice
 
+USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Safari/605.1.15"
+
+PLATFORM = "Safari / Mac OS X"
 
 def get_server_id(request):
-    return request.META["SERVER_NAME"] + "_id"
+    return "fido-server-id-callable"
 
 
 def get_server_name(request):
-    return "MySite"
+    return "fido-server-name-callable"
 
 
 class FidoTestCase(TransactionTestCase):
     def setUp(self) -> None:
+        settings.FIDO_SERVER_ID = get_server_id
+        settings.FIDO_SERVER_NAME = get_server_name
 
-        from django.contrib.auth import get_user_model
         self.user_model = get_user_model()
-        if self.user_model.objects.filter(username="test").count() == 0:
-            self.user = self.user_model.objects.create_user(username="test", password="test")
-        else:
-            self.user = self.user_model.objects.get(username="test")
-        self.client = Client()
-        settings.SESSION_ENGINE = 'django.contrib.sessions.backends.file'
-        engine = import_module(settings.SESSION_ENGINE)
-        # settings.SESSION_FILE_PATH = "/"
-        store = engine.SessionStore()
-        store.save(must_create=True)
-        self.session = store
-        self.client.cookies["sessionid"] = store.session_key
-
-        self.client.post("/auth/login", {"username": "test", "password": "test", 'passkeys': ''})
-        self.factory = RequestFactory()
-
-    def test_key_reg(self):
-        self.client.post('auth/login', {"usernaame": "test", "password": "test", "passkeys": ""})
-        r = self.client.get(reverse('passkeys:reg_begin'))
-        self.assertEqual(r.status_code, 200)
-        j = json.loads(r.content)
-        j['publicKey']['challenge'] = j['publicKey']['challenge'].encode("ascii")
-        s = SoftWebauthnDevice()
-        res = s.create(j, "https://" + j["publicKey"]["rp"]["id"])
-        res["key_name"] = "testKey"
-        u = reverse('passkeys:reg_complete')
-        r = self.client.post(u, data=json.dumps(res), headers={"USER_AGENT": ""}, HTTP_USER_AGENT="",
-                             content_type="application/json")
-        try:
-            j = json.loads(r.content)
-        except Exception:
-            raise AssertionError("Failed to get the required JSON after reg_completed")
-        self.assertTrue("status" in j)
-
-        self.assertEqual(j["status"], "OK")
-        self.assertEqual(UserPasskey.objects.latest('id').name, "testKey")
-        return s
-
-    def test_auto_key_name(self):
-        r = self.client.get(reverse('passkeys:reg_begin'))
-        self.assertEqual(r.status_code, 200)
-        j = json.loads(r.content)
-        j['publicKey']['challenge'] = j['publicKey']['challenge'].encode("ascii")
-        s = SoftWebauthnDevice()
-        res = s.create(j, "https://" + j["publicKey"]["rp"]["id"])
-        u = reverse('passkeys:reg_complete')
-        r = self.client.post(u, data=json.dumps(res),
-                             HTTP_USER_AGENT="Mozilla/5.0 (Macintosh; Intel Mac OS X 13_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Safari/605.1.15",
-                             content_type="application/json")
-        try:
-            j = json.loads(r.content)
-        except Exception:
-            raise AssertionError("Failed to get the required JSON after reg_completed")
-        self.assertTrue("status" in j)
-        self.assertEqual(j["status"], "OK")
-        self.assertEqual(UserPasskey.objects.latest('id').name, "Apple")
-        return s
-
-    def test_error_when_no_session(self):
-        res = {}
-        res["key_name"] = "testKey"
-        u = reverse('passkeys:reg_complete')
-        r = self.client.post(u, data=json.dumps(res), headers={"USER_AGENT": ""}, HTTP_USER_AGENT="",
-                             content_type="application/json")
-        try:
-            j = json.loads(r.content)
-        except Exception:
-            raise AssertionError("Failed to get the required JSON after reg_completed")
-        self.assertTrue("status" in j)
-        self.assertEqual(j["status"], "ERR")
-        self.assertEqual(j["message"], "FIDO Status can't be found, please try again")
-
-    def test_passkey_login(self):
-        authenticator = self.test_key_reg()
-        self.client.get('/auth/logout')
-        r = self.client.get(reverse('passkeys:auth_begin'))
-        self.assertEqual(r.status_code, 200)
-        j = json.loads(r.content)
-        j['publicKey']['challenge'] = j['publicKey']['challenge'].encode("ascii")
-
-        res = authenticator.get(j, "https://" + j["publicKey"]["rpId"])
-        u = reverse('login')
-        self.client.post(u, {'passkeys': json.dumps(res), "username": "", "password": ""}, headers={"USER_AGENT": ""},
-                         HTTP_USER_AGENT="")
-        self.assertTrue(self.client.session.get('_auth_user_id', False))
-        self.assertTrue(self.client.session.get("passkey", {}).get("passkey", False))
-        self.assertEqual(self.client.session.get("passkey", {}).get("name"), "testKey")
-
-    def test_base_username(self):
-        authenticator = self.test_key_reg()
-        self.client.get('/auth/logout')
-        session = self.session
-        session["base_username"] = "test"
-        session.save(must_create=True)
-        self.client.cookies["sessionid"] = session.session_key
-        r = self.client.get(reverse('passkeys:auth_begin'))
-        self.assertEqual(r.status_code, 200)
-        j = json.loads(r.content)
-        self.assertEqual(j['publicKey']['allowCredentials'][0]['id'],
-                         urlsafe_b64encode(authenticator.credential_id).decode("utf8").strip('='))
-
-    def test_passkey_login_no_session(self):
-        pass
+        self.user_model.objects.create_user(username="a", password="a")
+        self.user_model.objects.create_user(username="b", password="b")
 
     def test_server_id_callable(self):
+        self.client.logout()
         settings.FIDO_SERVER_ID = get_server_id
-        r = self.client.get(reverse('passkeys:auth_begin'))
-        self.assertEqual(r.status_code, 200)
-        j = json.loads(r.content)
-        self.assertEqual(j['publicKey']['rpId'], 'testserver1')
+        response = self.client.get(reverse('passkeys:auth_begin'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['publicKey']['rpId'], 'fido-server-id-callable')
 
     def test_server_name_callable(self):
-        settings.FIDO_SERVER_NAME = get_server_name
-        r = self.client.get(reverse('passkeys:reg_begin'))
-        self.assertEqual(r.status_code, 200)
-        j = json.loads(r.content)
-        self.assertEqual(j['publicKey']['rp']["name"], 'MySite')
+        self.client.login(username="b", password="b")
+        response = self.client.get(reverse('passkeys:reg_begin'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['publicKey']['rp']["name"], 'fido-server-name-callable')
+        self.client.logout()
+
+    def __test_registration(self, key_name=None):
+        # check login
+        response = self.client.get(reverse('passkeys:reg_begin'))
+        self.assertEqual(response.status_code, 302)
+
+        response = self.client.get(reverse('passkeys:reg_complete'))
+        self.assertEqual(response.status_code, 302)
+
+        # login
+        self.client.login(username="b", password="b")
+
+        # start registration
+        response = self.client.get(reverse('passkeys:reg_begin'))
+        self.assertEqual(response.status_code, 200)
+
+        data = json.loads(response.content)
+        data['publicKey']['challenge'] = data['publicKey']['challenge'].encode("ascii")
+        authenticator = SoftWebauthnDevice()
+
+        request = authenticator.create(data, "https://" + data["publicKey"]["rp"]["id"])
+        if key_name is not None:
+            request["key_name"] = key_name
+
+        # complete registration
+        response = self.client.post(
+            reverse('passkeys:reg_complete'),
+            data=json.dumps(request),
+            headers={"USER_AGENT": USER_AGENT},
+            HTTP_USER_AGENT=USER_AGENT,
+            content_type="application/json"
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        key = UserPasskey.objects.latest('id')
+        self.assertNotEqual(key, None)
+
+        if key_name is None:
+            self.assertEqual(key.name, key.platform)
+        else:
+            self.assertEqual(key.name, key_name)
+
+        self.assertEqual(key.platform, PLATFORM)
+        self.assertEqual(key.user.username, "b")
+
+        return authenticator
+
+    def test_registration(self):
+        self.__test_registration('test-key')
+
+    def test_registration_auto_key_name(self):
+        self.__test_registration()
+
+    def test_base_username(self):
+        authenticator = self.__test_registration()
+
+        self.client.logout()
+
+        session = self.client.session
+        session.update({"base_username": "b"})
+        session.save()
+
+        response = self.client.get(reverse('passkeys:auth_begin'))
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(response.json()['publicKey']['allowCredentials'][0]['id'],
+                         urlsafe_b64encode(authenticator.credential_id).decode("utf8").strip('='))

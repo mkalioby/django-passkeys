@@ -1,5 +1,6 @@
 from django.test import TransactionTestCase
 from django.urls import reverse
+from django.contrib.auth import get_user_model
 
 from passkeys.models import UserPasskey
 
@@ -7,20 +8,21 @@ from passkeys.models import UserPasskey
 class KeyManagementTestcase(TransactionTestCase):
 
     def setUp(self) -> None:
-        from django.contrib.auth import get_user_model
         self.user_model = get_user_model()
 
         user_a = self.user_model.objects.create_user(username="a", password="a")
         user_b = self.user_model.objects.create_user(username="b", password="b")
 
-        UserPasskey.objects.create(pk=1, user=user_a, credential_id='A')
-        UserPasskey.objects.create(pk=2, user=user_b, credential_id='B')
+        UserPasskey.objects.create(pk=1, user=user_a, credential_id='A', name="Passkey A")
+        UserPasskey.objects.create(pk=2, user=user_b, credential_id='B', name="Passkey B")
 
         self.client.login(username="a", password="a")
 
     def test_home(self):
         response = self.client.get(reverse('passkeys:home'))
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Passkey A")
+        self.assertNotContains(response, "Passkey B")
 
     def test_toggle(self):
         # wrong http method
