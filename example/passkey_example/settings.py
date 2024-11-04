@@ -75,6 +75,8 @@ DATABASES = {
 
 LOGIN_URL = "/auth/login"
 
+LOGIN_REDIRECT_URL = "/"
+
 AUTHENTICATION_BACKENDS = ['passkeys.backend.PasskeyModelBackend']
 
 FIDO_SERVER_ID = LOCAL_SETTINGS['DJANGO_PASSKEY_HOST']  # Server rp id for FIDO2, it the full domain of your project
