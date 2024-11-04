@@ -80,6 +80,18 @@ urls_patterns= [
 ]
 ```
 
+Using the following script tag in your html templates will load the passkeys js module:
+
+```html
+<script type="application/javascript" src="{% static 'passkeys/js/passkeys.js' %}"></script>
+```
+
+If you use a different URL prefix than 'passkeys/' you have to inform the js module:
+
+```html
+DjangoPasskey.init('<url prefix>');
+```
+
 **To match the look and feel of your project, Passkeys includes `base.html` but it needs blocks named `head` & `content` to added its content to it.**
 
 ***Notes:*** 
