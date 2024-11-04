@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 
-from passkey_example.demo import views
+from passkey_example import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -9,11 +9,8 @@ urlpatterns = [
     path('auth/login/', views.login_view, name="login"),
     path('auth/logout/', views.logout_view, name="logout"),
 
-    path('', views.home, name='home'),
-    path('registered/', views.registered, name='registered'),
-
     path('passkeys/', include('passkeys.urls')),
-]
 
-admin.site.site_title = 'Django-Passkeys'
-admin.site.site_header = 'Django-Passkeys'
+    path('', views.home, name='home'),
+
+]

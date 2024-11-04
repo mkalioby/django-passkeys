@@ -24,8 +24,3 @@ def logout_view(request):
 @login_required()
 def home(request):  # pragma: no cover
     return render(request, "home.html", {})
-
-
-@login_required()
-def registered(request):  # pragma: no cover
-    return render(request, "home.html", {"registered": True})

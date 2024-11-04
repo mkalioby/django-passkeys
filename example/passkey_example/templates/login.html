@@ -19,9 +19,9 @@
                 {% if invalid %}
                     <div class="alert alert-danger">Invalid Username or password</div>
                 {% endif %}
-                <form action="{% url 'login' %}" method="post" id="loginForm">
+                <form action="{% url 'login' %}" method="post" id="login-form">
                     {% csrf_token %}
-                    <input type="hidden" name="passkeys" id="passkeys"/>
+                    <input type="hidden" name="passkeys" id="id_passkeys"/>
 
                     <div class="form-floating mb-3">
                         <input type="text" id="id_username" name="username" class="form-control"
@@ -39,7 +39,7 @@
 
                         <button class="btn btn-primary" type="submit">Login</button>
 
-                        <button class="btn btn-secondary" type="button" onclick="DjangoPasskey.authn(false)">
+                        <button class="btn btn-secondary" type="button" onclick="DjangoPasskey.authn(false, 'login-form')">
                             <img src="{% static 'passkeys/images/fido-passkey-icon-white.png' %}" style="width: 24px">
                         </button>
                     </div>
@@ -53,7 +53,7 @@
     <script type="application/javascript" src="{% static 'passkeys/js/passkeys.js' %}"></script>
     <script type="application/javascript">
         (function() {
-            DjangoPasskey.checkConditionalUI();
+            DjangoPasskey.checkConditionalUI('login-form');
         })();
     </script>
 {% endblock %}

@@ -5,7 +5,7 @@ from .util import load_env
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-CONFIG = load_env(BASE_DIR)
+LOCAL_SETTINGS = load_env(BASE_DIR)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -21,14 +21,14 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+    'passkey_example.apps.AppAdminConfig',
+    #'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'passkeys',
-    'passkey_example.demo'
 ]
 
 MIDDLEWARE = [
@@ -46,7 +46,7 @@ ROOT_URLCONF = 'passkey_example.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'passkey_example' / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -69,7 +69,7 @@ STATIC_URL = '/static/'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'test_db',
+        'NAME': 'db.sqlite3',
     }
 }
 
@@ -77,12 +77,12 @@ LOGIN_URL = "/auth/login"
 
 AUTHENTICATION_BACKENDS = ['passkeys.backend.PasskeyModelBackend']
 
-FIDO_SERVER_ID = CONFIG['DJANGO_PASSKEY_HOST']  # Server rp id for FIDO2, it the full domain of your project
+FIDO_SERVER_ID = LOCAL_SETTINGS['DJANGO_PASSKEY_HOST']  # Server rp id for FIDO2, it the full domain of your project
 
 FIDO_SERVER_NAME = "DjangoPasskeysExampleApp"
 
 KEY_ATTACHMENT = None  # Set None to allow all authenticator attachment
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://" + CONFIG['DJANGO_PASSKEY_HOST']
+    "https://" + LOCAL_SETTINGS['DJANGO_PASSKEY_HOST']
 ]

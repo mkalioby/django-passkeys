@@ -294,7 +294,7 @@
      */
 
 
-    const checkConditionalUI = function () {
+    const checkConditionalUI = function (loginFormId='login-form') {
         window.conditionUIAbortController = new AbortController();
         window.conditionUIAbortSignal = conditionUIAbortController.signal;
 
@@ -302,7 +302,7 @@
             // Check if conditional mediation is available.
             PublicKeyCredential.isConditionalMediationAvailable().then((result) => {
                 if (result === true) {
-                    authn(true)
+                    authn(true, loginFormId)
                 }
             });
         }
@@ -318,7 +318,7 @@
         return getAssert;
     }
 
-    const authn = function (conditionalUI = false) {
+    const authn = function (conditionalUI = false, loginFormId='login-form') {
         fetch(urlAuthBegin(), {method: 'GET'}).then(function (response) {
             if (response.ok) {
                 return response.json().then(function (req) {
@@ -337,7 +337,7 @@
 
             return navigator.credentials.get(options);
         }).then(function (assertion) {
-            let pk = document.querySelector("#passkeys");
+            let pk = document.querySelector("input#id_passkeys");
 
             if (pk.length === 0) {
                 console.error("The login form does not contain a passkeys input field!")
@@ -345,7 +345,7 @@
             }
             pk.value = JSON.stringify(publicKeyCredentialToJSON(assertion));
 
-            let loginForm = document.getElementById('loginForm');
+            let loginForm = document.getElementById(loginFormId);
             if (loginForm === null || loginForm === undefined) {
                 console.error("Login form id invalid!")
                 return;

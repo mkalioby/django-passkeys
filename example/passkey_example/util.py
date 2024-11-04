@@ -1,4 +1,15 @@
 def load_env(path):
+    """
+    Load variables from a file named .env
+    Format:
+    VARIABLE_NAME = value
+
+    returns a dictionary with variables
+
+    python-dotenv implements similar functionality.
+    """
+
+    # default data
     data = {
         'DJANGO_PASSKEY_HOST': 'localhost'
     }
