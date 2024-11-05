@@ -145,6 +145,7 @@ class FidoTestCase(TransactionTestCase):
 
         res = authenticator.get(result, "https://" + result["publicKey"]["rpId"])
 
+        # build a fake request for the authentication backend
         factory = RequestFactory()
         request = factory.post('/login/',
                                {
@@ -153,6 +154,11 @@ class FidoTestCase(TransactionTestCase):
                                    'passkeys': json.dumps(res)
                                },
                                headers={"USER_AGENT": USER_AGENT})
+
+        # set user agent for running tests in tox
+        request.META['HTTP_USER_AGENT'] = USER_AGENT
+
+        # keeping client session is required
         request.session = self.client.session
 
         backend = PasskeyModelBackend()
