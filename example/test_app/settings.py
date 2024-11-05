@@ -18,7 +18,6 @@ import passkeys
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
@@ -29,7 +28,6 @@ SECRET_KEY = '#9)q!_i3@pr-^3oda(e^3$x!kq3b4f33#5l@+=+&vuz+p6gb3g'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -60,7 +58,7 @@ ROOT_URLCONF = 'test_app.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR ,'example','templates' )],
+        'DIRS': [os.path.join(BASE_DIR, 'example', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -75,7 +73,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'test_app.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
@@ -85,7 +82,6 @@ DATABASES = {
         'NAME': 'test_db',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -105,7 +101,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
@@ -119,17 +114,24 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
-#STATIC_ROOT=(os.path.join(BASE_DIR,'static'))
-STATICFILES_DIRS=[os.path.join(BASE_DIR,'static')]
-LOGIN_URL="/auth/login"
+# STATIC_ROOT=(os.path.join(BASE_DIR,'static'))
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+LOGIN_URL = "/auth/login"
 
 AUTHENTICATION_BACKENDS = ['passkeys.backend.PasskeyModelBackend']
 
-FIDO_SERVER_ID="localhost"      # Server rp id for FIDO2, it the full domain of your project
-FIDO_SERVER_NAME="TestApp"
-KEY_ATTACHMENT = None  # Set None to allow all authenticator attachment
+# Server rp id for FIDO2, it the full domain of your project
+FIDO_SERVER_ID = "localhost"
+
+FIDO_SERVER_NAME = "TestApp"
+
+# Set None to allow all authenticator attachment
+KEY_ATTACHMENT = None
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://localhost"
+]
