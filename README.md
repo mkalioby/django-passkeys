@@ -158,9 +158,9 @@ Starting version v1.2. you can use Conditional UI by adding the following to you
 add the following to the page js.
 
 ```js
-window.onload = checkConditionalUI('login-form');
+window.onload = DjangoPasskeys.checkConditionalUI('login-form');
 ```
-where `login-form` is name of your login form.
+where `login-form` is id of your login form.
 
 ## Security contact information
 
