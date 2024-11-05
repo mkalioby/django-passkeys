@@ -23,13 +23,13 @@ Passkeys are now supported on
 
 On May 3, 2023, Google allowed the use of Passkeys for the users to login, killing the password for enrolled users. 
 
-# Installation
+## Installation
 
 `pip install django-passkeys`
 
 Currently, it support Django 2.0+, Python 3.7+
 
-# Usage
+## Usage
 1. in your settings.py add the application to your installed apps
    ```python
    INSTALLED_APPS=(
@@ -44,23 +44,29 @@ Currently, it support Django 2.0+, Python 3.7+
 4. Add the following settings to your file
 
    ```python
-    AUTHENTICATION_BACKENDS = ['passkeys.backend.PasskeyModelBackend'] # Change your authentication backend
-    FIDO_SERVER_ID="localhost"      # Server rp id for FIDO2, it the full domain of your project
-    FIDO_SERVER_NAME="TestApp"
-    import passkeys
-    KEY_ATTACHMENT = None | passkeys.Attachment.CROSS_PLATFORM | passkeys.Attachment.PLATFORM
+   import passkeys
+   
+   # Change your authentication backend 
+   AUTHENTICATION_BACKENDS = ['passkeys.backend.PasskeyModelBackend']
+   
+   # Server rp id for FIDO2, it the full domain of your project 
+   FIDO_SERVER_ID="localhost"
+   
+   FIDO_SERVER_NAME="TestApp"
+   
+   KEY_ATTACHMENT = None | passkeys.Attachment.CROSS_PLATFORM | passkeys.Attachment.PLATFORM
    ```
    **Note**: Starting v1.1, `FIDO_SERVER_ID` and/or `FIDO_SERVER_NAME` can be a callable to support multi-tenants web applications, the `request` is passed to the called function.
 5. Add passkeys to urls.py
-   ```python 
-
+   ```python
    urls_patterns= [
-   '...',
-   url(r'^passkeys/', include('passkeys.urls')),
-   '....',
+        '...',
+        path('passkeys/', include('passkeys.urls')),
+        '....',
     ]
     ```
 6. To match the look and feel of your project, Passkeys includes `base.html` but it needs blocks named `head` & `content` to added its content to it.
+
    **Notes:** 
     
     1. You can override `passkeys/passkeys_base.html` which is used by `passkeys/passkeys.html` so you can control the styling better and current `passkeys/passkeys_base.html` extends `base.html`
@@ -77,13 +83,20 @@ Currently, it support Django 2.0+, Python 3.7+
    * Give an id to your login form e.g 'loginForm', the id should be provided when calling `authn` function
    * Inside the form, add 
      ```html
-      <input type="hidden" name="passkeys" id="passkeys"/>
-      <button class="btn btn-block btn-dark" type="button" onclick="authn('loginForm')"><img src="{% static 'passkeys/imgs/FIDO-Passkey_Icon-White.png' %}" style="width: 24px"></button>
-     {%include 'passkeys/passkeys.js' %}
+     <form id="login-form"> {% csrf_token %}
+        ... 
+        <input type="hidden" name="passkeys" id="id_passkeys"/>
+      
+        <button class="btn btn-secondary" type="button" onclick="DjangoPasskeys.authn('login-form')">
+            <img src="{% static 'passkeys/imgs/FIDO-Passkey_Icon-White.png' %}" style="width: 24px">
+        </button>
+     </form>
+     <script src="{% static 'passkeys/js/passkeys.js' %}"></script>
      ```
 For Example, See 'example' app and look at EXAMPLE.md to see how to set it up.
 
-# Detect if user is using passkeys
+## Detect if user is using passkeys
+
 Once the backend is used, there will be a `passkey` key in request.session. 
 If the user used a passkey then `request.session['passkey']['passkey']` will be True and the key information will be there like this
 ```python
@@ -95,20 +108,33 @@ If the user didn't use a passkey then it will be set to False
 {'passkey':False}
 ```
 
-
-# Check if the user can be enrolled for a platform authenticator
+## Check if the user can be enrolled for a platform authenticator
 
 If you want to check if the user can be enrolled to use a platform authenticator, you can do the following in your main page.
 
 ```html
-<div id="pk" class="alert alert-info" style="display: none">Your device supports passkeys, <a href="{%url 'passkeys:enroll'%}">Enroll</a> </div>
-<script type="text/javascript">
-function register_pk()
-    {
-        $('#pk').show();
-    }
-{% include 'passkeys/check_passkeys.js'%}
-$(document).ready(check_passkey(true,register_pk))
+<div id="passkeys-supported" style="display: none">
+   <div class="alert alert-success">
+       Your device supports passkeys.
+   </div>
+   <a href="{% url 'passkeys:enroll' %}">Enroll</a>
+</div>
+
+<div id="passkeys-missing" style="display: none">
+   <div class="alert alert-danger">
+       Your device does not support passkeys.
+   </div>
+</div>
+
+<script type="application/javascript" src="{% static 'passkeys/js/passkeys.js' %}"></script>
+<script type="application/javascript">
+    (function () {
+        DjangoPasskeys.checkPasskeysSupport(() => {
+            document.querySelector('#passkeys-supported').style.display = 'block';
+        }, () => {
+           document.querySelector('#passkeys-missing').style.display = 'block';
+        });
+    })();
 </script>
 ```
 check_passkey function paramters are as follows 
@@ -121,7 +147,7 @@ check_passkey function paramters are as follows
 
 Conditional UI is a way for the browser to prompt the user to use the passkey to login to the system as shown in 
 
-![conditionalUI.png](imgs%2FconditionalUI.png)
+![conditionalUI.png](imgs/conditionalUI.png)
 
 Starting version v1.2. you can use Conditional UI by adding the following to your login page
 
@@ -132,9 +158,9 @@ Starting version v1.2. you can use Conditional UI by adding the following to you
 add the following to the page js.
 
 ```js
-window.onload = checkConditionalUI('loginForm');
+window.onload = DjangoPasskeys.checkConditionalUI('login-form');
 ```
-where `loginForm` is name of your login form.
+where `login-form` is id of your login form.
 
 ## Security contact information
 

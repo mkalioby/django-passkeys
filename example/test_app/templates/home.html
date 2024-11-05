@@ -1,33 +1,47 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block content %}
-      <div class="container-fluid">
 
+{% block content %}
+    <div class="container-fluid">
         <!-- Breadcrumbs-->
         <ol class="breadcrumb">
-          <li class="breadcrumb-item">
-            <a href="index.html">Dashboard</a>
-          </li>
-          <li class="breadcrumb-item active">Blank Page</li>
+            <li class="breadcrumb-item">
+                <a href="index.html">Dashboard</a>
+            </li>
+            <li class="breadcrumb-item active">Blank Page</li>
         </ol>
 
         <!-- Page Content -->
-          {% if registered %}
-              <div class="alert alert-success">Registered Successfully</div>
-          {% endif %}
+        {% if registered %}
+            <div class="alert alert-success">Registered Successfully</div>
+        {% endif %}
         <h1>Welcome {{ request.user.username }}!</h1>
-          <hr/>
-          <div id="pk" class="alert alert-info" style="display: none">Your device supports passkeys, <a href="{%url 'passkeys:enroll'%}">Enroll</a> </div>
 
+        <hr/>
 
-      </div>
-        <script type="application/javascript">
-            function register_pk()
-            {
-                $('#pk').show();
-            }
-            {% include 'passkeys/check_passkeys.js'%}
-            $(document).ready(check_passkey(true,register_pk))
+        <div id="passkeys-supported" style="display: none">
+            <div class="alert alert-success">
+                Your device supports passkeys.
+            </div>
+            <a href="{% url 'passkeys:enroll' %}">Enroll</a>
+        </div>
 
-        </script>
-      {% endblock %}
+        <div id="passkeys-missing" style="display: none">
+            <div class="alert alert-danger">
+                Your device does not support passkeys.
+            </div>
+        </div>
+
+    </div>
+
+    <script type="application/javascript" src="{% static 'passkeys/js/passkeys.js' %}"></script>
+    <script type="application/javascript">
+        (function () {
+            DjangoPasskeys.checkPasskeysSupport(() => {
+                document.querySelector('#passkeys-supported').style.display = 'block';
+            }, () => {
+                document.querySelector('#passkeys-missing').style.display = 'block';
+            });
+        })();
+    </script>
+{% endblock %}
