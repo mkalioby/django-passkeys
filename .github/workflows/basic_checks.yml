@@ -22,14 +22,9 @@ jobs:
           python setup.py install
           pip install -r requirements.txt
           pip install -r requirements_test.txt
-      - name: Run Migrations
-        run: |
-          cd example
-          python manage.py migrate
       - name: Run Tests
         run: |
-          cd example
-          coverage run manage.py test
+          coverage run runtests.py
           coverage report
       - name: Coverage Badge
         uses: tj-actions/coverage-badge-py@v2
