@@ -19,3 +19,8 @@ class PasskeyModelBackendTestCase(TransactionTestCase):
         backend = PasskeyModelBackend()
         user = backend.authenticate(None, 'test', 'test')
         self.assertNotEqual(user, None)
+
+    def test_username_password_success(self):
+        backend = PasskeyModelBackend()
+        user = backend.authenticate(None, 'test', 'test')
+        self.assertNotEqual(user, None)

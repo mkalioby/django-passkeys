@@ -70,6 +70,8 @@ class ViewsTestCase(TransactionTestCase):
         key.refresh_from_db()
         self.assertTrue(UserPasskey.objects.get(id=key.id).enabled)
 
+        response = self.client.post(reverse('passkeys:toggle'), {})
+        self.assertEqual(response.status_code, 403)
     def test_key_delete(self):
         self.client.logout()
         key = UserPasskey.objects.filter(user=self.user_a).latest('pk')
@@ -92,4 +94,8 @@ class ViewsTestCase(TransactionTestCase):
 
         # invalid key id
         response = self.client.post(reverse('passkeys:delKey'), {"id": 9999999})
+        self.assertEqual(response.status_code, 403)
+
+        #Missing Parameter
+        response = self.client.post(reverse('passkeys:delKey'), {})
         self.assertEqual(response.status_code, 403)

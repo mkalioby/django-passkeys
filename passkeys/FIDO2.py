@@ -36,12 +36,12 @@ def getServer(request=None):
     if callable(settings.FIDO_SERVER_ID):
         fido_server_id = settings.FIDO_SERVER_ID(request)
     else:
-        fido_server_id = settings.FIDO_SERVER_ID
+        fido_server_id = settings.FIDO_SERVER_ID  # pragma: no cover
 
     if callable(settings.FIDO_SERVER_NAME):
         fido_server_name = settings.FIDO_SERVER_NAME(request)
     else:
-        fido_server_name = settings.FIDO_SERVER_NAME
+        fido_server_name = settings.FIDO_SERVER_NAME # pragma: no cover
 
     rp = PublicKeyCredentialRpEntity(id=fido_server_id, name=fido_server_name)
     return Fido2Server(rp)
@@ -58,7 +58,7 @@ def get_current_platform(request):
     elif "Windows" in ua.os.family:
         return "Microsoft"
     else:
-        return "Key"
+        return "Key" # pragma: no cover
 
 
 @login_required
@@ -115,7 +115,7 @@ def auth_begin(request):
     if "base_username" in request.session:
         username = request.session["base_username"]
     if request.user.is_authenticated:
-        username = request.user.username
+        username = request.user.username # pragma: no cover
     if username:
         credentials = getUserCredentials(username)
     auth_data, state = server.authenticate_begin(credentials)

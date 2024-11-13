@@ -43,7 +43,7 @@ class SoftWebauthnDevice():
     def cred_as_attested(self):
         """return current credential as AttestedCredentialData"""
 
-        return AttestedCredentialData.create(
+        return AttestedCredentialData.create(     #noqa
             self.aaguid,
             self.credential_id,
             ES256.from_cryptography_key(self.private_key.public_key()))
