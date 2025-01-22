@@ -1,4 +1,9 @@
 var publicKeyCredentialToJSON = (pubKeyCred) => {
+
+            if(pubKeyCred instanceof Uint8Array){
+                return base64url.encode(pubKeyCred.buffer);
+            }
+            
             if(pubKeyCred instanceof Array) {
                 let arr = [];
                 for(let i of pubKeyCred)
