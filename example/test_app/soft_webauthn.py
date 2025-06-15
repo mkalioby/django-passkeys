@@ -82,7 +82,7 @@ class SoftWebauthnDevice():
 
         return {
             'id': urlsafe_b64encode(self.credential_id).decode("utf8"),
-            'rawId': self.credential_id.decode("latin-1"),
+            'rawId': urlsafe_b64encode(self.credential_id).decode("utf8"),
             'response': {
                 'clientDataJSON': urlsafe_b64encode(json.dumps(client_data).encode("utf8")).decode("ascii"),
                 'attestationObject':  urlsafe_b64encode(cbor.encode(attestation_object)).decode("utf8")
