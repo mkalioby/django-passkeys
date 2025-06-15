@@ -1,3 +1,9 @@
+## v1.3.0
+
+* Added Django 5.1, Django 5.2 to tests
+* Added: Python 3.12, Python 3.13 to tests
+* Upgrade fido2 to v2.0.0
+
 ## v1.2.7
 
 * Fix: issue if the user isn't defined by username field #25.
