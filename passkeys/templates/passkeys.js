@@ -86,6 +86,12 @@ function tryLogin(formid)
         console.log(options)
         return navigator.credentials.get(options);
     }).then(function(assertion) {
+        if (assertion.type == "password"){
+            $("#inputUsername").val(assertion.id);
+            $("#inputPassword").val(assertion.password);
+            $("#" + window.loginForm).submit();
+            return;
+    }
         pk = $("#passkeys")
         if (pk.length == 0)
     {
