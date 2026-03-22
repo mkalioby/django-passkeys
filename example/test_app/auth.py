@@ -1,26 +1,20 @@
-from django.shortcuts import render
+from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
+from django.shortcuts import render
 from django.urls import reverse
-from django.contrib.auth import authenticate,login,logout
-from django.contrib.auth.models import User
 
-def loginView(request):
-    context={}
-    if request.method=="POST":
-        user=authenticate(request, username=request.POST["username"],password=request.POST["password"])
+
+def login_view(request):
+    context = {}
+    if request.method == "POST":
+        user = authenticate(request, username=request.POST["username"], password=request.POST["password"])
         if user:
             login(request, user)
             return HttpResponseRedirect(reverse('home'))
-        context["invalid"]=True
+        context["invalid"] = True
     return render(request, "login.html", context)
 
-# def create_session(request,username):
-#     user=User.objects.get(username=username)
-#     user.backend='django.contrib.auth.backends.ModelBackend'
-#     login(request, user)
-#     return HttpResponseRedirect(reverse('home'))
 
-
-def logoutView(request):
+def logout_view(request):
     logout(request)
-    return  render(request,"logout.html",{})
+    return render(request, "logout.html", {})
