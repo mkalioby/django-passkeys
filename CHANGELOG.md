@@ -23,6 +23,9 @@
 * Code: `enable_json_mapping()` called once at module load instead of per-request
 * Code: Modernized settings to use `pathlib.Path` instead of `os.path`
 * Code: Removed deprecated `USE_L10N` setting
+* **Breaking**: Renamed `FIDO2.py` → `webauthn.py` (update imports: `from passkeys.webauthn import ...`)
+* **Breaking**: Templates moved to `passkeys/` namespace (`PassKeys.html` → `passkeys/manage.html`, `PassKeys_base.html` → `passkeys/base.html`, `passkeys.js` → `passkeys/login.js`, `check_passkeys.js` → `passkeys/check.js`)
+* Code: Cleaned up JS templates — consistent indentation, `const`/`let`, proper semicolons
 * CI: Updated GitHub Actions to v4/v5
 
 ## v1.3.0

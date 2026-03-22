@@ -10,7 +10,7 @@ from .models import UserPasskey
 @login_required
 def index(request, enroll=False):  # noqa
     keys = UserPasskey.objects.filter(user=request.user)  # pragma: no cover
-    return render(request, 'PassKeys.html', {"keys": keys, "enroll": enroll})  # pragma: no cover
+    return render(request, 'passkeys/manage.html', {"keys": keys, "enroll": enroll})  # pragma: no cover
 
 
 @login_required

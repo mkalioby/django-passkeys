@@ -1,6 +1,6 @@
 from django.test import TestCase, RequestFactory
 
-from passkeys.FIDO2 import get_current_platform
+from passkeys.webauthn import get_current_platform
 
 
 class TestCurrentPlatform(TestCase):

@@ -71,8 +71,8 @@ Supports Django 4.2+, Python 3.10+
 
    **Notes:**
 
-    1. You can override `PassKeys_base.html` which is used by `Passkeys.html` so you can control the styling better. The default `Passkeys_base.html` extends `base.html`.
-    2. Currently, `PassKeys_base.html` needs jQuery and Bootstrap.
+    1. You can override `passkeys/base.html` which is used by `passkeys/manage.html` so you can control the styling better. The default `passkeys/base.html` extends `base.html`.
+    2. Currently, `passkeys/base.html` needs jQuery and Bootstrap.
 
 7. Somewhere in your app, add a link to 'passkeys:home'
     ```html
@@ -91,7 +91,7 @@ Supports Django 4.2+, Python 3.10+
      <button class="btn btn-block btn-dark" type="button" onclick="authn('loginForm')">
          <img src="{% static 'passkeys/imgs/FIDO-Passkey_Icon-White.png' %}" style="width: 24px">
      </button>
-     {% include 'passkeys.js' %}
+     {% include 'passkeys/login.js' %}
      ```
 
 For a full example, see the `example` app and look at [Example.md](Example.md) for setup instructions.
@@ -123,7 +123,7 @@ If you want to check if the user can be enrolled to use a platform authenticator
 function register_pk() {
     $('#pk').show();
 }
-{% include 'check_passkeys.js' %}
+{% include 'passkeys/check.js' %}
 $(document).ready(check_passkey(true, register_pk))
 </script>
 ```

@@ -1,7 +1,7 @@
 from django.contrib.auth.backends import ModelBackend
 from django.core.exceptions import SuspiciousOperation
 
-from .FIDO2 import auth_complete
+from .webauthn import auth_complete
 
 
 class PasskeyModelBackend(ModelBackend):
