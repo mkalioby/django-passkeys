@@ -12,13 +12,14 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
           python-version: 3.12
       - name: Install requirements
         run: |
+          pip install setuptools
           python setup.py install
           pip install -r requirements.txt
           pip install -r requirements_test.txt
