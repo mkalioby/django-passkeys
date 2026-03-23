@@ -18,20 +18,20 @@ try:
     from importlib.metadata import version
     fido2_version = version('fido2')
     NEW_FIDO_VER = fido2_version.split(".")[0] > "1"
-except Exception:
+except Exception: # pragma: no cover
     NEW_FIDO_VER = fido2.__version__.split(".")[0] > "1"
 
 def enable_json_mapping():
     if NEW_FIDO_VER:
         return
-    try:
+    try: # pragma: no cover
         if  hasattr(fido2.features,"webauthn_json_mapping"):
             fido2.features.webauthn_json_mapping.enabled = True
         else:
             raise Exception(
                 "Failed to enable JSON mapping, please make sure you have fido2 version 1.0.0 or higher installed")
 
-    except ValueError:
+    except ValueError: # pragma: no cover
         pass
 
 
