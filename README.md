@@ -160,4 +160,6 @@ Tidelift will coordinate the fix and disclosure.
 * [gasparbrogueira](https://github.com/gasparbrogueira)
 * [pulse-mind](https://github.com/pulse-mind)
 * [ashokdelphia](https://github.com/ashokdelphia)
+* [offbyone](https://github.com/offbyone)
+* [resba](https://github.com/resba)
 * [ganiyevuz](https://github.com/ganiyevuz)

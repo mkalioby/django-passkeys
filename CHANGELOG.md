@@ -2,13 +2,14 @@
 * Fix: Change the hardcoded username field.
 * Fix: Change Grammar for empty keys cases.
 * Fix: Show user provided key name when deleting key.
+* Cast Uint8Array objects to base64url encoding when preparing the payload so fido2 knows how to process it.
 * Added: Django 6.0 tests
 * Added: Python 3.14 to tests
 * Upgraded fido2 to v2.1.0
 * Moved DELETE key to be POST request
 * Fixed some typos
 
-   Thanks to @ganiyevuz & ashokdelphia for his contribution in this release.
+   Thanks to ashokdelphia, @resba & @ganiyevuz &  for his contribution in this release.
 
 ## v1.3.0
 
