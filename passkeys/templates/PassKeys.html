@@ -59,6 +59,7 @@
     function confirmDel(id) {
         $.ajax({
             url:"{% url 'passkeys:delKey' %}",
+            method:"POST",
             data:{"id":id},
             success:function (data) {
                 alert(data)

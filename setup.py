@@ -4,7 +4,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='django-passkeys',
-    version='1.3.0.1',
+    version='1.4.0',
     description='A Django Authentication Backend for Passkeys',
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
@@ -18,7 +18,7 @@ setup(
         'django >= 2.0',
         'ua-parser',
         'user-agents',
-        'fido2>=1.1.1,<2.1.0',
+        'fido2>=1.1.1,<2.2.0',
       ],
     python_requires=">=3.7",
     include_package_data=True,
@@ -40,6 +40,7 @@ setup(
         "Framework :: Django :: 5.0",
         "Framework :: Django :: 5.1",
         "Framework :: Django :: 5.2",
+        "Framework :: Django :: 6.0",
         "Intended Audience :: Developers",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
@@ -51,6 +52,7 @@ setup(
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3.13",
+        "Programming Language :: Python :: 3.14",
         "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 )

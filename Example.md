@@ -1,18 +1,47 @@
 # Use of Example project
 
-1. create virtual env
-`virtualenv venv`
-1. activate env `source venv/bin/activate`
-1. install requirements `pip install -r requirements.txt`
-1. cd to example project `cd example`
-1. migrate `python manage.py migrate`
-1. create super user `python manage.py createsuperuser`
-1. start the server `python manage.py runserver`
+1. Create virtual env
+   ```shell
+   python -m venv env
+   ```
+2. Activate env
+   ```
+   source env/bin/activate
+   ```
+3. Install requirements
+   ```
+   pip install -r requirements.txt
+   ```
+4. cd to example project
+   ```
+   cd example
+   ```
+5. Run migrations
+   ```
+   python manage.py migrate
+   ```
+6. Create superuser
+   ```
+   python manage.py createsuperuser
+   ```
+7. Start the server
+   ```
+   python manage.py runserver
+   ```
+8. Open `http://localhost:8000/` in your browser
+
+   **Important**: Use `localhost` not `127.0.0.1` — WebAuthn requires the domain to match `FIDO_SERVER_ID` in settings.
 
 # Notes for SSL
 
-For passkeys, you need to use HTTPS, after the above steps are done:
+For passkeys in production, you need to use HTTPS. After the above steps are done:
 
-1. stop the server
-1. install requirements `pip install -r example-ssl-requirements.txt`
-1. start the ssl server `python manage.py runsslserver`
+1. Stop the server
+2. Install SSL requirements
+   ```shell
+   pip install django-sslserver
+   ```
+3. Start the SSL server
+   ```shell
+   python manage.py runsslserver
+   ```

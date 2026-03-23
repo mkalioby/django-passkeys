@@ -13,12 +13,25 @@ from fido2.utils import websafe_decode, websafe_encode
 from fido2.webauthn import PublicKeyCredentialRpEntity, AttestedCredentialData, RegistrationResponse
 from .models import UserPasskey
 from user_agents.parsers import parse as ua_parse
-
+NEW_FIDO_VER = False
+try:
+    from importlib.metadata import version
+    fido2_version = version('fido2')
+    NEW_FIDO_VER = fido2_version.split(".")[0] > "1"
+except Exception:
+    NEW_FIDO_VER = fido2.__version__.split(".")[0] > "1"
 
 def enable_json_mapping():
+    if NEW_FIDO_VER:
+        return
     try:
-        fido2.features.webauthn_json_mapping.enabled = True
-    except:
+        if  hasattr(fido2.features,"webauthn_json_mapping"):
+            fido2.features.webauthn_json_mapping.enabled = True
+        else:
+            raise Exception(
+                "Failed to enable JSON mapping, please make sure you have fido2 version 1.0.0 or higher installed")
+
+    except ValueError:
         pass
 
 
