@@ -34,13 +34,13 @@ jobs:
           coverage run manage.py test
           coverage report
       - name: Coverage Badge
-        uses: tj-actions/coverage-badge-py@v2
+        uses: tj-actions/coverage-badge-py@1788babcb24544eb5bbb6e0d374df5d1e54e670f # v2
         with:
           working-directory: example
           output: ../coverage.svg
 
       - name: Verify Changed files
-        uses: tj-actions/verify-changed-files@v14
+        uses: tj-actions/verify-changed-files@a1c6acee9df209257a246f2cc6ae8cb6581c1edf #v20
         id: verify-changed-files
         with:
           files: coverage.svg
