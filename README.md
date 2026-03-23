@@ -19,7 +19,7 @@ This app is a slim-down version of [django-mfa2](https://github.com/mkalioby/dja
 Passkeys are now supported on 
 * Apple Ecosystem (iPhone 16.0+, iPadOS 16.1, Mac OS X Ventura)
 * Chromium based browsers (on PC and Laptop) allows picking up credentials from Android and iPhone/iPadOS.
-* Android Credentials creation for ResidentKeys is currently in live now.
+* Android Credentials creation for ResidentKeys is currently live.
 
 On May 3, 2023, Google allowed the use of Passkeys for the users to login, killing the password for enrolled users. 
 
@@ -27,10 +27,10 @@ On May 3, 2023, Google allowed the use of Passkeys for the users to login, killi
 
 `pip install django-passkeys`
 
-Currently, it support Django 2.0+, Python 3.7+
+Supports Django 2.0+, Python 3.7+
 
 # Usage
-1. in your settings.py add the application to your installed apps
+1. In your settings.py add the application to your installed apps
    ```python
    INSTALLED_APPS=(
    '......',
@@ -38,19 +38,28 @@ Currently, it support Django 2.0+, Python 3.7+
    '......')
    ```
 2. Collect Static Files
-`python manage.py collectstatic`
+   ```shell
+   python manage.py collectstatic
+   ```
+
 3. Run migrate
-`python manage.py migrate`
+   ```shell
+    python manage.py migrate
+   ```
 4. Add the following settings to your file
 
    ```python
     AUTHENTICATION_BACKENDS = ['passkeys.backend.PasskeyModelBackend'] # Change your authentication backend
-    FIDO_SERVER_ID="localhost"      # Server rp id for FIDO2, it the full domain of your project
+    FIDO_SERVER_ID="localhost"      # Server rp id for FIDO2, must match your domain
     FIDO_SERVER_NAME="TestApp"
     import passkeys
-    KEY_ATTACHMENT = None | passkeys.Attachment.CROSS_PLATFORM | passkeys.Attachment.PLATFORM
+    KEY_ATTACHMENT = None # or passkeys.Attachment.CROSS_PLATFORM or  passkeys.Attachment.PLATFORM
    ```
-   **Note**: Starting v1.1, `FIDO_SERVER_ID` and/or `FIDO_SERVER_NAME` can be a callable to support multi-tenants web applications, the `request` is passed to the called function.
+   **Notes**
+    
+   * Starting v1.1, `FIDO_SERVER_ID` and/or `FIDO_SERVER_NAME` can be a callable to support multi-tenant web applications, the `request` is passed to the called function. 
+   * `FIDO_SERVER_ID` must match the domain you access the site from. For local development, use `localhost` and access via `http://localhost:8000/` (not `127.0.0.1`).
+   
 5. Add passkeys to urls.py
    ```python 
 
@@ -64,14 +73,17 @@ Currently, it support Django 2.0+, Python 3.7+
    **Notes:** 
     
     1. You can override `PassKeys_base.html` which is used by `Passkeys.html` so you can control the styling better and current `Passkeys_base.html` extends `base.html`
-    1. Currently, `PassKeys_base.html` needs JQuery and bootstrap. 
+    1. Currently, `PassKeys_base.html` needs jQuery and bootstrap. 
 
 7. Somewhere in your app, add a link to 'passkeys:home'
-    ```<li><a href="{% url 'passkeys:home' %}">Passkeys</a> </li>```
+    ```html
+    <li><a href="{% url 'passkeys:home' %}">Passkeys</a> </li>
+   ```
 8. In your login view, change the authenticate call to include the request as follows
+   
    ```python
-    user=authenticate(request, username=request.POST["username"],password=request.POST["password"])
-    ```
+    user = authenticate(request, username=request.POST["username"],password=request.POST["password"])
+   ```
 
 8. Finally, In your `login.html`
    * Give an id to your login form e.g 'loginForm', the id should be provided when calling `authn` function
@@ -147,7 +159,7 @@ Tidelift will coordinate the fix and disclosure.
 * [jacopsd](https://github.com/jacopsd)   
 * [gasparbrogueira](https://github.com/gasparbrogueira)
 * [pulse-mind](https://github.com/pulse-mind)
-
-
-
-
+* [ashokdelphia](https://github.com/ashokdelphia)
+* [offbyone](https://github.com/offbyone)
+* [resba](https://github.com/resba)
+* [ganiyevuz](https://github.com/ganiyevuz)

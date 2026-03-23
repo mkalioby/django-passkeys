@@ -13,12 +13,25 @@ from fido2.utils import websafe_decode, websafe_encode
 from fido2.webauthn import PublicKeyCredentialRpEntity, AttestedCredentialData, RegistrationResponse
 from .models import UserPasskey
 from user_agents.parsers import parse as ua_parse
-
+NEW_FIDO_VER = False
+try:
+    from importlib.metadata import version
+    fido2_version = version('fido2')
+    NEW_FIDO_VER = fido2_version.split(".")[0] > "1"
+except Exception: # pragma: no cover
+    NEW_FIDO_VER = fido2.__version__.split(".")[0] > "1"
 
 def enable_json_mapping():
-    try:
-        fido2.features.webauthn_json_mapping.enabled = True
-    except:
+    if NEW_FIDO_VER:
+        return
+    try: # pragma: no cover
+        if  hasattr(fido2.features,"webauthn_json_mapping"):
+            fido2.features.webauthn_json_mapping.enabled = True
+        else:
+            raise Exception(
+                "Failed to enable JSON mapping, please make sure you have fido2 version 1.0.0 or higher installed")
+
+    except ValueError: # pragma: no cover
         pass
 
 
@@ -63,9 +76,10 @@ def reg_begin(request):
     enable_json_mapping()
     server = getServer(request)
     auth_attachment = getattr(settings,'KEY_ATTACHMENT', None)
+    username = request.user.get_username()
     registration_data, state = server.register_begin({
-        u'id':  urlsafe_b64encode(request.user.username.encode("utf8")),
-        u'name': request.user.get_username(),
+        u'id':  urlsafe_b64encode(username.encode("utf8")),
+        u'name': username,
         u'displayName': request.user.get_full_name()
     }, getUserCredentials(request.user), authenticator_attachment = auth_attachment, resident_key_requirement=fido2.webauthn.ResidentKeyRequirement.PREFERRED)
     request.session['fido2_state'] = state
@@ -107,7 +121,7 @@ def auth_begin(request):
     if "base_username" in request.session:
         username = request.session["base_username"]
     if request.user.is_authenticated:
-        username = request.user.username
+        username = request.user.get_username()
     if username:
         credentials = getUserCredentials(username)
     auth_data, state = server.authenticate_begin(credentials)

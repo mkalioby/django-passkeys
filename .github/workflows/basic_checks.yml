@@ -12,13 +12,14 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
       - name: Setup Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v6
         with:
-          python-version: 3.11
+          python-version: 3.13
       - name: Install requirements
         run: |
+          pip install setuptools
           python setup.py install
           pip install -r requirements.txt
           pip install -r requirements_test.txt
@@ -28,17 +29,23 @@ jobs:
           python manage.py migrate
       - name: Run Tests
         run: |
+          pip install setuptools
+          pip install genbadge[all]
           cd example
           coverage run manage.py test
           coverage report
+          coverage xml
+#          coverage html
       - name: Coverage Badge
-        uses: tj-actions/coverage-badge-py@v2
-        with:
-          working-directory: example
-          output: ../coverage.svg
+        run: |
+          genbadge coverage -i example/coverage.xml -o coverage.svg
+        #uses: tj-actions/coverage-badge-py@1788babcb24544eb5bbb6e0d374df5d1e54e670f # v2
+        #with:
+        #  working-directory: example
+        #  output: ../coverage.svg
 
       - name: Verify Changed files
-        uses: tj-actions/verify-changed-files@v14
+        uses: tj-actions/verify-changed-files@a1c6acee9df209257a246f2cc6ae8cb6581c1edf #v20
         id: verify-changed-files
         with:
           files: coverage.svg

@@ -1,3 +1,16 @@
+## 1.4.0
+* Fix: Change the hardcoded username field.
+* Fix: Change Grammar for empty keys cases.
+* Fix: Show user provided key name when deleting key.
+* Cast Uint8Array objects to base64url encoding when preparing the payload so fido2 knows how to process it.
+* Added: Django 6.0 tests
+* Added: Python 3.14 to tests
+* Upgraded fido2 to v2.1.0
+* Moved DELETE key to be POST request
+* Fixed some typos
+
+   Thanks to @ashokdelphia, @resba & @ganiyevuz &  for his contribution in this release.
+
 ## v1.3.0
 
 * Added Django 5.1, Django 5.2 to tests
@@ -35,13 +48,13 @@
 
 ## v1.1
 
-* `FIDO_SERVER_ID` and `FIDO_SERVER_NAME` call be callable now to multi tenants application
+* `FIDO_SERVER_ID` and `FIDO_SERVER_NAME` can be callable now for multi-tenant applications.
 
-   Thanks for [jacopsd](https://github.com/jacopsd)   
+   Thanks to [jacopsd](https://github.com/jacopsd)   
 * Fix: Issue while encoding PublicKeyCredentials.
 * Fix: Add check that the key is enabled.
    
-    Thanks for [gasparbrogueira](https://github.com/gasparbrogueira)
+    Thanks to [gasparbrogueira](https://github.com/gasparbrogueira)
 
 ## v1.0
 * Upgraded fido2 to v1.1.1
