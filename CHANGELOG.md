@@ -9,7 +9,7 @@
 * Moved DELETE key to be POST request
 * Fixed some typos
 
-   Thanks to ashokdelphia, @resba & @ganiyevuz &  for his contribution in this release.
+   Thanks to @ashokdelphia, @resba & @ganiyevuz &  for his contribution in this release.
 
 ## v1.3.0
 
