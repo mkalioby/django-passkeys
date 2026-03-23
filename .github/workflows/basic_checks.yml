@@ -38,7 +38,7 @@ jobs:
 #          coverage html
       - name: Coverage Badge
         run: |
-          genbadge -i example/coverage.xml -o coverage.svg
+          genbadge coverage -i example/coverage.xml -o coverage.svg
         #uses: tj-actions/coverage-badge-py@1788babcb24544eb5bbb6e0d374df5d1e54e670f # v2
         #with:
         #  working-directory: example
