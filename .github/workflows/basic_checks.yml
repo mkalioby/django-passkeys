@@ -16,7 +16,7 @@ jobs:
       - name: Setup Python ${{ matrix.python-version }}
         uses: actions/setup-python@v6
         with:
-          python-version: 3.12
+          python-version: 3.13
       - name: Install requirements
         run: |
           pip install setuptools
@@ -29,6 +29,7 @@ jobs:
           python manage.py migrate
       - name: Run Tests
         run: |
+          pip install setuptools
           cd example
           coverage run manage.py test
           coverage report
