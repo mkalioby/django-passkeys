@@ -1,0 +1,46 @@
+site_name: django-passkeys
+site_description: A Django Authentication Backend for Passkeys (WebAuthn/FIDO2)
+site_url: https://mkalioby.github.io/django-passkeys
+repo_url: https://github.com/mkalioby/django-passkeys
+repo_name: mkalioby/django-passkeys
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+
+nav:
+  - Home: index.md
+  - Template Setup: template-setup.md
+  - REST API (DRF): drf-setup.md
+  - Settings Reference: settings.md
+  - Changelog: changelog.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - attr_list
+  - md_in_html
