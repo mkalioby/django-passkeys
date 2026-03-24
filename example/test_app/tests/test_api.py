@@ -161,3 +161,48 @@ class TestPasskeyAPI(TransactionTestCase):
             'credential': {},
         }, format='json')
         self.assertEqual(response.status_code, 400)
+
+    def test_authenticate_with_drf_token_backend(self):
+        from unittest.mock import patch
+        device = self._register_key()
+        self.client.force_authenticate(user=None)
+
+        response = self.client.post('/api/passkeys/authenticate/options', {}, format='json')
+        data = response.json()
+        options = data['options']
+        options['publicKey']['challenge'] = options['publicKey']['challenge'].encode("ascii")
+        assertion = device.get(options, "https://" + options["publicKey"]["rpId"])
+
+        mock_token_response = {'token_type': 'token', 'token': 'fake-token-key'}
+        with patch('passkeys.api.views.get_token_response', return_value=mock_token_response):
+            response = self.client.post('/api/passkeys/authenticate/verify', {
+                'state_token': data['state_token'],
+                'credential': assertion,
+            }, format='json', HTTP_USER_AGENT="")
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertEqual(result['token_type'], 'token')
+        self.assertEqual(result['token'], 'fake-token-key')
+
+    def test_authenticate_with_jwt_token_backend(self):
+        from unittest.mock import patch
+        device = self._register_key()
+        self.client.force_authenticate(user=None)
+
+        response = self.client.post('/api/passkeys/authenticate/options', {}, format='json')
+        data = response.json()
+        options = data['options']
+        options['publicKey']['challenge'] = options['publicKey']['challenge'].encode("ascii")
+        assertion = device.get(options, "https://" + options["publicKey"]["rpId"])
+
+        mock_token_response = {'token_type': 'jwt', 'access': 'fake-access', 'refresh': 'fake-refresh'}
+        with patch('passkeys.api.views.get_token_response', return_value=mock_token_response):
+            response = self.client.post('/api/passkeys/authenticate/verify', {
+                'state_token': data['state_token'],
+                'credential': assertion,
+            }, format='json', HTTP_USER_AGENT="")
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertEqual(result['token_type'], 'jwt')
+        self.assertEqual(result['access'], 'fake-access')
+        self.assertEqual(result['refresh'], 'fake-refresh')
