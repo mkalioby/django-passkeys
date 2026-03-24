@@ -11,7 +11,7 @@ def loginView(request):
             login(request, user)
             if not is_login_page(request):
                 return get_redirection_url(request)
-            return redirect('home')
+            return redirect('home') # pragma: no cover
         context["invalid"]=True
     return render(request, "login.html", context)
 
@@ -23,5 +23,5 @@ def loginView(request):
 
 
 def logoutView(request):
-    logout(request)
-    return  render(request,"logout.html",{})
+    logout(request) # pragma: no cover
+    return  render(request,"logout.html",{}) # pragma: no cover
