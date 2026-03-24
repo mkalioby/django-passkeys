@@ -1,3 +1,6 @@
+## 1.4.1
+* Add csrfmiddlwwaretoken to deleteKey and toggle key.
+
 ## 1.4.0
 * Fix: Change the hardcoded username field.
 * Fix: Change Grammar for empty keys cases.
