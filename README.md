@@ -100,6 +100,201 @@ You can check [public.html](exmple/testapp/templates/public.html) for an example
 **Note**: setting `allow_password` to `True` (default `False`) will allow the user to login by password if 
 that what is stored in the password manager, otherwise, the user will be forced to login by passkeys.
 
+# REST API (Django REST Framework)
+
+An optional DRF module provides REST endpoints for passkey registration, authentication, and management.
+
+## Installation
+
+```bash
+pip install django-passkeys[drf]
+
+# With JWT support:
+pip install django-passkeys[drf-jwt]
+```
+
+## Setup
+
+1. Add `rest_framework` to your `INSTALLED_APPS`:
+   ```python
+   INSTALLED_APPS = [
+       ...
+       'rest_framework',
+       'passkeys',
+   ]
+   ```
+
+2. Add the API URLs to your project:
+   ```python
+   urlpatterns = [
+       ...
+       path('api/passkeys/', include('passkeys.api.urls')),
+   ]
+   ```
+
+## API Endpoints
+
+| Method | URL | Auth | Description |
+|--------|-----|------|-------------|
+| `GET` | `/api/passkeys/` | Required | List user's passkeys |
+| `GET` | `/api/passkeys/<id>` | Required | Retrieve a passkey |
+| `PATCH` | `/api/passkeys/<id>` | Required | Update a passkey (name, enabled) |
+| `DELETE` | `/api/passkeys/<id>` | Required | Delete a passkey |
+| `POST` | `/api/passkeys/register/options` | Required | Get WebAuthn registration options |
+| `POST` | `/api/passkeys/register/verify` | Required | Verify and save new credential |
+| `POST` | `/api/passkeys/authenticate/options` | Public | Get WebAuthn authentication options |
+| `POST` | `/api/passkeys/authenticate/verify` | Public | Verify assertion and return token |
+
+## Registration Flow (user must be logged in)
+
+**Step 1 — Get registration options:**
+```
+POST /api/passkeys/register/options
+Authorization: Bearer <token>
+
+Response 200:
+{
+    "options": { "publicKey": { ... } },
+    "state_token": "signed-state-token..."
+}
+```
+
+**Step 2 — Create credential in the browser:**
+```js
+options.publicKey.challenge = base64url.decode(options.publicKey.challenge);
+options.publicKey.user.id = base64url.decode(options.publicKey.user.id);
+for (let cred of options.publicKey.excludeCredentials) {
+    cred.id = base64url.decode(cred.id);
+}
+
+const credential = await navigator.credentials.create(options);
+```
+
+**Step 3 — Verify and save:**
+```
+POST /api/passkeys/register/verify
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+    "state_token": "signed-state-token...",
+    "key_name": "My Laptop",
+    "credential": { "id": "...", "rawId": "...", "response": {...}, "type": "public-key" }
+}
+
+Response 201:
+{
+    "id": 1, "name": "My Laptop", "enabled": true,
+    "platform": "Apple", "added_on": "...", "last_used": null
+}
+```
+
+## Authentication Flow (no login required)
+
+WebAuthn supports two authentication modes:
+
+- **Discoverable (passwordless)** — send an empty body or omit `username`. The browser/OS shows all passkeys the user has saved for this domain and lets them pick one. This is the true passwordless experience.
+- **Username-assisted** — send `username` to narrow the prompt to only that user's registered passkeys. Useful when the user has already typed their username in the login form.
+
+**Step 1 — Get authentication options:**
+```
+POST /api/passkeys/authenticate/options
+Content-Type: application/json
+
+{}                       // discoverable — browser shows all passkeys for this site
+{ "username": "john" }   // username-assisted — only shows john's passkeys
+
+Response 200:
+{
+    "options": { "publicKey": { ... } },
+    "state_token": "signed-state-token..."
+}
+```
+
+**Step 2 — Get assertion in the browser:**
+```js
+options.publicKey.challenge = base64url.decode(options.publicKey.challenge);
+for (let cred of options.publicKey.allowCredentials) {
+    cred.id = base64url.decode(cred.id);
+}
+
+const assertion = await navigator.credentials.get(options);
+```
+
+**Step 3 — Verify and get token:**
+```
+POST /api/passkeys/authenticate/verify
+Content-Type: application/json
+
+{
+    "state_token": "signed-state-token...",
+    "credential": { "id": "...", "rawId": "...", "response": {...}, "type": "public-key" }
+}
+
+Response 200 (varies by token backend):
+{ "user_id": 1, "username": "john", "token_type": "jwt", "access": "...", "refresh": "..." }
+{ "user_id": 1, "username": "john", "token_type": "token", "token": "..." }
+{ "user_id": 1, "username": "john", "token_type": "session" }
+```
+
+## Passkey Management
+
+```
+# List all passkeys for the authenticated user
+GET /api/passkeys/
+Authorization: Bearer <token>
+
+Response 200:
+[{ "id": 1, "name": "My Laptop", "enabled": true, "platform": "Apple", "added_on": "...", "last_used": "..." }]
+
+# Update a passkey (name, enabled)
+PATCH /api/passkeys/1
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{ "name": "Work Laptop", "enabled": false }
+
+Response 200:
+{ "id": 1, "name": "Work Laptop", "enabled": false, "platform": "Apple", ... }
+
+# Delete a passkey (returns 404 if not owned by user)
+DELETE /api/passkeys/1
+Authorization: Bearer <token>
+
+Response 204
+```
+
+## Token Backend
+
+After successful passkey authentication, the API returns a token based on your project's auth configuration. Detection order:
+
+1. **`PASSKEYS_API_TOKEN_BACKEND`** setting (if set) — a dotted path to a custom callable
+2. **SimpleJWT** — if `rest_framework_simplejwt` is in `INSTALLED_APPS`, returns `access` and `refresh` tokens
+3. **DRF Token** — if `rest_framework.authtoken` is in `INSTALLED_APPS`, returns a `token`
+4. **Session** (fallback) — logs the user in via Django session
+
+### Custom Token Backend
+
+```python
+# myapp/auth.py
+def my_token_backend(user, request):
+    """Custom backend must accept (user, request) and return a dict."""
+    token = generate_my_token(user)
+    return {'token_type': 'custom', 'token': token}
+
+# settings.py
+PASSKEYS_API_TOKEN_BACKEND = 'myapp.auth.my_token_backend'
+```
+
+## State Token
+
+The API uses signed state tokens (Django's `signing` module) instead of sessions to carry FIDO2 state between `options` and `verify` calls. This means:
+
+- **Stateless clients** (mobile apps, SPAs with JWT) work without sessions
+- Tokens are HMAC-signed with your `SECRET_KEY` and expire after **5 minutes**
+- Sessions are still written as a side-effect when available, for backward compatibility
+
+
 ## Security contact information
 
 To report a security vulnerability, please use the
