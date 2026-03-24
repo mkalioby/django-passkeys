@@ -1,2 +1,3 @@
 coverage
 tox
+djangorestframework>=3.14
