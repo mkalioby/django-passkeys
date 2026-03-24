@@ -13,7 +13,7 @@ class test_views(TransactionTestCase):
         test = test_fido()
         test.setUp()
         self.authenticator = test.test_key_reg()
-        self.client.post("/auth/login", {"username": "test", "password": "test", 'passkeys': ''})
+        self.client.post("/auth/login/", {"username": "test", "password": "test", 'passkeys': ''})
         self.user = self.user_model.objects.get(username="test")
 
     def test_disabling_key(self):
@@ -35,7 +35,7 @@ class test_views(TransactionTestCase):
         authenticator = test.test_key_reg()
         key = UserPasskey.objects.filter(user=self.user).latest('id')
         self.user = self.user_model.objects.create_user(username="test2", password="test2")
-        self.client.post("/auth/login", {"username": "test2", "password": "test2", 'passkeys': ''})
+        self.client.post("/auth/login/", {"username": "test2", "password": "test2", 'passkeys': ''})
         r = self.client.post(reverse('passkeys:delKey') , {"id":key.id})
         self.assertEqual(r.status_code, 403)
         self.assertEqual(r.content,b"Error: You don't own this token so you can't delete it")

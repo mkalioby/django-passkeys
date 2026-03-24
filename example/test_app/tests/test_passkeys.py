@@ -18,7 +18,7 @@ class test_passkeys(TransactionTestCase):
             self.assertEqual(str(e),"request is required for passkeys.backend.PasskeyModelBackend")
 
     def test_not_add_passkeys_field(self):
-        request = self.factory.post("/auth/login",{"username":"","password":""})
+        request = self.factory.post("/auth/login/",{"username":"","password":""})
         from django.contrib.auth import authenticate
         try:
             user = authenticate(request=request,username="",password="")
@@ -27,14 +27,14 @@ class test_passkeys(TransactionTestCase):
             self.assertEqual(str(e),"Can't find 'passkeys' key in request.POST, did you add the hidden input?")
 
     def test_username_password_failed_login(self):
-        self.client.post("/auth/login",{"username":"test","password":"test123",'passkeys':''})
+        self.client.post("/auth/login/",{"username":"test","password":"test123",'passkeys':''})
         self.assertFalse(self.client.session.get('_auth_user_id',False))
 
     def test_username_password_login(self):
-        self.client.post("/auth/login",{"username":"test","password":"test",'passkeys':''})
+        self.client.post("/auth/login/",{"username":"test","password":"test",'passkeys':''})
         self.assertTrue(self.client.session.get('_auth_user_id',False))
         self.assertFalse(self.client.session.get('passkey', {}).get('passkey', False))
 
     def test_no_data(self):
-        self.client.post("/auth/login",{"username":"","password":"",'passkeys':''})
+        self.client.post("/auth/login/",{"username":"","password":"",'passkeys':''})
         self.assertFalse(self.client.session.get('_auth_user_id',False))
