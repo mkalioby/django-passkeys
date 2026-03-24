@@ -1,9 +1,12 @@
-## 1.4.1
+## 2.0
 
 * New: DRF API module (`passkeys.api`) — REST endpoints for passkey registration, authentication, and management
 * New: Pluggable token backend — auto-detects SimpleJWT, DRF TokenAuth, or session-based auth
 * New: Service layer (`passkeys.api.service`) — session-independent FIDO2 logic with signed state tokens
 * New: Optional install via `pip install django-passkeys[drf]` or `pip install django-passkeys[drf-jwt]`
+
+## 1.4.1
+* Add csrfmiddlwwaretoken to deleteKey and toggle key.
 
 ## 1.4.0
 * Fix: Change the hardcoded username field.

@@ -60,7 +60,7 @@
         $.ajax({
             url:"{% url 'passkeys:delKey' %}",
             method:"POST",
-            data:{"id":id},
+            data:{"id":id,"csrfmiddlewaretoken":"{{ csrf_token }}"},
             success:function (data) {
                 alert(data)
                 window.location= "{%url 'passkeys:home'%}";
@@ -89,7 +89,9 @@
 
     function toggleKey(id) {
         $.ajax({
-            url:"{% url 'passkeys:toggle' %}?id="+id,
+            url:"{% url 'passkeys:toggle' %}",
+            data:{"id":id,"csrfmiddlewaretoken":"{{ csrf_token }}"},
+            method:"POST",
             success:function (data) {
                 if (data == "Error")
                     $("#toggle_"+id).toggle()
