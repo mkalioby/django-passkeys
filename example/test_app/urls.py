@@ -19,8 +19,9 @@ from . import views,auth
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('passkeys/', include('passkeys.urls')),
-    path('auth/login',auth.loginView,name="login"),
-    path('auth/logout',auth.logoutView,name="logout"),
+    path('auth/login/',auth.loginView,name="login"),
+    path('auth/logout/',auth.logoutView,name="logout"),
+    path('public/', views.public, name='public'),
 
     re_path('^$',views.home,name='home'),
     path('registered/',views.registered,name='registered')

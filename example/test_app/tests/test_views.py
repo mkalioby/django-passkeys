@@ -1,4 +1,4 @@
-from django.test import TransactionTestCase, Client
+from django.test import TransactionTestCase, TestCase, Client
 from django.urls import reverse
 
 from passkeys.models import UserPasskey
@@ -42,3 +42,18 @@ class test_views(TransactionTestCase):
         r = self.client.post(reverse('passkeys:toggle'), {"id":key.id})
         self.assertEqual(r.status_code, 403)
         self.assertEqual(r.content, b"Error: You don't own this token so you can't toggle it")
+
+
+class PublicPageTests(TestCase):
+    def test_public_page_is_accessible(self):
+        response = self.client.get(reverse('public'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'public.html')
+
+    def test_public_page_shows_login_button(self):
+        response = self.client.get(reverse('public'))
+
+        self.assertContains(response, reverse('login'))
+        self.assertContains(response, 'Login')
+

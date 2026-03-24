@@ -2,10 +2,11 @@
 <script type="application/javascript" src="{% static 'passkeys/js/base64url.js' %}"></script>
 <script type="application/javascript" src="{% static 'passkeys/js/helpers.js' %}"></script>
 <script type="text/javascript">
-    window.allow_immediate=true;
+    // window.allow_immediate={% if allow_immediate %}true{% else %}false{% endif %};
+    window.allow_password={% if allow_password %}true{% else %}false{% endif %};
     async function checkImmediateMediationAvailability() {
-    if (!window.allow_immediate)
-        return [false, false];
+    // if (!window.allow_immediate)
+    //     return [false, false];
     try {
     const capabilities = await PublicKeyCredential.getClientCapabilities();
     if (capabilities.immediateGet && window.PasswordCredential) {
@@ -25,8 +26,10 @@
 
 function tryLogin(formid)
     {
+        usernamefield = $("#username");
+        passwordfield = $("#password");
         window.loginForm = formid;
-        if ($("#inputUsername").val() != "" && $("#inputPassword").val() != "")
+        if (usernamefield.val() != "" && passwordfield.val() != "") {}
             $("#" + formid).submit();
         options = {};
         status = checkImmediateMediationAvailability();
@@ -34,6 +37,12 @@ function tryLogin(formid)
         {
             start_authn(formid, false);
         }
+        else{
+           if (usernamefield.val() == "")
+            usernamefield.focus();
+           else if (passwordfield.val() == "")
+            passwordfield.focus();
+    }
     }
     window.conditionalUI = false;
     window.conditionUIAbortController = new AbortController();
@@ -80,15 +89,15 @@ function tryLogin(formid)
         else
         {
         window.conditionUIAbortController.abort('Stopping conditional UI');
-        options.mediation = 'immediate';
-        options.password = true;
+        options.uiMode = 'immediate';
+        options.password = window.allow_password;
         }
         console.log(options)
         return navigator.credentials.get(options);
     }).then(function(assertion) {
         if (assertion.type == "password"){
-            $("#inputUsername").val(assertion.id);
-            $("#inputPassword").val(assertion.password);
+            $("#username").val(assertion.id);
+            $("#password").val(assertion.password);
             $("#" + window.loginForm).submit();
             return;
     }
@@ -111,8 +120,15 @@ function tryLogin(formid)
     {
 
         if (err.toString() === 'NotAllowedError: No immediate discoverable credentials are found.') {
-        window.allow_immediate = false;
-        tryLogin(window.loginForm);
+        // window.allow_immediate = false;
+        no_credentials_found()
+        //tryLogin(window.loginForm);
+
+    }
+        else if(err.toString() === "NotAllowedError: An allowCredentials is not allowed with immediate mediation.")
+    {
+        // window.allow_immediate = false;
+        // window.href = "{%url 'login'%}"
     }
         else {
         console.error("Authentication failed: " + err);
