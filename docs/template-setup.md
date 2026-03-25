@@ -1,135 +1,102 @@
-# Template-Based Setup
+# Django Template Integration
 
-This guide covers the Django template integration. Complete the [Common Setup](index.md#common-setup) first.
+1. Add passkeys to urls.py
+   ```python 
 
-## 1. Add URLs
+   urls_patterns= [
+   '...',
+    url(r'^passkeys/', include('passkeys.urls')),
+   '....',
+    ]
+    ```
+1. To match the look and feel of your project, Passkeys includes `base.html` but it needs blocks named `head` & `content` to added its content to it.
+   **Notes:** 
+    
+    1. You can override `passkeys/base.html` which is used by `passkeys/manage.html` so you can control the styling better and current `passkeys/base.html` extends `base.html`
+    1. Currently, `passKeys/base.html` needs jQuery and bootstrap. 
 
-```python
-from django.urls import path, include
+1. Somewhere in your app, add a link to 'passkeys:home'
+    ```html
+    <li><a href="{% url 'passkeys:home' %}">Passkeys</a> </li>
+   ```
+1. In your login view, change the authenticate call to include the request as follows
+   
+   ```python
+    user = authenticate(request, username=request.POST["username"],password=request.POST["password"])
+   ```
 
-urlpatterns = [
-    ...
-    path('passkeys/', include('passkeys.urls')),
-]
-```
+1. Finally, in your `login.html`
+   * Give an id to your login form e.g. 'loginForm', the id should be provided when calling `authn` function
+   * Inside the form, add 
+     ```html
+      <input type="hidden" name="passkeys" id="passkeys"/>
+      <button class="btn btn-block btn-dark" type="button" onclick="authn('loginForm')"><img src="{% static 'passkeys/imgs/FIDO-Passkey_Icon-White.png' %}" style="width: 24px"/> Login by Passkeys </button>
+     {%include 'passkeys/passkeys.js' %}
+     ```
+ For more information about how to set it up, please see the 'example' app and the EXAMPLE.md document.
 
-## 2. Collect Static Files
+## Check if the user can be enrolled for a platform authenticator
 
-```bash
-python manage.py collectstatic
-```
-
-## 3. Update Your Login View
-
-Pass `request` to `authenticate()`:
-
-```python
-from django.contrib.auth import authenticate, login
-
-def login_view(request):
-    if request.method == "POST":
-        user = authenticate(
-            request,
-            username=request.POST["username"],
-            password=request.POST["password"],
-        )
-        if user:
-            login(request, user)
-            return redirect("home")
-    return render(request, "login.html")
-```
-
-## 4. Update Your Login Template
-
-Add a hidden input and passkey button inside your login form:
+If you want to check if the user can be enrolled to use a platform authenticator, you can do the following in your main page.
 
 ```html
-<form method="post" id="loginForm">
-    {% csrf_token %}
-    <input type="text" name="username" autocomplete="username webauthn">
-    <input type="password" name="password">
-
-    <!-- Passkey support -->
-    <input type="hidden" name="passkeys" id="passkeys"/>
-    <button type="button" class="btn btn-dark" onclick="authn('loginForm')">
-        <img src="{% static 'passkeys/imgs/FIDO-Passkey_Icon-White.png' %}" style="width: 24px">
-        Login with Passkey
-    </button>
-
-    {% include 'passkeys.js' %}
-    <button type="submit">Login</button>
-</form>
-```
-
-!!! note
-    The form must have an `id` attribute. Pass this id to `authn()`.
-
-## 5. Add Passkey Management Link
-
-Let users manage their passkeys from your app:
-
-```html
-<a href="{% url 'passkeys:home' %}">Manage Passkeys</a>
-```
-
-## Template Customization
-
-The management UI uses `PassKeys_base.html` which extends your `base.html`. It requires blocks named `head` and `content`.
-
-To customize styling, override `PassKeys_base.html` in your own templates directory.
-
-!!! info "Requirements"
-    The built-in templates require jQuery and Bootstrap.
-
-## Detect Passkey Usage
-
-After login, check `request.session['passkey']`:
-
-```python
-# User logged in with a passkey
-request.session['passkey']
-# {'passkey': True, 'name': 'Chrome', 'id': 2, 'platform': 'Chrome on Apple', 'cross_platform': False}
-
-# User logged in with password
-request.session['passkey']
-# {'passkey': False}
-```
-
-`cross_platform` is `True` when the user authenticated from a different platform than where the key was registered (e.g. Android phone used on Mac).
-
-## Enrollment Prompt
-
-Show a prompt to users whose devices support passkeys:
-
-```html
-<div id="pk" class="alert alert-info" style="display: none">
-    Your device supports passkeys, <a href="{% url 'passkeys:enroll' %}">Enroll</a>
-</div>
-<script>
-function register_pk() { $('#pk').show(); }
-{% include 'check_passkeys.js' %}
-$(document).ready(check_passkey(true, register_pk))
+<div id="pk" class="alert alert-info" style="display: none">Your device supports passkeys, <a href="{%url 'passkeys:enroll'%}">Enroll</a> </div>
+<script type="text/javascript">
+function register_pk()
+    {
+        $('#pk').show();
+    }
+{% include 'passkeys/check.js'%}
+$(document).ready(check_passkey(true,register_pk))
 </script>
 ```
+check_passkey function parameters are as follows 
+* `platform_authenticator`: if the service requires only a platform authenticator (e.g TouchID, Windows Hello or Android SafetyNet)
+* `success_func`: function to call if a platform authenticator is found or if the user didn't login by a passkey
+* `fail_func`: function to call if no platform authenticator is found (optional).
 
-| Parameter | Description |
-|-----------|-------------|
-| `platform_authenticator` | `true` to require platform authenticator (TouchID, Windows Hello) |
-| `success_func` | Called when a platform authenticator is available |
-| `fail_func` | Called when no platform authenticator is found (optional) |
+## Using Conditional UI
 
-## Conditional UI
+Conditional UI is a way for the browser to prompt the user to use the passkey to login to the system as shown in 
 
-Browsers can prompt passkey login directly in the username field:
+![conditionalUI.png](imgs%2FconditionalUI.png)
 
-![Conditional UI](https://raw.githubusercontent.com/mkalioby/django-passkeys/main/imgs/conditionalUI.png)
+Starting version v1.2. you can use Conditional UI by adding the following to your login page
 
-1. Add `webauthn` to the username autocomplete:
-   ```html
-   <input name="username" placeholder="username" autocomplete="username webauthn">
-   ```
+1. Add `webauthn` to autocomplete of the username field as shown below.
+```html
+<input name="username" placeholder="username" autocomplete="username webauthn">
+```
+add the following to the page js.
 
-2. Initialize on page load:
-   ```js
-   window.onload = checkConditionalUI('loginForm');
-   ```
+```js
+window.onload = checkConditionalUI('loginForm');
+```
+where `loginForm` is name of your login form.
+
+## Using Immediate Mediation 
+
+Immediate Mediation is an extension to WebAuthn API that allows the browser to immediately prompt the user to use password/passkeys
+without the need of a login form. This is currently supported by Google Chrome 144+ and soon on Android devices. 
+
+You can watch demo presented by Google
+
+[![Watch the video](imgs/immediate.png)](https://developer.chrome.com//static/blog/webauthn-immediate-mediation-ot/video/immediate-mediation-explicit-flow.mp4)
+
+To enable this feature in your pages add a new hidden form in your page that the passkeys can use to send to the server.
+
+```html
+{%include 'passkeys/passkeys.js' allow_password=True %}
+<form id="loginForm" action="{% url 'login' %}" method="post" style="display: none">
+      {% csrf_token %}
+    <input type="hidden" id="passkeys" name="passkeys" />
+    <input type="hidden" id="username" name="username" />
+    <input type="hidden" id="password" name="password" />
+  </form>
+```
+
+You can check [public.html](exmple/testapp/templates/public.html) for an example of how to configure it.
+
+**Note**: setting `allow_password` to `True` (default `False`) will allow the user to login by password if 
+that what is stored in the password manager, otherwise, the user will be forced to login by passkeys.
+

@@ -9,7 +9,9 @@
 ![Django Versions](https://img.shields.io/pypi/frameworkversions/django/django-passkeys)
 ![Python Versions](https://img.shields.io/pypi/pyversions/django-passkeys)
 
-An extension to Django *ModelBackend* backend to support passkeys.
+**[Full Documentation](https://mkalioby.github.io/django-passkeys)**
+
+An extension to Django *ModelBackend* backend to support passkeys. Supports both django templates and REST API (Django REST Framework) with pluggable token backends (JWT, DRF Token, or Session).
 
 Passkeys is an extension to Web Authentication API that will allow the user to login to a service using another device.
 
@@ -22,103 +24,71 @@ Passkeys are now supported on
 
 On May 3, 2023, Google allowed the use of Passkeys for the users to login, killing the password for enrolled users.
 
-**[Full Documentation](https://mkalioby.github.io/django-passkeys)**
+## Special Features
 
-## Installation
+django-passkeys supports the following features:
+1. **Conditional UI** is a way for the browser to prompt the user to use the passkey to login as shown. 
+![conditionalUI.png](imgs%2FconditionalUI.png)
 
-```
-pip install django-passkeys
-```
+1. **Immediate Mediation** is an extension to WebAuthn API that allows the browser to immediately prompt the 
+user to use password/passkeys without the need of a login form. This is currently supported by Google Chrome 144+ and soon on Android devices.
 
-For DRF (REST API) support:
-```
-pip install django-passkeys[drf]
-
-# With JWT:
-pip install django-passkeys[drf-jwt]
-```
-
-## Choose Your Integration
-
-django-passkeys supports two integration modes. Pick the one that fits your project:
-
-| | Template-Based | REST API (DRF) |
-|---|---|---|
-| **Best for** | Server-rendered Django apps | SPAs, mobile apps, headless APIs |
-| **Auth flow** | Session-based with Django forms | Token-based (JWT, DRF Token, or Session) |
-| **Frontend** | Django templates with jQuery | Any frontend (React, Vue, mobile, etc.) |
-| **Setup guide** | [Template Setup](docs/template-setup.md) | [DRF Setup](docs/drf-setup.md) |
-
-Both can coexist in the same project — you can use templates for your web app and the API for your mobile app.
-
-### Quick Start — Common Settings
-
-Regardless of which integration you choose, add these to your `settings.py`:
-
-```python
-INSTALLED_APPS = [
-    ...
-    'passkeys',
-]
-
-AUTHENTICATION_BACKENDS = ['passkeys.backend.PasskeyModelBackend']
-FIDO_SERVER_ID = "localhost"      # Must match your domain
-FIDO_SERVER_NAME = "TestApp"
-```
-
-Then follow the guide for your chosen integration:
-- **[Template-Based Setup](docs/template-setup.md)** — Django templates with session auth
-- **[REST API Setup (DRF)](docs/drf-setup.md)** — REST endpoints with pluggable token backend
-
-## Example Project
-
-See the `example` app and [Example.md](Example.md) for a working demo.
-
-## Using Immediate Mediation 
-
-Immediate Mediation is an extension to WebAuthn API that allows the browser to immediately prompt the user to use password/passkeys
-without the need of a login form. This is currently supported by Google Chrome 144+ and soon on Android devices. 
-
-You can watch demo showed by Google
+You can watch demo presented by Google
 
 [![Watch the video](imgs/immediate.png)](https://developer.chrome.com//static/blog/webauthn-immediate-mediation-ot/video/immediate-mediation-explicit-flow.mp4)
 
-To enable this feature in your pages add a new hidden form in your page that the passkeys can use to send to the server.
+# Quick Start - Common Settings
 
-```html
-{%include 'passkeys/passkeys.js' allow_password=True %}
-<form id="loginForm" action="{% url 'login' %}" method="post" style="display: none">
-      {% csrf_token %}
-    <input type="hidden" id="passkeys" name="passkeys" />
-    <input type="hidden" id="username" name="username" />
-    <input type="hidden" id="password" name="password" />
-  </form>
+`pip install django-passkeys`
+
+Supports Django 2.0+, Python 3.7+
+
+# Usage
+1. In your settings.py add the application to your installed apps
+   ```python
+   INSTALLED_APPS=(
+   '......',
+   'passkeys',
+   '......')
+   ```
+2. Collect Static Files
+   ```shell
+   python manage.py collectstatic
+   ```
+
+3. Run migrate
+   ```shell
+    python manage.py migrate
+   ```
+4. Add the following settings to your file
+
+   ```python
+    AUTHENTICATION_BACKENDS = ['passkeys.backend.PasskeyModelBackend'] # Change your authentication backend
+    FIDO_SERVER_ID="localhost"      # Server rp id for FIDO2, must match your domain
+    FIDO_SERVER_NAME="TestApp"
+    import passkeys
+    KEY_ATTACHMENT = None # or passkeys.Attachment.CROSS_PLATFORM or  passkeys.Attachment.PLATFORM
+   ```
+   **Notes**
+    
+   * Starting v1.1, `FIDO_SERVER_ID` and/or `FIDO_SERVER_NAME` can be a callable to support multi-tenant web applications, the `request` is passed to the called function. 
+   * `FIDO_SERVER_ID` must match the domain you access the site from. For local development, use `localhost` and access via `http://localhost:8000/` (not `127.0.0.1`).
+
+
+# Detect if user is using passkeys
+Once the backend is used, there will be a `passkey` key in request.session. 
+If the user used a passkey then `request.session['passkey']['passkey']` will be `True` and the key information will be there like this
+
+```python
+{'passkey': True, 'name': 'Chrome', 'id': 2, 'platform': 'Chrome on Apple', 'cross_platform': False}
+```
+`cross_platform`: means that the user used a key from another platform so there is no key local to the device used to login e.g used an Android phone on Mac OS X or iPad.
+If the user didn't use a passkey then it will be set to False
+```python
+{'passkey':False}
 ```
 
-You can check [public.html](exmple/testapp/templates/public.html) for an example of how to configure it.
-
-**Note**: setting `allow_password` to `True` (default `False`) will allow the user to login by password if 
-that what is stored in the password manager, otherwise, the user will be forced to login by passkeys.
-
-# REST API (Django REST Framework)
-
-An optional DRF module provides REST endpoints for passkey registration, authentication, and management.
-
-**[Full Documentation](https://mkalioby.github.io/django-passkeys)**
-
-## Installation
-
-```
-pip install django-passkeys
-```
-
-For DRF (REST API) support:
-```
-pip install django-passkeys[drf]
-
-# With JWT:
-pip install django-passkeys[drf-jwt]
-```
+By this the basic installation of django-passkeys, your next step depends on whether you want to use the Django Template integration or the REST API (Django REST Framework) integration.
 
 ## Choose Your Integration
 
@@ -132,25 +102,6 @@ django-passkeys supports two integration modes. Pick the one that fits your proj
 | **Setup guide** | [Template Setup](docs/template-setup.md) | [DRF Setup](docs/drf-setup.md) |
 
 Both can coexist in the same project — you can use templates for your web app and the API for your mobile app.
-
-### Quick Start — Common Settings
-
-Regardless of which integration you choose, add these to your `settings.py`:
-
-```python
-INSTALLED_APPS = [
-    ...
-    'passkeys',
-]
-
-AUTHENTICATION_BACKENDS = ['passkeys.backend.PasskeyModelBackend']
-FIDO_SERVER_ID = "localhost"      # Must match your domain
-FIDO_SERVER_NAME = "TestApp"
-```
-
-Then follow the guide for your chosen integration:
-- **[Template-Based Setup](docs/template-setup.md)** — Django templates with session auth
-- **[REST API Setup (DRF)](docs/drf-setup.md)** — REST endpoints with pluggable token backend
 
 ## Example Project
 
