@@ -59,7 +59,7 @@ check_passkey function parameters are as follows
 
 Conditional UI is a way for the browser to prompt the user to use the passkey to login to the system as shown in 
 
-![conditionalUI.png](imgs%2FconditionalUI.png)
+![conditionalUI.png](../imgs%2FconditionalUI.png)
 
 Starting version v1.2. you can use Conditional UI by adding the following to your login page
 
@@ -81,7 +81,7 @@ without the need of a login form. This is currently supported by Google Chrome 1
 
 You can watch demo presented by Google
 
-[![Watch the video](imgs/immediate.png)](https://developer.chrome.com//static/blog/webauthn-immediate-mediation-ot/video/immediate-mediation-explicit-flow.mp4)
+[![Watch the video](../imgs/immediate.png)](https://developer.chrome.com//static/blog/webauthn-immediate-mediation-ot/video/immediate-mediation-explicit-flow.mp4)
 
 To enable this feature in your pages add a new hidden form in your page that the passkeys can use to send to the server.
 
