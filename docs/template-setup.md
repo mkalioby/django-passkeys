@@ -92,6 +92,7 @@ To enable this feature in your pages add a new hidden form in your page that the
     <input type="hidden" id="passkeys" name="passkeys" />
     <input type="hidden" id="username" name="username" />
     <input type="hidden" id="password" name="password" />
+   <input type="hidden" name="next" value="{{ request.get_full_path }}" />
   </form>
 ```
 

@@ -9,8 +9,8 @@ def loginView(request):
         user=authenticate(request, username=request.POST["username"],password=request.POST["password"])
         if user:
             login(request, user)
-            if not is_login_page(request):
-                return get_redirection_url(request)
+            if request.POST.get("next",""):
+                return redirect(request.POST["next"])
             return redirect('home') # pragma: no cover
         context["invalid"]=True
     return render(request, "login.html", context)
