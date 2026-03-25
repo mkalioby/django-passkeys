@@ -8,13 +8,21 @@
 
 ![Django Versions](https://img.shields.io/pypi/frameworkversions/django/django-passkeys)
 ![Python Versions](https://img.shields.io/pypi/pyversions/django-passkeys)
+# django-passkeys
 
+[![PyPI version](https://badge.fury.io/py/django-passkeys.svg)](https://badge.fury.io/py/django-passkeys)
+[![Downloads](https://static.pepy.tech/badge/django-passkeys)](https://pepy.tech/project/django-passkeys)
+[![Downloads / Month ](https://pepy.tech/badge/django-passkeys/month)](https://pepy.tech/project/django-passkeys)
+[![build](https://github.com/mkalioby/django-passkeys/actions/workflows/basic_checks.yml/badge.svg)](https://github.com/mkalioby/django-passkeys/actions/workflows/basic_checks.yml)
+![Coverage](https://raw.githubusercontent.com/mkalioby/django-passkeys/main/coverage.svg)
+
+!
 
 An extension to Django *ModelBackend* backend to support passkeys.
 
 Passkeys is an extension to Web Authentication API that will allow the user to login to a service using another device.
 
-This app is a slim-down version of [django-mfa2](https://github.com/mkalioby/django-mfa2)
+This app is a slimmed-down version of [django-mfa2](https://github.com/mkalioby/django-mfa2)
 
 Passkeys are now supported on
 * Apple Ecosystem (iPhone 16.0+, iPadOS 16.1, Mac OS X Ventura)
@@ -90,3 +98,6 @@ Tidelift will coordinate the fix and disclosure.
 * [offbyone](https://github.com/offbyone)
 * [resba](https://github.com/resba)
 * [ganiyevuz](https://github.com/ganiyevuz)
+* [smark-1](https://github.com/smark-1)
+* [ThomasWaldmann-1](https://github.com/ThomasWaldmann)
+* [rafaelurben](https://github.com/rafaelurben)

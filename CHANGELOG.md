@@ -1,11 +1,17 @@
-## 2.0
-
+## 2.0.0
+* Breaking Change: Moved templates to `passkeys` folder and renamed the templates. thanks to @ganiyevuz and @smark-1 
+  * `PassKeys.html` -> `passkeys/manage.html`
+  * `PassKeys_base.html` -> `passkeys/base.html`
+  * `check_passkeys.js` -> `passkeys/check.js`
+  * `passkeys.js` -> `passkeys/passkeys.js`
+  * `modal.html` -> `passkeys/modal.html`
 * New: DRF API module (`passkeys.api`) — REST endpoints for passkey registration, authentication, and management
 * New: Pluggable token backend — auto-detects SimpleJWT, DRF TokenAuth, or session-based auth
 * New: Service layer (`passkeys.api.service`) — session-independent FIDO2 logic with signed state tokens
 * New: Optional install via `pip install django-passkeys[drf]` or `pip install django-passkeys[drf-jwt]`
-* Added: Support for Google new WebAuthn immediate mediation API for Android Credential Creation. This allows users to create resident keys on Android devices and use them for passwordless authentication. for more details check [Google's announcement](https://web.dev/credential-management-immediate-api/).
+* Added: Support for Google new WebAuthn immediate mediation API (with allow/disallow password login) for Android Credential Creation. This allows users to create resident keys on Android devices and use them for passwordless authentication. for more details check [Google's announcement](https://web.dev/credential-management-immediate-api/).
 * Fix: add `@login required` to passkey registration views. thanks to @rafaelurbeno for reporting the issue.
+
 ## 1.4.1
 * Add csrfmiddlwwaretoken to deleteKey and toggle key.
 

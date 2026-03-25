@@ -48,7 +48,6 @@
             <button class="btn btn-block btn-dark" id="passkeysNtn" type="button" onclick="authn('loginForm')"><img src="{% static 'passkeys/imgs/FIDO-Passkey_Icon-White.png' %}" style="width: 24px"> &nbsp;Login By Passkeys</button>
             <br/>
             <span id="auth_err" style="display: none">No credentials available, login by username & password</span>
-            {%include 'passkeys.js' with allow_password=True %}
         </form>
       </div>
     </div>
@@ -60,6 +59,7 @@
 
   <!-- Core plugin JavaScript-->
   <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js'%}"></script>
+  {%include 'passkeys/passkeys.js' with allow_password=True %}
 <script type="application/javascript">
     window.onload = checkConditionalUI('loginForm');
 

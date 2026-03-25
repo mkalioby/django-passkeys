@@ -107,7 +107,7 @@
   <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
   <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
-        {% include 'passkeys.js' with allow_password=False %}
+        {% include 'passkeys/passkeys.js' with allow_password=True %}
   <form id="loginForm" action="{% url 'login' %}" method="post" style="display: none">
       {% csrf_token %}
     <input type="hidden" id="passkeys" name="passkeys" />
