@@ -83,6 +83,32 @@ Then follow the guide for your chosen integration:
 
 See the `example` app and [Example.md](Example.md) for a working demo.
 
+## Using Immediate Mediation 
+
+Immediate Mediation is an extension to WebAuthn API that allows the browser to immediately prompt the user to use password/passkeys
+without the need of a login form. This is currently supported by Google Chrome 144+ and soon on Android devices. 
+
+You can watch demo showed by Google
+
+[![Watch the video](imgs/immediate.png)](https://developer.chrome.com//static/blog/webauthn-immediate-mediation-ot/video/immediate-mediation-explicit-flow.mp4)
+
+To enable this feature in your pages add a new hidden form in your page that the passkeys can use to send to the server.
+
+```html
+{%include 'passkeys/passkeys.js' allow_password=True %}
+<form id="loginForm" action="{% url 'login' %}" method="post" style="display: none">
+      {% csrf_token %}
+    <input type="hidden" id="passkeys" name="passkeys" />
+    <input type="hidden" id="username" name="username" />
+    <input type="hidden" id="password" name="password" />
+  </form>
+```
+
+You can check [public.html](exmple/testapp/templates/public.html) for an example of how to configure it.
+
+**Note**: setting `allow_password` to `True` (default `False`) will allow the user to login by password if 
+that what is stored in the password manager, otherwise, the user will be forced to login by passkeys.
+
 ## Security contact information
 
 To report a security vulnerability, please use the
