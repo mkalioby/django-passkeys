@@ -27,10 +27,13 @@ On May 3, 2023, Google allowed the use of Passkeys for the users to login, killi
 ## Special Features
 
 django-passkeys supports the following features:
-1. **Conditional UI** is a way for the browser to prompt the user to use the passkey to login as shown. 
+### 1. Conditional UI 
+**Conditional UI** is a way for the browser to prompt the user to use the passkey to login as shown. 
 ![conditionalUI.png](imgs%2FconditionalUI.png)
 
-1. **Immediate Mediation** is an extension to WebAuthn API that allows the browser to immediately prompt the 
+### 2. WebAuthn immediate mediation for frictionless sign-in
+
+**Immediate Mediation** is an extension to WebAuthn API that allows the browser to immediately prompt the 
 user to use password/passkeys without the need of a login form. This is currently supported by Google Chrome 144+ and soon on Android devices.
 
 You can watch demo presented by Google
