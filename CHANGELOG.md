@@ -1,5 +1,12 @@
-## 1.5.0
-* Added: Support for Google new WebAuthn immediate mediation API for Android Credential Creation. This allows users to create resident keys on Android devices and use them for passwordless authentication. for more details check [Google's announcement](https://web.dev/credential-management-immediate-api/).
+## 2.0.0
+* Breaking Change: Moved templates to `passkeys` folder and renamed the templates. thanks to @ganiyevuz and @smark-1 
+  * `PassKeys.html` -> `passkeys/manage.html`
+  * `PassKeys_base.html` -> `passkeys/base.html`
+  * `check_passkeys.js` -> `passkeys/check.js`
+  * `passkeys.js` -> `passkeys/passkeys.js`
+  * `modal.html` -> `passkeys/modal.html`
+
+* Added: Support for Google new WebAuthn immediate mediation API (with allow/disallow password login) for Android Credential Creation. This allows users to create resident keys on Android devices and use them for passwordless authentication. for more details check [Google's announcement](https://web.dev/credential-management-immediate-api/).
 * Fix: add `@login required` to passkey registration views. thanks to @rafaelurbeno for reporting the issue.
 
 ## 1.4.1

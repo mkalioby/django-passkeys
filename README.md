@@ -8,13 +8,21 @@
 
 ![Django Versions](https://img.shields.io/pypi/frameworkversions/django/django-passkeys)
 ![Python Versions](https://img.shields.io/pypi/pyversions/django-passkeys)
+# django-passkeys
 
+[![PyPI version](https://badge.fury.io/py/django-passkeys.svg)](https://badge.fury.io/py/django-passkeys)
+[![Downloads](https://static.pepy.tech/badge/django-passkeys)](https://pepy.tech/project/django-passkeys)
+[![Downloads / Month ](https://pepy.tech/badge/django-passkeys/month)](https://pepy.tech/project/django-passkeys)
+[![build](https://github.com/mkalioby/django-passkeys/actions/workflows/basic_checks.yml/badge.svg)](https://github.com/mkalioby/django-passkeys/actions/workflows/basic_checks.yml)
+![Coverage](https://raw.githubusercontent.com/mkalioby/django-passkeys/main/coverage.svg)
+
+!
 
 An extension to Django *ModelBackend* backend to support passkeys.
 
 Passkeys is an extension to Web Authentication API that will allow the user to login to a service using another device.
 
-This app is a slim-down version of [django-mfa2](https://github.com/mkalioby/django-mfa2)
+This app is a slimmed-down version of [django-mfa2](https://github.com/mkalioby/django-mfa2)
 
 Passkeys are now supported on 
 * Apple Ecosystem (iPhone 16.0+, iPadOS 16.1, Mac OS X Ventura)
@@ -72,8 +80,8 @@ Supports Django 2.0+, Python 3.7+
 6. To match the look and feel of your project, Passkeys includes `base.html` but it needs blocks named `head` & `content` to added its content to it.
    **Notes:** 
     
-    1. You can override `PassKeys_base.html` which is used by `Passkeys.html` so you can control the styling better and current `Passkeys_base.html` extends `base.html`
-    1. Currently, `PassKeys_base.html` needs jQuery and bootstrap. 
+    1. You can override `passkeys/base.html` which is used by `passkeys/manage.html` so you can control the styling better and current `passkeys/base.html` extends `base.html`
+    1. Currently, `passKeys/base.html` needs jQuery and bootstrap. 
 
 7. Somewhere in your app, add a link to 'passkeys:home'
     ```html
@@ -85,15 +93,15 @@ Supports Django 2.0+, Python 3.7+
     user = authenticate(request, username=request.POST["username"],password=request.POST["password"])
    ```
 
-8. Finally, In your `login.html`
-   * Give an id to your login form e.g 'loginForm', the id should be provided when calling `authn` function
+8. Finally, in your `login.html`
+   * Give an id to your login form e.g. 'loginForm', the id should be provided when calling `authn` function
    * Inside the form, add 
      ```html
       <input type="hidden" name="passkeys" id="passkeys"/>
-      <button class="btn btn-block btn-dark" type="button" onclick="authn('loginForm')"><img src="{% static 'passkeys/imgs/FIDO-Passkey_Icon-White.png' %}" style="width: 24px"></button>
-     {%include 'passkeys.js' %}
+      <button class="btn btn-block btn-dark" type="button" onclick="authn('loginForm')"><img src="{% static 'passkeys/imgs/FIDO-Passkey_Icon-White.png' %}" style="width: 24px"/> Login by Passkeys </button>
+     {%include 'passkeys/passkeys.js' %}
      ```
-For Example, See 'example' app and look at EXAMPLE.md to see how to set it up.
+ For more information about how to set it up, please see the 'example' app and the EXAMPLE.md document.
 
 # Detect if user is using passkeys
 Once the backend is used, there will be a `passkey` key in request.session. 
@@ -119,11 +127,11 @@ function register_pk()
     {
         $('#pk').show();
     }
-{% include 'check_passkeys.js'%}
+{% include 'passkeys/check.js'%}
 $(document).ready(check_passkey(true,register_pk))
 </script>
 ```
-check_passkey function paramters are as follows 
+check_passkey function parameters are as follows 
 * `platform_authenticator`: if the service requires only a platform authenticator (e.g TouchID, Windows Hello or Android SafetyNet)
 * `success_func`: function to call if a platform authenticator is found or if the user didn't login by a passkey
 * `fail_func`: function to call if no platform authenticator is found (optional).
@@ -163,3 +171,6 @@ Tidelift will coordinate the fix and disclosure.
 * [offbyone](https://github.com/offbyone)
 * [resba](https://github.com/resba)
 * [ganiyevuz](https://github.com/ganiyevuz)
+* [smark-1](https://github.com/smark-1)
+* [ThomasWaldmann-1](https://github.com/ThomasWaldmann)
+* [rafaelurben](https://github.com/rafaelurben)

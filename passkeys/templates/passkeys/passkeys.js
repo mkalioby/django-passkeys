@@ -26,11 +26,11 @@
 
 function tryLogin(formid)
     {
-        usernamefield = $("#username");
-        passwordfield = $("#password");
+        usernamefield = document.getElementById("username");
+        passwordfield = document.getElementById("password");
         window.loginForm = formid;
-        if (usernamefield.val() != "" && passwordfield.val() != "") {}
-            $("#" + formid).submit();
+        if (usernamefield.value != "" && passwordfield.value != "") {}
+            document.getElementById(formid).submit();
         options = {};
         status = checkImmediateMediationAvailability();
         if (status[0] && window.allow_immediate)
@@ -38,9 +38,9 @@ function tryLogin(formid)
             start_authn(formid, false);
         }
         else{
-           if (usernamefield.val() == "")
+           if (usernamefield.value == "")
             usernamefield.focus();
-           else if (passwordfield.val() == "")
+           else if (passwordfield.value == "")
             passwordfield.focus();
     }
     }
@@ -96,18 +96,18 @@ function tryLogin(formid)
         return navigator.credentials.get(options);
     }).then(function(assertion) {
         if (assertion.type == "password"){
-            $("#username").val(assertion.id);
-            $("#password").val(assertion.password);
-            $("#" + window.loginForm).submit();
+            document.getElementbyId("username").value = assertion.id;
+            document.getElementbyId("password").value = assertion.password;
+            document.getElmentbyId(window.loginForm).submit();
             return;
     }
-        pk = $("#passkeys")
-        if (pk.length == 0)
+        pk = document.getElementById("passkeys")
+        if (pk  === null || pk === undefined )
     {
         console.error("Did you add the 'passkeys' hidden input field")
         return
     }
-        pk.val(JSON.stringify(publicKeyCredentialToJSON(assertion)));
+        pk.value = JSON.stringify(publicKeyCredentialToJSON(assertion));
         x= document.getElementById(window.loginForm)
         if (x === null || x === undefined)
     {
@@ -135,12 +135,12 @@ function tryLogin(formid)
     }
 
     });
-        $(document).ready(function () {
+    }
+        document.addEventListener('DOMContentLoaded',function () {
         if (location.protocol != 'https:') {
         console.error("Passkeys must work under secure context")
     }
-    });
-    }
+    })
     function authn(form)
     {
         start_authn(form, false)
