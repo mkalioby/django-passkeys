@@ -4,7 +4,8 @@
 * New: Pluggable token backend — auto-detects SimpleJWT, DRF TokenAuth, or session-based auth
 * New: Service layer (`passkeys.api.service`) — session-independent FIDO2 logic with signed state tokens
 * New: Optional install via `pip install django-passkeys[drf]` or `pip install django-passkeys[drf-jwt]`
-
+* Added: Support for Google new WebAuthn immediate mediation API for Android Credential Creation. This allows users to create resident keys on Android devices and use them for passwordless authentication. for more details check [Google's announcement](https://web.dev/credential-management-immediate-api/).
+* Fix: add `@login required` to passkey registration views. thanks to @rafaelurbeno for reporting the issue.
 ## 1.4.1
 * Add csrfmiddlwwaretoken to deleteKey and toggle key.
 

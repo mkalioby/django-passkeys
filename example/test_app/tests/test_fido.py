@@ -36,12 +36,12 @@ class test_fido(TransactionTestCase):
         self.session = store
         self.client.cookies["sessionid"] = store.session_key
 
-        self.client.post("/auth/login", {"username": "test", "password": "test", 'passkeys': ''})
+        self.client.post("/auth/login/", {"username": "test", "password": "test", 'passkeys': ''})
         self.factory = RequestFactory()
 
 
     def test_key_reg(self):
-        self.client.post('auth/login',{"usernaame":"test","password":"test","passkeys":""})
+        self.client.post('auth/login/',{"username":"test","password":"test","passkeys":""})
         r = self.client.get(reverse('passkeys:reg_begin'))
         self.assertEqual(r.status_code, 200)
         j = json.loads(r.content)
