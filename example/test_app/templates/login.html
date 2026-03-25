@@ -46,7 +46,7 @@
             <input type="hidden" name="passkeys" id="passkeys"/>
             <button class="btn btn-primary btn-block" type="submit">Login</button><br/>
             <button class="btn btn-block btn-dark" type="button" onclick="authn('loginForm')"><img src="{% static 'passkeys/imgs/FIDO-Passkey_Icon-White.png' %}" style="width: 24px"> &nbsp;Login By Passkeys</button>
-            {%include 'passkeys.js' %}
+            {%include 'passkeys/passkeys.js' %}
         </form>
       </div>
     </div>
