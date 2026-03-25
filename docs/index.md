@@ -19,17 +19,17 @@ pip install django-passkeys
 
 For REST API support:
 
-=== "DRF"
+**"DRF**
 
-    ```bash
-    pip install django-passkeys[drf]
-    ```
+```bash
+pip install django-passkeys[drf]
+```
 
-=== "DRF + JWT"
+**DRF + JWT**
 
-    ```bash
-    pip install django-passkeys[drf-jwt]
-    ```
+```bash
+pip install django-passkeys[drf-jwt]
+```
 
 ## Common Setup
 
