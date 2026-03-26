@@ -162,6 +162,68 @@ class TestPasskeyAPI(TransactionTestCase):
         }, format='json')
         self.assertEqual(response.status_code, 400)
 
+    def test_expired_state_token(self):
+        from unittest.mock import patch
+        from django.core import signing
+        # Register a key first to get a valid state_token format
+        response = self.client.post('/api/passkeys/register/options')
+        data = response.json()
+        # Patch signing.loads to raise SignatureExpired
+        with patch('passkeys.api.service.signing.loads', side_effect=signing.SignatureExpired('expired')):
+            response = self.client.post('/api/passkeys/register/verify', {
+                'state_token': data['state_token'],
+                'credential': {'id': 'fake'},
+            }, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_auth_expired_state_token(self):
+        from unittest.mock import patch
+        from django.core import signing
+        with patch('passkeys.api.service.signing.loads', side_effect=signing.SignatureExpired('expired')):
+            response = self.client.post('/api/passkeys/authenticate/verify', {
+                'state_token': 'expired-token',
+                'credential': {'id': 'fake'},
+            }, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_auth_missing_credential_id(self):
+        from unittest.mock import patch
+        self.client.force_authenticate(user=None)
+        with patch('passkeys.api.service.signing.loads', return_value={}):
+            response = self.client.post('/api/passkeys/authenticate/verify', {
+                'state_token': 'valid-token',
+                'credential': {},
+            }, format='json')
+        self.assertIn(response.status_code, [401, 403])
+
+    def test_auth_passkey_not_found(self):
+        from unittest.mock import patch
+        with patch('passkeys.api.service.signing.loads', return_value={}):
+            response = self.client.post('/api/passkeys/authenticate/verify', {
+                'state_token': 'valid-token',
+                'credential': {'id': 'nonexistent-credential-id'},
+            }, format='json')
+        self.assertEqual(response.status_code, 404)
+
+    def test_duplicate_passkey_registration(self):
+        from unittest.mock import patch
+        from django.db import IntegrityError
+        device = self._register_key()
+        # Try registering again - mock IntegrityError on save
+        response = self.client.post('/api/passkeys/register/options')
+        data = response.json()
+        options = data['options']
+        options['publicKey']['challenge'] = options['publicKey']['challenge'].encode("ascii")
+        device2 = SoftWebauthnDevice()
+        credential = device2.create(options, "https://" + options["publicKey"]["rp"]["id"])
+        with patch('passkeys.FIDO2.UserPasskey.save', side_effect=IntegrityError):
+            response = self.client.post('/api/passkeys/register/verify', {
+                'state_token': data['state_token'],
+                'key_name': 'dup',
+                'credential': credential,
+            }, format='json')
+        self.assertEqual(response.status_code, 400)
+
     def test_authenticate_with_drf_token_backend(self):
         from unittest.mock import patch
         device = self._register_key()
@@ -183,6 +245,102 @@ class TestPasskeyAPI(TransactionTestCase):
         result = response.json()
         self.assertEqual(result['token_type'], 'token')
         self.assertEqual(result['token'], 'fake-token-key')
+
+    def test_reg_verify_generic_exception(self):
+        from unittest.mock import patch
+        response = self.client.post('/api/passkeys/register/options')
+        data = response.json()
+        options = data['options']
+        options['publicKey']['challenge'] = options['publicKey']['challenge'].encode("ascii")
+        device = SoftWebauthnDevice()
+        credential = device.create(options, "https://" + options["publicKey"]["rp"]["id"])
+        with patch('passkeys.api.service.complete_registration', side_effect=RuntimeError('fido2 error')):
+            response = self.client.post('/api/passkeys/register/verify', {
+                'state_token': data['state_token'],
+                'key_name': 'test',
+                'credential': credential,
+            }, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_auth_bad_signature_state_token(self):
+        response = self.client.post('/api/passkeys/authenticate/verify', {
+            'state_token': 'tampered-bad-signature-token',
+            'credential': {'id': 'fake'},
+        }, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_auth_verify_value_error(self):
+        from unittest.mock import patch
+        with patch('passkeys.api.service.signing.loads', return_value={}):
+            with patch('passkeys.api.service.complete_authentication', side_effect=ValueError('bad')):
+                response = self.client.post('/api/passkeys/authenticate/verify', {
+                    'state_token': 'valid',
+                    'credential': {'id': 'some-id'},
+                }, format='json')
+        self.assertIn(response.status_code, [400, 401, 403])
+
+    def test_auth_begin_uses_authenticated_user(self):
+        """auth_begin_service should use request.user.get_username() when no username provided."""
+        device = self._register_key()
+        # Don't logout - stay authenticated
+        response = self.client.post('/api/passkeys/authenticate/options', {}, format='json')
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        # Should have allowCredentials since it found the authenticated user's keys
+        self.assertIn('options', data)
+
+    def test_session_token_backend_directly(self):
+        from passkeys.api.token_backends import _session_token_backend
+        from django.test import RequestFactory
+        factory = RequestFactory()
+        request = factory.post('/')
+        from django.contrib.sessions.backends.file import SessionStore
+        request.session = SessionStore()
+        result = _session_token_backend(self.user, request)
+        self.assertEqual(result['token_type'], 'session')
+
+    def test_custom_token_backend(self):
+        from unittest.mock import patch
+        device = self._register_key()
+        self.client.force_authenticate(user=None)
+
+        response = self.client.post('/api/passkeys/authenticate/options', {}, format='json')
+        data = response.json()
+        options = data['options']
+        options['publicKey']['challenge'] = options['publicKey']['challenge'].encode("ascii")
+        assertion = device.get(options, "https://" + options["publicKey"]["rpId"])
+
+        mock_token_response = {'token_type': 'custom', 'token': 'custom-token'}
+        with patch('passkeys.api.views.get_token_response', return_value=mock_token_response):
+            response = self.client.post('/api/passkeys/authenticate/verify', {
+                'state_token': data['state_token'],
+                'credential': assertion,
+            }, format='json', HTTP_USER_AGENT="")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['token_type'], 'custom')
+
+    def test_load_custom_backend_setting(self):
+        from unittest.mock import patch
+        from passkeys.api.token_backends import get_token_response
+        from django.test import RequestFactory
+        factory = RequestFactory()
+        request = factory.post('/')
+        from django.contrib.sessions.backends.file import SessionStore
+        request.session = SessionStore()
+
+        def my_backend(user, request):
+            return {'token_type': 'my_custom', 'key': '123'}
+
+        with patch.object(settings, 'PASSKEYS_API_TOKEN_BACKEND', 'test_app.tests.test_api.my_custom_backend', create=True):
+            with patch('passkeys.api.token_backends._load_custom_backend', return_value=my_backend):
+                result = get_token_response(self.user, request)
+        self.assertEqual(result['token_type'], 'my_custom')
+
+    def test_load_custom_backend_import_error(self):
+        from passkeys.api.token_backends import _load_custom_backend
+        from django.core.exceptions import ImproperlyConfigured
+        with self.assertRaises(ImproperlyConfigured):
+            _load_custom_backend('nonexistent.module.backend')
 
     def test_authenticate_with_jwt_token_backend(self):
         from unittest.mock import patch
