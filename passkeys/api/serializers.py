@@ -5,6 +5,7 @@ try:
         CharField,
         BooleanField,
         DictField,
+        IntegerField,
     )
 except ImportError as exc:
     raise ImportError(
@@ -27,16 +28,39 @@ class UserPasskeyUpdateSerializer(Serializer):
     enabled = BooleanField(required=False)
 
 
+# ── Registration ──
+
 class RegisterVerifySerializer(Serializer):
     state_token = CharField()
     key_name = CharField(required=False, default='', allow_blank=True)
     credential = DictField()
 
 
+class RegisterOptionsResponseSerializer(Serializer):
+    options = DictField()
+    state_token = CharField()
+
+
+# ── Authentication ──
+
 class AuthenticateOptionsSerializer(Serializer):
     username = CharField(required=False, allow_blank=True, default='')
+
+
+class AuthenticateOptionsResponseSerializer(Serializer):
+    options = DictField()
+    state_token = CharField()
 
 
 class AuthenticateVerifySerializer(Serializer):
     state_token = CharField()
     credential = DictField()
+
+
+class AuthenticateVerifyResponseSerializer(Serializer):
+    user_id = IntegerField()
+    username = CharField()
+    token_type = CharField()
+    token = CharField(required=False)
+    access = CharField(required=False)
+    refresh = CharField(required=False)

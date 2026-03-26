@@ -1,5 +1,5 @@
 try:
-    from rest_framework.generics import ListAPIView, RetrieveDestroyAPIView
+    from rest_framework.generics import GenericAPIView, ListAPIView, RetrieveDestroyAPIView
     from rest_framework.views import APIView
     from rest_framework.response import Response
     from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -32,6 +32,8 @@ from passkeys.api.token_backends import get_token_response
 
 
 class UserPasskeyListAPIView(ListAPIView):
+    """List all passkeys belonging to the authenticated user."""
+
     serializer_class = UserPasskeyModelSerializer
     permission_classes = [IsAuthenticated]
 
@@ -40,6 +42,14 @@ class UserPasskeyListAPIView(ListAPIView):
 
 
 class UserPasskeyDetailAPIView(RetrieveDestroyAPIView):
+    """
+    Retrieve, update, or delete a passkey.
+
+    - GET: Retrieve passkey details.
+    - PATCH: Update passkey name or enabled status.
+    - DELETE: Remove a passkey. Returns 404 if not owned by the user.
+    """
+
     serializer_class = UserPasskeyModelSerializer
     permission_classes = [IsAuthenticated]
 
@@ -57,6 +67,14 @@ class UserPasskeyDetailAPIView(RetrieveDestroyAPIView):
 
 
 class RegisterOptionsAPIView(APIView):
+    """
+    Get WebAuthn registration options.
+
+    No request body needed. Returns the public key creation options
+    and a signed state token. The state token must be sent back to
+    the verify endpoint within 5 minutes.
+    """
+
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -64,11 +82,20 @@ class RegisterOptionsAPIView(APIView):
         return Response(result)
 
 
-class RegisterVerifyAPIView(APIView):
+class RegisterVerifyAPIView(GenericAPIView):
+    """
+    Verify and save a new passkey credential.
+
+    Accepts the state token from the options step and the credential
+    created by the browser's WebAuthn API. Saves the passkey and
+    returns the created passkey details.
+    """
+
     permission_classes = [IsAuthenticated]
+    serializer_class = RegisterVerifySerializer
 
     def post(self, request):
-        serializer = RegisterVerifySerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         try:
@@ -89,22 +116,41 @@ class RegisterVerifyAPIView(APIView):
         )
 
 
-class AuthenticateOptionsAPIView(APIView):
+class AuthenticateOptionsAPIView(GenericAPIView):
+    """
+    Get WebAuthn authentication options.
+
+    Optionally accepts a username to narrow allowed credentials.
+    If omitted, the browser will show all discoverable passkeys for this domain.
+
+    Returns the public key request options and a signed state token.
+    """
+
     permission_classes = [AllowAny]
+    serializer_class = AuthenticateOptionsSerializer
 
     def post(self, request):
-        serializer = AuthenticateOptionsSerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         username = serializer.validated_data.get('username', '')
         result = auth_begin_service(username or None, request)
         return Response(result)
 
 
-class AuthenticateVerifyAPIView(APIView):
+class AuthenticateVerifyAPIView(GenericAPIView):
+    """
+    Verify a passkey assertion and authenticate the user.
+
+    Accepts the state token from the options step and the assertion
+    from the browser's WebAuthn API. On success, returns the user info
+    and an auth token (JWT, DRF Token, or session depending on project config).
+    """
+
     permission_classes = [AllowAny]
+    serializer_class = AuthenticateVerifySerializer
 
     def post(self, request):
-        serializer = AuthenticateVerifySerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         try:
