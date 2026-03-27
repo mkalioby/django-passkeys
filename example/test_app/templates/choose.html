@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+      <div class="container-fluid">
+
+        <!-- Breadcrumbs-->
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="index.html">Dashboard</a>
+          </li>
+          <li class="breadcrumb-item active">Blank Page</li>
+        </ol>
+
+        <!-- Page Content -->
+          {% if registered %}
+              <div class="alert alert-success">Registered Successfully</div>
+          {% endif %}
+        <h1>Welcome to django-passkeys example!</h1>
+          <hr/>
+
+          <div id="pk" class="alert alert-info" style="display: none">Your device supports passkeys, <a href="{%url 'passkeys:enroll'%}">Enroll</a> </div>
+      <div>
+          <p> Choose your example mode</p>
+        <ul>
+            <li><a href="{% url 'template' %}">Template based configuration</a> </li>
+            <li><a href="{% url 'rest_manage'%}">Django-rest configuration</a> </li>
+            <li><a href="{% url 'public' %}">Immediate Mediation</a> </li>
+        </ul>
+
+      </div>
+        <script type="application/javascript">
+            function register_pk()
+            {
+                $('#pk').show();
+            }
+            {% include 'passkeys/check.js'%}
+            $(document).ready(check_passkey(true,register_pk))
+
+        </script>
+      {% endblock %}

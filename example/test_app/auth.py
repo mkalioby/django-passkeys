@@ -1,17 +1,15 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate,login,logout
 
-from passkeys.helpers import is_login_page, get_redirection_url
-
 def loginView(request):
     context={}
     if request.method=="POST":
         user=authenticate(request, username=request.POST["username"],password=request.POST["password"])
         if user:
             login(request, user)
-            if not is_login_page(request):
-                return get_redirection_url(request)
-            return redirect('home') # pragma: no cover
+            if request.POST.get("next",""):
+                return redirect(request.POST["next"])
+            return redirect('template') # pragma: no cover
         context["invalid"]=True
     return render(request, "login.html", context)
 

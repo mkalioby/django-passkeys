@@ -20,6 +20,15 @@ setup(
         'user-agents',
         'fido2>=1.1.1,<2.2.0',
       ],
+    extras_require={
+        'drf': [
+            'djangorestframework>=3.14',
+        ],
+        'drf-jwt': [
+            'djangorestframework>=3.14',
+            'djangorestframework-simplejwt>=5.0',
+        ],
+    },
     python_requires=">=3.7",
     include_package_data=True,
     zip_safe=False, # because we're including static files

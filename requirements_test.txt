@@ -1,2 +1,4 @@
 coverage
 tox
+djangorestframework>=3.14
+drf-spectacular>=0.27

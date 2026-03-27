@@ -96,9 +96,9 @@ function tryLogin(formid)
         return navigator.credentials.get(options);
     }).then(function(assertion) {
         if (assertion.type == "password"){
-            document.getElementbyId("username").value = assertion.id;
-            document.getElementbyId("password").value = assertion.password;
-            document.getElmentbyId(window.loginForm).submit();
+            document.getElementById("username").value = assertion.id;
+            document.getElementById("password").value = assertion.password;
+            document.getElementById(window.loginForm).submit();
             return;
     }
         pk = document.getElementById("passkeys")

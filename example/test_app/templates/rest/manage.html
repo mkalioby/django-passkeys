@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Passkeys Rest API</title>
+    <link href="{% static 'vendor/fontawesome-free/css/all.min.css'%}" rel="stylesheet" type="text/css">
+
+  <!-- Page level plugin CSS-->
+
+  <!-- Custom styles for this template-->
+  <link href="{% static 'css/sb-admin.min.css'%}" rel="stylesheet">
+<script src="{% static 'vendor/jquery/jquery.min.js'%}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.min.js'%}"></script>
+<script src="{% static 'passkeys/js/base64url.js'%}"></script>
+<script src="{% static 'passkeys/js/helpers.js'%}"></script>
+<script src="{% static 'passkeys/js/reg.js'%}"></script>
+
+    <script type="application/javascript">
+        function deleteKey(id,name)
+        {
+            $("#modal-title").html("Delete Key" + name);
+            $("#modal-body").html("Are you sure to delete '" + name + "' key?");
+            $("#modal-footer").prepend(`<button class='btn btn-danger' onclick='confirmDel(${id})'>Confirm Deletion</button>`);
+            $("#popUpModal").modal("show");
+        }
+        function confirmDel(id)
+        {
+            $.ajax({
+                url: "/api/passkeys/" + id,
+                headers: {'X-CSRFToken': "{{ csrf_token }}"},
+                method: "DELETE",
+                success: function(data)
+                {
+                    showCredentials();
+                    $("#popUpModal").modal("hide");
+                },
+                error: function(data)
+                {
+                    alert("Error deleting key");
+                }
+            })
+        }
+        function toggle(id,status)
+        {
+            new_status = !(status === "true")
+            $.ajax({
+                url: "/api/passkeys/" + id,
+                headers: {'X-CSRFToken': "{{ csrf_token }}"},
+                method: "PATCH",
+                data: {"enabled":  new_status},
+                success: function(data){
+                    showCredentials()
+                }
+            })
+        }
+        function showCredentials() {
+            $.ajax({
+                "url":"/api/passkeys/", dataType: "json",
+                success:function(data){
+                    if (data.length == 0)
+                    {
+                        $("#creds").html("<div class='alert alert-info'>No credentials found, please register a new key.</div>")
+                        return;
+                    }
+                    html=`<table class="table"><tr><th>Name</th><th>State</th><th>Created At</th><th>Last Used</th><th>...</th></tr>`;
+                    for (i in data)
+                    {
+                        key = data[i];
+                        status = `<span style="cursor: pointer" class='badge ${key.enabled ? "badge-success" : "badge-danger"}' onclick='toggle(${key.id},"${key.enabled}")'>${key.enabled ? "Enabled" : "Disabled"}</span>`;
+                        html+=`<tr><td>${key.name}</td><td>${status}</td><td>${key.added_on}</td><td>${key.last_used}</td>
+                        <td><button class="btn btn-danger" onclick="deleteKey(${key.id},'${key.name}')">Delete</button></td>
+                                    </tr>`;
+                    }
+                    html+=`</table>`;
+                    $("#creds").html(html);
+                },
+            })
+            }
+            function registerKey()
+            {
+                key_name = prompt("Enter key name");
+                $.ajax({
+                    "url": "/api/passkeys/register/options", dataType: "json", method: "POST",
+                    headers: {'X-CSRFToken': "{{ csrf_token }}"},
+                    success: async function(data) {
+                        window.state_token = data.state_token
+                        try {
+                            key_info = await get_new_credentials(data.options)
+
+                        }
+                        catch(err) {
+                            alert("Failed registering new key, you can try again.")
+                            return
+                        }
+                        sendData=  {key_name: key_name, state_token: window.state_token, credential: key_info}
+                        $.ajax({
+                          url: "/api/passkeys/register/verify",
+                          method: "POST",
+                          headers: {'X-CSRFToken': "{{ csrf_token }}"},
+                          data: JSON.stringify(sendData),
+                           contentType: "application/json; charset=utf-8",
+                          success: function(data){
+                                alert("Key registered successfully");
+                                showCredentials();
+                            },
+                            error:function(data) {
+                                alert("Error registering key");
+                            }
+                            })
+
+                    },
+                    error: function(data) {
+                        alert("Error registering key");
+                    }
+                })
+            }
+    </script>
+
+
+</head>
+<body>
+      <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
+      <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
+
+    </button>
+    <a class="navbar-brand mr-1" href="{% url 'home' %}">Django-Passkeys REST API Example</a>
+      <div class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
+      </div>
+
+    <!-- Navbar -->
+    <ul class="navbar-nav ml-auto ml-md-0">
+      <li class="nav-item dropdown no-arrow mx-1" style="color: white">
+            Hello, {{ user.username }} &nbsp;
+            <button class="btn btn-danger" onclick="window.location.href='{% url 'logout' %}'">Logout</button>
+
+      </li>
+    </ul>
+      </nav>
+
+      <br/>
+      <br/>
+    <div class="row">
+    <div class="col-md-6 offset-md-3" align="center">
+        <button class="btn btn-primary" onclick="showCredentials()">Show My Credentials</button>
+        <button class="btn btn-secondary" onclick="registerKey()">Registry New Key</button>
+    </div>
+        <div class="col-md-3" align="right">
+          </div>
+    </div>
+        <br/>
+    <div id="creds">
+
+    </div>
+{% include 'passkeys/modal.html' %}
+</body>
+</html>

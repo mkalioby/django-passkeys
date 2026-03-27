@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'test_app',
     'passkeys',
+    'rest_framework',
     'sslserver'
 ]
 

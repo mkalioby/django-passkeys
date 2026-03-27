@@ -42,8 +42,20 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'test_app',
     'passkeys',
+    'rest_framework',
+    'drf_spectacular',
     'sslserver'
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'django-passkeys API',
+    'DESCRIPTION': 'WebAuthn/FIDO2 Passkey Authentication API',
+    'VERSION': '1.4.1',
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
