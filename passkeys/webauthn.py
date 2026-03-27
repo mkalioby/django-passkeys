@@ -1,4 +1,6 @@
 # ── Core functions (used by both views and API service layer) ──
+from typing import List, Tuple
+
 import fido2.features
 from base64 import urlsafe_b64encode
 
@@ -33,7 +35,7 @@ def enable_json_mapping():
         pass
 
 
-def getUserCredentials(user) -> list[AttestedCredentialData]:
+def getUserCredentials(user) -> List[AttestedCredentialData]:
     User = get_user_model()
     username_field = User.USERNAME_FIELD
     filter_args = {"user__"+username_field : user}
@@ -57,8 +59,9 @@ def getServer(request=None) -> Fido2Server:
 
 
 def get_current_platform(request) -> str:
-    ua = ua_parse(request.META.get("HTTP_USER_AGENT"))
+    ua = request.META.get("HTTP_USER_AGENT")
     if not ua: return "Key"
+    ua = ua_parse(ua)
     if 'Safari' in ua.browser.family:
         return "Apple"
     elif 'Chrome' in ua.browser.family and ua.os.family == "Mac OS X":
@@ -71,7 +74,7 @@ def get_current_platform(request) -> str:
 
 
 
-def begin_registration(user, request) -> tuple[dict, dict]:
+def begin_registration(user, request) -> Tuple[dict, dict]:
     """Core registration begin logic. Returns (registration_data_dict, state)."""
     enable_json_mapping()
     server = getServer(request)

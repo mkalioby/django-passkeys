@@ -3,7 +3,7 @@ import logging
 from django.core import signing
 from django.db import IntegrityError
 
-from passkeys.FIDO2 import (
+from passkeys.webauthn import (
     begin_registration,
     complete_registration,
     begin_authentication,

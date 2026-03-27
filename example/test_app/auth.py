@@ -9,7 +9,7 @@ def loginView(request):
             login(request, user)
             if request.POST.get("next",""):
                 return redirect(request.POST["next"])
-            return redirect('home') # pragma: no cover
+            return redirect('template') # pragma: no cover
         context["invalid"]=True
     return render(request, "login.html", context)
 

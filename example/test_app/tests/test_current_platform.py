@@ -1,6 +1,6 @@
 from django.test import TestCase, RequestFactory
 
-from passkeys.FIDO2 import get_current_platform
+from passkeys.webauthn import get_current_platform
 
 
 class TestCurrentPlatform(TestCase):
@@ -13,6 +13,9 @@ class TestCurrentPlatform(TestCase):
         request = self.request_factory.get('/', HTTP_USER_AGENT=user_agent)
         self.assertEqual(get_current_platform(request), platform)
 
+    def test_no_ua(self):
+        request = self.request_factory.get('/')
+        self.assertEqual(get_current_platform(request), "Key")
     def test_mac(self):
         self.check_platform("Mozilla/5.0 (Macintosh; Intel Mac OS X 13_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Safari/605.1.15","Apple")
     def test_ios(self):
@@ -25,7 +28,8 @@ class TestCurrentPlatform(TestCase):
 
     def test_chrome_windows(self):
         self.check_platform("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36","Microsoft")
-
+    def test_unknow(self):
+        self.check_platform("curl/7.54. 1","Key")
     def test_android(self):
         self.check_platform("Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.130 Mobile Safari/537.36","Google")
         self.check_platform("Mozilla/5.0 (Linux; Android 10; SM-A205U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.130 Mobile Safari/537.36","Google")

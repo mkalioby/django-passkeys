@@ -216,7 +216,7 @@ class TestPasskeyAPI(TransactionTestCase):
         options['publicKey']['challenge'] = options['publicKey']['challenge'].encode("ascii")
         device2 = SoftWebauthnDevice()
         credential = device2.create(options, "https://" + options["publicKey"]["rp"]["id"])
-        with patch('passkeys.FIDO2.UserPasskey.save', side_effect=IntegrityError):
+        with patch('passkeys.webauthn.UserPasskey.save', side_effect=IntegrityError):
             response = self.client.post('/api/passkeys/register/verify', {
                 'state_token': data['state_token'],
                 'key_name': 'dup',

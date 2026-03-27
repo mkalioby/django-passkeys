@@ -5,7 +5,7 @@ try:
     from rest_framework.permissions import IsAuthenticated, AllowAny
     from rest_framework.exceptions import ValidationError, AuthenticationFailed, NotFound
     from rest_framework import status
-except ImportError as exc:
+except ImportError as exc: # pragma: no cover
     raise ImportError(
         "djangorestframework is required to use passkeys.api. "
         "Install it with: pip install django-passkeys[drf]"
