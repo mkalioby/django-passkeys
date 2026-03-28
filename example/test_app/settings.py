@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'passkeys',
     'rest_framework',
     'drf_spectacular',
+
     'sslserver'
 ]
 

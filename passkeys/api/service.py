@@ -53,7 +53,7 @@ def reg_complete_service(user, state_token, credential, key_name, request):
     except IntegrityError:
         raise PasskeyVerificationError("This passkey is already registered")
     except Exception:
-        logger.exception("Passkey registration verification failed")
+        # logger.exception("Passkey registration verification failed")
         raise PasskeyVerificationError("Passkey verification failed, please try again")
 
     return passkey

@@ -5,11 +5,12 @@
   * `check_passkeys.js` -> `passkeys/check.js`
   * `passkeys.js` -> `passkeys/passkeys.js`
   * `modal.html` -> `passkeys/modal.html`
+* Dropped Support for django-2.0, django-2.1, django-4.0, django-4.1, django-5.0, django-5.1, but django 2.2, 3.2.
 * New: DRF API module (`passkeys.api`) — REST endpoints for passkey registration, authentication, and management
 * New: Pluggable token backend — auto-detects SimpleJWT, DRF TokenAuth, or session-based auth
 * New: Service layer (`passkeys.api.service`) — session-independent FIDO2 logic with signed state tokens
 * New: Optional install via `pip install django-passkeys[drf]` or `pip install django-passkeys[drf-jwt]`
-* Added: Support for Google new WebAuthn immediate mediation API (with allow/disallow password login) for Android Credential Creation. This allows users to create resident keys on Android devices and use them for passwordless authentication. for more details check [Google's announcement](https://web.dev/credential-management-immediate-api/).
+* Added: Support for Google new WebAuthn immediate mediation API (with allow/disallow password login) for Chromium Browser. for more details check [Google's announcement](https://developer.chrome.com/blog/webauthn-immediate-mediation-ot).
 * Fix: add `@login required` to passkey registration views. thanks to @rafaelurbeno for reporting the issue.
 
 ## 1.4.1

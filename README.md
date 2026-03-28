@@ -44,7 +44,7 @@ You can watch demo presented by Google
 
 `pip install django-passkeys`
 
-Supports Django 2.0+, Python 3.7+
+Supports Django 2.2+, Python 3.7+
 
 # Usage
 1. In your settings.py add the application to your installed apps
