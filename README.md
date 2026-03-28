@@ -108,7 +108,7 @@ Both can coexist in the same project — you can use templates for your web app 
 
 ## Example Project
 
-See the `example` app and [Example.md](docs.Example.md) for a working demo for templates, drf and immediate mediation.
+See the `example` app and [Example.md](docs/Example.md) for a working demo for templates, drf and immediate mediation.
 
 ## Security contact information
 

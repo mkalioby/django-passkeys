@@ -88,7 +88,7 @@ def auth_complete_service(state_token, credential, request):
 
     try:
         user = complete_authentication(state, credential, request)
-    except ValueError:
+    except Exception:
         raise PasskeyVerificationError("Passkey authentication failed")
 
     if user is None:
