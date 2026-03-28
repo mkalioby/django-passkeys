@@ -29,7 +29,7 @@ On May 3, 2023, Google allowed the use of Passkeys for the users to login, killi
 django-passkeys supports the following features:
 ### 1. Conditional UI
 **Conditional UI** is a way for the browser to prompt the user to use the passkey to login as shown.
-![conditionalUI.png](imgs%2FconditionalUI.png)
+![conditionalUI.png](docs/imgs%2FconditionalUI.png)
 
 ### 2. WebAuthn immediate mediation for frictionless sign-in
 
@@ -38,7 +38,7 @@ user to use password/passkeys without the need of a login form. This is currentl
 
 You can watch demo presented by Google
 
-[![Watch the video](imgs/immediate.png)](https://developer.chrome.com//static/blog/webauthn-immediate-mediation-ot/video/immediate-mediation-explicit-flow.mp4)
+[![Watch the video](docs/imgs/immediate.png)](https://developer.chrome.com//static/blog/webauthn-immediate-mediation-ot/video/immediate-mediation-explicit-flow.mp4)
 
 # Quick Start - Common Settings
 
@@ -108,7 +108,7 @@ Both can coexist in the same project — you can use templates for your web app 
 
 ## Example Project
 
-See the `example` app and [Example.md](Example.md) for a working demo.
+See the `example` app and [Example.md](docs.Example.md) for a working demo for templates, drf and immediate mediation.
 
 ## Security contact information
 

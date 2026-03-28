@@ -29,6 +29,8 @@ nav:
   - Home: index.md
   - Template Setup: template-setup.md
   - REST API (DRF): drf-setup.md
+  - JS Example Code: jscode.md
+  - Example App: Example.md
   - Settings Reference: settings.md
   - Changelog: changelog.md
 

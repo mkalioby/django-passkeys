@@ -32,10 +32,14 @@ INSTALLED_APPS = [
 ```python
 # urls.py
 from django.urls import path, include
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 urlpatterns = [
     ...
     path('api/passkeys/', include('passkeys.api.urls')),
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+
 ]
 ```
 
@@ -52,13 +56,74 @@ urlpatterns = [
 | `PATCH` | `<id>` | Required | Update a passkey (name, enabled) |
 | `DELETE` | `<id>` | Required | Delete a passkey |
 
----
 
-## Complete Registration Flow
+## Example Code
 
-User must be authenticated to register a new passkey. This is a two-step process: first get the WebAuthn challenge options from the server, then pass the browser's credential response back.
+!!! info
+    - For an example for key management and registering new key , check [mange.html](https://github.com/mkalioby/django-passkeys/blob/v2.0/example/test_app/templates/rest/manage.html)
+    - For a login example using the API, check [login.html](https://github.com/mkalioby/django-passkeys/blob/v2.0/example/test_app/templates/rest/login.html)
 
-### Step 1 — Get registration options
+## Registration Flow
+
+A User must be authenticated to register a new passkey. This is a two-step process: first get the WebAuthn challenge options from the server, then pass the browser's credential response back.
+
+### Quick implementation
+
+This is a quick implementation for the registration flow, you can find all the details in the section below
+
+1. import the following provided js files in your page.
+    ```html
+     <!-- Make sure that jQuery is added -->
+     <script src="{% static 'passkeys/js/base64url.js'%}"></script>
+     <script src="{% static 'passkeys/js/helpers.js'%}"></script>
+     <script src="{% static 'passkeys/js/reg.js'%}"></script>
+    ```
+
+2. Add The following js function to register passkey.
+
+    ```js
+          function registerKey()
+            {
+                key_name = prompt("Enter key name");
+                $.ajax({
+                    "url": "/api/passkeys/register/options", dataType: "json", method: "POST",
+                    headers: {'X-CSRFToken': "{{ csrf_token }}"},
+                    success: async function(data) {
+                        window.state_token = data.state_token
+                        try {
+                            key_info = await get_new_credentials(data.options)
+                        }
+                        catch(err) {
+                            alert("Failed registering new key, you can try again.")
+                            return
+                        }
+                        sendData=  {key_name: key_name, state_token: window.state_token, credential: key_info}
+                        $.ajax({
+                          url: "/api/passkeys/register/verify",
+                          method: "POST",
+                          headers: {'X-CSRFToken': "{{ csrf_token }}"},
+                          data: JSON.stringify(sendData),
+                           contentType: "application/json; charset=utf-8",
+                          success: function(data){
+                                alert("Key registered successfully");
+                                showCredentials();
+                            },
+                            error:function(data) {
+                                alert("Error registering key");
+                            }
+                            })
+
+                    },
+                    error: function(data) {
+                        alert("Error registering key");
+                    }
+                })
+            }
+    ```
+
+
+### Detailed Implementation
+#### Step 1 — Get registration options
 
 Send a POST request to get the WebAuthn `PublicKeyCredentialCreationOptions`. The server returns the challenge, relying party info, user info, and a signed `state_token` that ties the two steps together.
 
@@ -106,7 +171,7 @@ Authorization: Bearer <your-auth-token>
 | `options.publicKey.excludeCredentials` | List of already-registered credential IDs — browser will skip these |
 | `state_token` | Signed server state — must be sent back in the verify step. Expires in 5 minutes |
 
-### Step 2 — Create credential in the browser
+#### Step 2 — Create credential in the browser
 
 Decode the binary fields and call the WebAuthn browser API:
 
@@ -138,7 +203,7 @@ const credentialJSON = {
 !!! note "base64url helper"
     You need a base64url encode/decode utility. The library ships one at `passkeys/static/passkeys/js/base64url.js`, or use any npm package like `base64url` or `@hexagon/base64`.
 
-### Step 3 — Verify and save the credential
+#### Step 3 — Verify and save the credential
 
 Send the credential and state token back to the server:
 
@@ -197,7 +262,7 @@ Content-Type: application/json
 
 ---
 
-## Complete Authentication Flow
+## Authentication Flow
 
 No login required — this is how users log in with a passkey. Two-step process similar to registration.
 
@@ -206,7 +271,64 @@ No login required — this is how users log in with a passkey. Two-step process 
 
     **Username-assisted** — send `{"username": "john"}` to narrow the prompt to that user's registered passkeys. Useful when the user already typed their username in your login form.
 
-### Step 1 — Get authentication options
+
+### Quick implementation
+1. import the following provided js files in your page.
+    ```html
+     <!-- Make sure that jQuery is added -->
+     <script src="{% static 'passkeys/js/base64url.js'%}"></script>
+     <script src="{% static 'passkeys/js/helpers.js'%}"></script>
+     <script src="{% static 'passkeys/js/login.js'%}"></script>
+    ```
+
+2. Add The following js function to register passkey.
+
+    ```js
+    async function authn() {
+            $.ajax({
+                "url": "/api/passkeys/authenticate/options", dataType: "json", method: "POST",
+                data: {"csrfmiddlewaretoken": "{{ csrf_token }}"},
+                success: async function (data) {
+                    window.state_token = data.state_token
+                    user_data = await get_credential(data.options, true)
+                    if (user_data.type == "password") {
+                        console.log(user_data)
+                        alert("user is logging in with password, not passkey, forward to the ");
+                        return;
+                    } else {
+                        sendData = {state_token: window.state_token, credential: user_data.credential},
+                            $.ajax({
+                                url: "/api/passkeys/authenticate/verify",
+                                method: "POST",
+                                headers: {'X-CSRFToken': "{{ csrf_token }}"},
+                                data: JSON.stringify(sendData), dataType: "json",
+                                contentType: "application/json; charset=utf-8",
+                                success: function (data) {
+                                    alert("Login successfully as " + data.username);
+                                    window.location.reload();
+                                }
+                            })
+                    }
+
+                }
+            })
+        }
+    ```
+
+!!! warning
+
+    In this quick implementation, the user is allowed to login by username and password (immediate mediation API), to enforce passkeys, change the following line
+    ```js
+     user_data = await get_credential(data.options, true)
+    ```
+    to
+
+    ```js
+     user_data = await get_credential(data.options, false)
+    ```
+
+### Detailed Implementation
+#### Step 1 — Get authentication options
 
 ```http
 POST /api/passkeys/authenticate/options
@@ -254,7 +376,7 @@ Content-Type: application/json
 | `options.publicKey.rpId` | Relying party ID — matches your `FIDO_SERVER_ID` |
 | `state_token` | Signed server state — send back in verify step. Expires in 5 minutes |
 
-### Step 2 — Get assertion in the browser
+#### Step 2 — Get assertion in the browser
 
 ```js
 const { options, state_token } = await response.json();
@@ -284,7 +406,7 @@ const assertionJSON = {
 };
 ```
 
-### Step 3 — Verify and get token
+#### Step 3 — Verify and get token
 
 ```http
 POST /api/passkeys/authenticate/verify
@@ -373,128 +495,6 @@ Content-Type: application/json
 
 ---
 
-## Complete JavaScript Example
-
-Here's a full example using `fetch` for both registration and authentication:
-
-```js
-// ── Helper ──
-function base64urlToBuffer(base64url) {
-    const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
-    const pad = base64.length % 4 === 0 ? '' : '='.repeat(4 - (base64.length % 4));
-    const binary = atob(base64 + pad);
-    return Uint8Array.from(binary, c => c.charCodeAt(0)).buffer;
-}
-
-function bufferToBase64url(buffer) {
-    const bytes = new Uint8Array(buffer);
-    let binary = '';
-    bytes.forEach(b => binary += String.fromCharCode(b));
-    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-}
-
-// ── Register a new passkey ──
-async function registerPasskey(authToken, keyName = '') {
-    // Step 1: Get options
-    const optionsRes = await fetch('/api/passkeys/register/options', {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${authToken}` },
-    });
-    const { options, state_token } = await optionsRes.json();
-
-    // Decode binary fields
-    options.publicKey.challenge = base64urlToBuffer(options.publicKey.challenge);
-    options.publicKey.user.id = base64urlToBuffer(options.publicKey.user.id);
-    for (const cred of options.publicKey.excludeCredentials || []) {
-        cred.id = base64urlToBuffer(cred.id);
-    }
-
-    // Step 2: Create credential
-    const credential = await navigator.credentials.create(options);
-
-    // Step 3: Verify
-    const verifyRes = await fetch('/api/passkeys/register/verify', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${authToken}`,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            state_token,
-            key_name: keyName,
-            credential: {
-                id: credential.id,
-                rawId: bufferToBase64url(credential.rawId),
-                response: {
-                    clientDataJSON: bufferToBase64url(credential.response.clientDataJSON),
-                    attestationObject: bufferToBase64url(credential.response.attestationObject),
-                },
-                type: credential.type,
-            },
-        }),
-    });
-    return await verifyRes.json(); // { id, name, enabled, platform, ... }
-}
-
-// ── Authenticate with a passkey ──
-async function authenticateWithPasskey(username = null) {
-    // Step 1: Get options
-    const optionsRes = await fetch('/api/passkeys/authenticate/options', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(username ? { username } : {}),
-    });
-    const { options, state_token } = await optionsRes.json();
-
-    // Decode binary fields
-    options.publicKey.challenge = base64urlToBuffer(options.publicKey.challenge);
-    for (const cred of options.publicKey.allowCredentials || []) {
-        cred.id = base64urlToBuffer(cred.id);
-    }
-
-    // Step 2: Get assertion
-    const assertion = await navigator.credentials.get(options);
-
-    // Step 3: Verify
-    const verifyRes = await fetch('/api/passkeys/authenticate/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            state_token,
-            credential: {
-                id: assertion.id,
-                rawId: bufferToBase64url(assertion.rawId),
-                response: {
-                    authenticatorData: bufferToBase64url(assertion.response.authenticatorData),
-                    clientDataJSON: bufferToBase64url(assertion.response.clientDataJSON),
-                    signature: bufferToBase64url(assertion.response.signature),
-                    userHandle: assertion.response.userHandle
-                        ? bufferToBase64url(assertion.response.userHandle)
-                        : null,
-                },
-                type: assertion.type,
-            },
-        }),
-    });
-    return await verifyRes.json(); // { user_id, username, token_type, ... }
-}
-```
-
-**Usage:**
-
-```js
-// Register (user must be logged in)
-const passkey = await registerPasskey(myAuthToken, 'My MacBook');
-console.log('Registered:', passkey.name, passkey.platform);
-
-// Authenticate (passwordless — no login needed)
-const auth = await authenticateWithPasskey();
-console.log('Logged in as:', auth.username);
-console.log('Token:', auth.access || auth.token); // JWT or DRF Token
-
-// Authenticate (username-assisted)
-const auth2 = await authenticateWithPasskey('john');
-```
 
 ---
 
