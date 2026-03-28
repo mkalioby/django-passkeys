@@ -1,11 +1,11 @@
 try:
-    from rest_framework.generics import GenericAPIView, ListAPIView, RetrieveDestroyAPIView
+    from rest_framework.generics import GenericAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
     from rest_framework.views import APIView
     from rest_framework.response import Response
     from rest_framework.permissions import IsAuthenticated, AllowAny
     from rest_framework.exceptions import ValidationError, AuthenticationFailed, NotFound
     from rest_framework import status
-except ImportError as exc: # pragma: no cover
+except ImportError as exc:  # pragma: no cover
     raise ImportError(
         "djangorestframework is required to use passkeys.api. "
         "Install it with: pip install django-passkeys[drf]"
@@ -41,7 +41,7 @@ class UserPasskeyListAPIView(ListAPIView):
         return UserPasskey.objects.filter(user=self.request.user)
 
 
-class UserPasskeyDetailAPIView(RetrieveDestroyAPIView):
+class UserPasskeyDetailAPIView(RetrieveUpdateDestroyAPIView):
     """
     Retrieve, update, or delete a passkey.
 
@@ -52,11 +52,12 @@ class UserPasskeyDetailAPIView(RetrieveDestroyAPIView):
 
     serializer_class = UserPasskeyModelSerializer
     permission_classes = [IsAuthenticated]
+    http_method_names = ['get', 'patch', 'delete', 'head', 'options']
 
     def get_queryset(self):
         return UserPasskey.objects.filter(user=self.request.user)
 
-    def patch(self, request, *args, **kwargs):
+    def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = UserPasskeyUpdateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

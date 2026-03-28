@@ -101,7 +101,7 @@ To enable this feature in your pages add a new hidden form in your page that the
   </form>
 ```
 
-You can check [public.html](../exmple/testapp/templates/public.html) for an example of how to configure it.
+You can check [public.html](../example/test_app/templates/public.html) for an example of how to configure it.
 
 !!! note "Important"
     **Note**: setting `allow_password` to `True` (default `False`) will allow the user to login by password if  that what is stored in the password manager, otherwise, the user will be forced to login by passkeys.

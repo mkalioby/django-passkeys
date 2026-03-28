@@ -7,7 +7,7 @@ try:
         DictField,
         IntegerField,
     )
-except ImportError as exc:
+except ImportError as exc:  # pragma: no cover
     raise ImportError(
         "djangorestframework is required to use passkeys.api. "
         "Install it with: pip install django-passkeys[drf]"
@@ -24,8 +24,14 @@ class UserPasskeyModelSerializer(ModelSerializer):
 
 
 class UserPasskeyUpdateSerializer(Serializer):
-    name = CharField(required=False)
+    name = CharField(required=False, min_length=1)
     enabled = BooleanField(required=False)
+
+    def validate(self, data):
+        if not data:
+            from rest_framework.exceptions import ValidationError
+            raise ValidationError("At least one field (name or enabled) must be provided.")
+        return data
 
 
 # ── Registration ──

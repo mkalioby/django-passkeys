@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'test_app',
     'passkeys',
     'rest_framework',
+    'rest_framework_simplejwt',
     'drf_spectacular',
 
     'sslserver'
@@ -50,6 +51,10 @@ INSTALLED_APPS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
 }
 
 SPECTACULAR_SETTINGS = {

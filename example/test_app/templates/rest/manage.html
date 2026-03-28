@@ -19,8 +19,8 @@
     <script type="application/javascript">
         function deleteKey(id,name)
         {
-            $("#modal-title").html("Delete Key" + name);
-            $("#modal-body").html("Are you sure to delete '" + name + "' key?");
+            $("#modal-title").text("Delete Key: " + name);
+            $("#modal-body").text("Are you sure you want to delete '" + name + "'?");
             $("#modal-footer").prepend(`<button class='btn btn-danger' onclick='confirmDel(${id})'>Confirm Deletion</button>`);
             $("#popUpModal").modal("show");
         }
@@ -48,7 +48,8 @@
                 url: "/api/passkeys/" + id,
                 headers: {'X-CSRFToken': "{{ csrf_token }}"},
                 method: "PATCH",
-                data: {"enabled":  new_status},
+                data: JSON.stringify({"enabled": new_status}),
+                contentType: "application/json; charset=utf-8",
                 success: function(data){
                     showCredentials()
                 }
@@ -87,10 +88,15 @@
                         window.state_token = data.state_token
                         try {
                             key_info = await get_new_credentials(data.options)
-
                         }
                         catch(err) {
-                            alert("Failed registering new key, you can try again.")
+                            if (err.name === 'InvalidStateError') {
+                                alert("This authenticator is already registered. Try a different device or security key.")
+                            } else if (err.name === 'NotAllowedError') {
+                                alert("Registration was cancelled or timed out.")
+                            } else {
+                                alert("Failed registering new key: " + err.message)
+                            }
                             return
                         }
                         sendData=  {key_name: key_name, state_token: window.state_token, credential: key_info}
@@ -143,7 +149,7 @@
     <div class="row">
     <div class="col-md-6 offset-md-3" align="center">
         <button class="btn btn-primary" onclick="showCredentials()">Show My Credentials</button>
-        <button class="btn btn-secondary" onclick="registerKey()">Registry New Key</button>
+        <button class="btn btn-secondary" onclick="registerKey()">Register New Key</button>
     </div>
         <div class="col-md-3" align="right">
           </div>
