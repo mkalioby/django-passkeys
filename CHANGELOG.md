@@ -12,6 +12,7 @@
 * New: Optional install via `pip install django-passkeys[drf]` or `pip install django-passkeys[drf-jwt]`
 * Added: Support for Google new WebAuthn immediate mediation API (with allow/disallow password login) for Chromium Browser. for more details check [Google's announcement](https://developer.chrome.com/blog/webauthn-immediate-mediation-ot).
 * Fix: add `@login required` to passkey registration views. thanks to @rafaelurbeno for reporting the issue.
+* New: Add docs and hosted on [readthedocs.io](https://django-passkeys.readthedocs.io/en/v2.0/)
 
 ## 1.4.1
 * Add csrfmiddlwwaretoken to deleteKey and toggle key.

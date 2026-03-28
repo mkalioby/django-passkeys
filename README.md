@@ -5,11 +5,11 @@
 [![Downloads / Month ](https://pepy.tech/badge/django-passkeys/month)](https://pepy.tech/project/django-passkeys)
 [![build](https://github.com/mkalioby/django-passkeys/actions/workflows/basic_checks.yml/badge.svg)](https://github.com/mkalioby/django-passkeys/actions/workflows/basic_checks.yml)
 ![Coverage](https://raw.githubusercontent.com/mkalioby/django-passkeys/main/coverage.svg)
+![docs](https://app.readthedocs.org/projects/django-passkeys/badge/?version=v2.0)
 
 ![Django Versions](https://img.shields.io/pypi/frameworkversions/django/django-passkeys)
 ![Python Versions](https://img.shields.io/pypi/pyversions/django-passkeys)
 
-**[Full Documentation](https://mkalioby.github.io/django-passkeys)**
 
 An extension to Django *ModelBackend* backend to support passkeys. Supports both django templates and REST API (Django REST Framework) with pluggable token backends (JWT, DRF Token, or Session).
 
