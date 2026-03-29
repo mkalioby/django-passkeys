@@ -5,6 +5,8 @@ try:
     from rest_framework.permissions import IsAuthenticated, AllowAny
     from rest_framework.exceptions import ValidationError, AuthenticationFailed, NotFound
     from rest_framework import status
+    from rest_framework.throttling import AnonRateThrottle
+
 except ImportError as exc:  # pragma: no cover
     raise ImportError(
         "djangorestframework is required to use passkeys.api. "
@@ -129,6 +131,7 @@ class AuthenticateOptionsAPIView(GenericAPIView):
 
     permission_classes = [AllowAny]
     serializer_class = AuthenticateOptionsSerializer
+    throttle_classes = [AnonRateThrottle]
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)

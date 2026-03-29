@@ -5,7 +5,7 @@
     ```python 
      urls_patterns= [
      '...',
-      url(r'^passkeys/', include('passkeys.urls')),
+      path(r'^passkeys/', include('passkeys.urls')),
      '....',
       ]
     ```

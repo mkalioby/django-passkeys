@@ -21,13 +21,19 @@ var GetAssertReq = (getAssert) => {
     return getAssert
 }
 
-async function get_credential(options, allow_password = false) {
+async function get_credential(options, conditionalUI=false, allow_password = false) {
     options = GetAssertReq(options)
-    // if (window.conditionUIAbortController) {
-    //     window.conditionUIAbortController.abort('Stopping conditional UI');
-    // }
-    options.uiMode = 'immediate';
-    options.password = allow_password;
+    if (window.conditionUIAbortController) {
+        window.conditionUIAbortController.abort('Stopping conditional UI');
+    }
+    if (conditionalUI) {
+     options.mediation = 'conditional';
+     options.signal = window.conditionUIAbortSignal;
+    }
+    else {
+        options.uiMode = 'immediate';
+        options.password = allow_password;
+    }
     data = {}
     assertion = await navigator.credentials.get(options)
     data = {'type': assertion.type}

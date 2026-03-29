@@ -11,10 +11,6 @@ function check_passkey(platform_authenticator = true,success_func, fail_func)
     else{
         fail_func();
     }
-
-    else{
-        fail_func();
-    }
     })
   }
     success_func();

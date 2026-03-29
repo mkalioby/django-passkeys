@@ -14,8 +14,14 @@ def loginView(request):
         user=authenticate(request, username=request.POST["username"],password=request.POST["password"])
         if user:
             login(request, user)
-            if request.POST.get("next",""):
-                return redirect(request.POST["next"])
+            next_url = request.POST.get("next", "")
+            try:
+                from django.utils.http import url_has_allowed_host_and_scheme
+                if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts = {request.get_host()}):
+                    return redirect(next_url)
+            except ImportError: # pragma: no cover
+                 if next_url and next_url.startswith("/"):
+                    return redirect(next_url)
             return redirect('template') # pragma: no cover
         context["invalid"]=True
     return render(request, "login.html", context)

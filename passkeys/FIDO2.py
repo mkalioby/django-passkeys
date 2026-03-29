@@ -40,7 +40,6 @@ def auth_begin(request):
     return JsonResponse(auth_data)
 
 
-@csrf_exempt
 def auth_complete(request):
     data = json.loads(request.POST["passkeys"])
     state = request.session.pop('fido2_state')

@@ -9,7 +9,11 @@ logger = logging.getLogger(__name__)
 
 def _session_token_backend(user, request):
     from django.contrib.auth import login as auth_login
-
+    if not hasattr(request, 'session'):
+        raise ImproperlyConfigured(
+            "Session middleware required for session token backend. "
+            "Install django-passkeys[drf] for token-based auth."
+        )
     auth_login(request, user, backend='passkeys.backend.PasskeyModelBackend')
     return {'token_type': 'session'}
 

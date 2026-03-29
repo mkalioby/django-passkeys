@@ -98,7 +98,8 @@ def complete_registration(state, credential_data, user, request) -> UserPasskey:
     auth_data = server.register_complete(state, response=credential_data)
     encoded = websafe_encode(auth_data.credential_data)
     platform = get_current_platform(request)
-    name = credential_data.pop("key_name", '') or platform
+    name = credential_data.get("key_name", '') or platform
+    credential_data.pop("key_name", None)  # clean up after extraction
     uk = UserPasskey(user=user, token=encoded, name=name, platform=platform)
     if credential_data.get("id"):
         uk.credential_id = credential_data.get('id')
@@ -123,11 +124,10 @@ def complete_authentication(state, credential_data, request):
     server = getServer(request)
     credential_id = credential_data['id']
 
-    keys = UserPasskey.objects.filter(credential_id=credential_id, enabled=1)
-    if not keys.exists():
+    key= UserPasskey.objects.filter(credential_id=credential_id, enabled=True).first()
+    if not key:
         return None  # pragma: no cover
 
-    key = keys[0]
     credentials = [AttestedCredentialData(websafe_decode(key.token))]
 
     try:
@@ -136,8 +136,6 @@ def complete_authentication(state, credential_data, request):
         )
     except ValueError:   # pragma: no cover
         return None      # pragma: no cover
-    except Exception as excep:              # pragma: no cover
-        raise Exception(excep)              # pragma: no cover
 
     key.last_used = timezone.now()
     key.save(update_fields=['last_used'])

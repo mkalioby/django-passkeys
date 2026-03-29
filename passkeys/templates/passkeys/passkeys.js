@@ -2,7 +2,6 @@
 <script type="application/javascript" src="{% static 'passkeys/js/base64url.js' %}"></script>
 <script type="application/javascript" src="{% static 'passkeys/js/helpers.js' %}"></script>
 <script type="text/javascript">
-    // window.allow_immediate={% if allow_immediate %}true{% else %}false{% endif %};
     window.allow_password={% if allow_password %}true{% else %}false{% endif %};
     async function checkImmediateMediationAvailability() {
     // if (!window.allow_immediate)
@@ -29,11 +28,12 @@ function tryLogin(formid)
         usernamefield = document.getElementById("username");
         passwordfield = document.getElementById("password");
         window.loginForm = formid;
-        if (usernamefield.value != "" && passwordfield.value != "") {}
-            document.getElementById(formid).submit();
+        if (usernamefield.value != "" && passwordfield.value != "") {
+        document.getElementById(formid).submit();
+    }
         options = {};
-        status = checkImmediateMediationAvailability();
-        if (status[0] && window.allow_immediate)
+        status = await checkImmediateMediationAvailability();
+        if (status[0])
         {
             start_authn(formid, false);
         }

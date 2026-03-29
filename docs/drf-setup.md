@@ -7,13 +7,13 @@ This guide covers the DRF integration for SPAs, mobile apps, and headless APIs. 
 === "DRF"
 
     ```bash
-    pip install django-passkeys[drf]
+    pip install django-passkeys[drf] drf-spectacular
     ```
 
 === "DRF + JWT"
 
     ```bash
-    pip install django-passkeys[drf-jwt]
+    pip install django-passkeys[drf-jwt] drf-spectacular
     ```
 
 ## 2. Configure
@@ -273,6 +273,11 @@ No login required — this is how users log in with a passkey. Two-step process 
 
 
 ### Quick implementation
+
+!!! warning 
+    if no credentials are found a call to a js function named `no_credentials_found()` is perform, make sure to implement this js function.
+
+
 1. import the following provided js files in your page.
     ```html
      <!-- Make sure that jQuery is added -->
@@ -674,7 +679,7 @@ The API uses signed state tokens instead of sessions to carry FIDO2 state betwee
 All error responses follow DRF's standard format:
 
 ```json
-{"detail": "Error message here"}
+{"detail": "...."}
 ```
 
 | Status | When | Example |
