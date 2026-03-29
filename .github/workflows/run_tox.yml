@@ -11,28 +11,29 @@ env:
   DJANGO_SETTINGS_MODULE: test_app.test_settings
 
 jobs:
-  testPy37:
+  testPy37-39:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v5
         with:
-          python-version:  3.7
+          python-version:
+            3.7
+            3.8
+            3.9
       - name: Install tox
         run: |
              python -m pip install --upgrade pip
              pip install tox
       - name: Run tox
         run: tox run --conf tox_old.ini
-  tests38-314:
+  tests310-314:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v6
     - uses: actions/setup-python@v5
       with:
         python-version: |
-            3.8
-            3.9
             3.10
             3.11
             3.12
