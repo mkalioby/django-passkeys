@@ -1,2 +1,6 @@
 coverage
 tox
+djangorestframework
+djangorestframework-simplejwt
+drf-spectacular
+

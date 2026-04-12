@@ -15,10 +15,18 @@
           {% if registered %}
               <div class="alert alert-success">Registered Successfully</div>
           {% endif %}
-        <h1>Welcome {{ request.user.username }}!</h1>
+        <h1>Welcome to django-passkeys example!</h1>
           <hr/>
-          <div id="pk" class="alert alert-info" style="display: none">Your device supports passkeys, <a href="{%url 'passkeys:enroll'%}">Enroll</a> </div>
 
+          <div id="pk" class="alert alert-info" style="display: none">Your device supports passkeys, <a href="{%url 'passkeys:enroll'%}">Enroll</a> </div>
+      <div>
+          <p> Choose your example mode</p>
+        <ul>
+            <li><a href="{% url 'template' %}">Template-Based Authentication</a></li>
+            <li><a href="{% url 'rest_manage' %}">REST API (DRF) Authentication</a></li>
+            <li><a href="{% url 'public' %}">Immediate Mediation</a></li>
+            <li><a href="{% url 'swagger-ui' %}">API Documentation (Swagger)</a></li>
+        </ul>
 
       </div>
         <script type="application/javascript">

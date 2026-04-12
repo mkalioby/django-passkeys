@@ -42,8 +42,26 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'test_app',
     'passkeys',
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'drf_spectacular',
+
     'sslserver'
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'django-passkeys API',
+    'DESCRIPTION': 'WebAuthn/FIDO2 Passkey Authentication API',
+    'VERSION': '1.4.1',
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -126,7 +144,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 #STATIC_ROOT=(os.path.join(BASE_DIR,'static'))
 STATICFILES_DIRS=[os.path.join(BASE_DIR,'static')]
-LOGIN_URL="/auth/login"
+LOGIN_URL="/auth/login/"
 
 AUTHENTICATION_BACKENDS = ['passkeys.backend.PasskeyModelBackend']
 

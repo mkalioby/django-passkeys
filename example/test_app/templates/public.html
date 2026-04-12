@@ -1,0 +1,128 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Public t-shirt showcase">
+  <meta name="author" content="">
+
+  <title>T-Shirt Store</title>
+
+  <!-- Custom fonts for this template -->
+  <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+
+  <!-- Custom styles for this template -->
+  <link href="{% static 'css/sb-admin.min.css' %}" rel="stylesheet">
+  <style>
+    .product-photo {
+      height: 220px;
+      object-fit: cover;
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body class="bg-light">
+  <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
+    <a class="navbar-brand mr-1" href="#">T-Shirt Store</a>
+    <div class="ml-auto">
+        {% if request.user.is_authenticated %}
+            <a style="color: white" class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fas fa-user-circle fa-fw"></i>&nbsp;{{ request.user.username }}
+        </a>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+          <a class="dropdown-item" href="#">Settings</a>
+         <a class="dropdown-item" href="{% url 'passkeys:home' %}">Passkeys</a>
+          <a class="dropdown-item" href="#">Activity Log</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">Logout</a>
+        </div>
+
+        {% else %}
+      <a class="btn btn-primary" href="javascript:void(0)" onclick="authn('loginForm')">
+        <i class="fas fa-sign-in-alt"></i>
+        Login
+      </a>
+        {% endif %}
+    </div>
+  </nav>
+
+  <div class="container py-5">
+    <div class="text-center mb-5">
+      <h1 class="h3 mb-2 text-gray-800">Featured T-Shirts</h1>
+      <p class="text-muted mb-0">Browse popular picks before signing in.</p>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <img class="card-img-top product-photo" src="https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?auto=format&fit=crop&w=900&q=80" alt="White t-shirt flat lay" loading="lazy">
+
+          <div class="card-body">
+            <h5 class="card-title">Classic Black Tee</h5>
+            <p class="card-text">Soft cotton t-shirt with regular fit and crew neck.</p>
+          </div>
+          <div class="card-footer d-flex justify-content-between">
+            <span class="font-weight-bold">$19.99</span>
+            <span class="badge badge-dark">Black</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <img class="card-img-top product-photo" src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=80" alt="Black t-shirt on hanger" loading="lazy">
+
+          <div class="card-body">
+            <h5 class="card-title">Retro White Tee</h5>
+            <p class="card-text">Lightweight daily t-shirt with a vintage-inspired print.</p>
+          </div>
+          <div class="card-footer d-flex justify-content-between">
+            <span class="font-weight-bold">$24.99</span>
+            <span class="badge badge-light border">White</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          <img class="card-img-top product-photo" src="https://images.unsplash.com/photo-1562157873-818bc0726f68?auto=format&fit=crop&w=900&q=80" alt="Navy t-shirt lifestyle photo" loading="lazy">
+          <div class="card-body">
+            <h5 class="card-title">Navy Sport Tee</h5>
+            <p class="card-text">Breathable and durable tee built for active days.</p>
+          </div>
+          <div class="card-footer d-flex justify-content-between">
+            <span class="font-weight-bold">$21.99</span>
+            <span class="badge badge-primary">Navy</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% include 'logout_modal.html' %}
+
+  <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+  <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+        {% include 'passkeys/passkeys.js' with allow_password=True %}
+  <form id="loginForm" action="{% url 'login' %}" method="post" style="display: none">
+      {% csrf_token %}
+    <input type="hidden" id="passkeys" name="passkeys" />
+    <input type="hidden" id="username" name="username" />
+    <input type="hidden" id="password" name="password" />
+    <input type="hidden" name="next" value="{{ request.get_full_path }}" />
+  </form>
+    <script type="text/javascript">
+    function no_credentials_found()
+    {
+        console.log("No credentials found, redirecting to login page");
+        window.location.href = "{% url 'login' %}";
+    }
+    </script>
+</body>
+
+</html>
+

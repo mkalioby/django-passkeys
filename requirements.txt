@@ -2,6 +2,9 @@ asgiref==3.11.1
 cffi==2.0.0
 cryptography==46.0.5
 Django==5.2.12
+djangorestframework>=3.14
+djangorestframework-simplejwt>=5.0
+drf-spectacular>=0.28.0
 django-sslserver==0.22
 fido2==2.1.1
 pycparser==3.0

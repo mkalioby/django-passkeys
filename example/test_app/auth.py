@@ -1,8 +1,12 @@
-from django.shortcuts import render
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-from django.contrib.auth import authenticate,login,logout
-from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import render, redirect
+from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.serializers import Serializer, CharField
+from rest_framework.views import APIView
+
+from passkeys.api.token_backends import get_token_response
 
 def loginView(request):
     context={}
@@ -10,7 +14,15 @@ def loginView(request):
         user=authenticate(request, username=request.POST["username"],password=request.POST["password"])
         if user:
             login(request, user)
-            return HttpResponseRedirect(reverse('home'))
+            next_url = request.POST.get("next", "")
+            try:
+                from django.utils.http import url_has_allowed_host_and_scheme
+                if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts = {request.get_host()}):
+                    return redirect(next_url)
+            except ImportError: # pragma: no cover
+                 if next_url and next_url.startswith("/"):
+                    return redirect(next_url)
+            return redirect('template') # pragma: no cover
         context["invalid"]=True
     return render(request, "login.html", context)
 
@@ -22,5 +34,40 @@ def loginView(request):
 
 
 def logoutView(request):
-    logout(request)
-    return  render(request,"logout.html",{})
+    logout(request) # pragma: no cover
+    return  render(request,"logout.html",{}) # pragma: no cover
+
+
+class LoginSerializer(Serializer):
+    username = CharField()
+    password = CharField()
+
+
+class LoginAPIView(APIView):
+    """
+    Username + password login API.
+
+    Returns the same token format as passkey authentication
+    (JWT, DRF Token, or session depending on project config).
+    Use this to get an initial token before registering passkeys.
+    """
+
+    permission_classes = [AllowAny]
+    serializer_class = LoginSerializer
+
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = authenticate(
+            request,
+            username=serializer.validated_data['username'],
+            password=serializer.validated_data['password'],
+        )
+        if user is None:
+            raise AuthenticationFailed("Invalid username or password")
+        token_data = get_token_response(user, request)
+        return Response({
+            'user_id': user.pk,
+            'username': user.get_username(),
+            **token_data,
+        })

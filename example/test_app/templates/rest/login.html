@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Passkeys Rest API</title>
+    <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+
+    <!-- Page level plugin CSS-->
+
+    <!-- Custom styles for this template-->
+    <link href="{% static 'css/sb-admin.min.css' %}" rel="stylesheet">
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'passkeys/js/base64url.js' %}"></script>
+    <script src="{% static 'passkeys/js/helpers.js' %}"></script>
+    <script src="{% static 'passkeys/js/login.js' %}"></script>
+
+    <script type="application/javascript">
+        async function authn() {
+            $.ajax({
+                "url": "/api/passkeys/authenticate/options", dataType: "json", method: "POST",
+                data: {"csrfmiddlewaretoken": "{{ csrf_token }}"},
+                success: async function (data) {
+                    window.state_token = data.state_token
+                    user_data = await get_credential(data.options, true)
+                    if (user_data.type == "password") {
+                        console.log(user_data)
+                        alert("user is logging in with password, not passkey, forward to the ");
+                        return;
+                    } else {
+                        sendData = {state_token: window.state_token, credential: user_data.credential},
+                            $.ajax({
+                                url: "/api/passkeys/authenticate/verify",
+                                method: "POST",
+                                headers: {'X-CSRFToken': "{{ csrf_token }}"},
+                                data: JSON.stringify(sendData), dataType: "json",
+                                contentType: "application/json; charset=utf-8",
+                                success: function (data) {
+                                    alert("Login successfully as " + data.username);
+                                    window.location.reload();
+                                }
+                            })
+                    }
+
+                }
+            })
+        }
+    </script>
+
+
+</head>
+<body>
+<nav class="navbar navbar-expand navbar-dark bg-dark static-top">
+    <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
+
+    </button>
+    <a class="navbar-brand mr-1" href="{% url 'home' %}">Django-Passkeys REST API Example</a>
+    <div class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
+    </div>
+
+    <!-- Navbar -->
+    <ul class="navbar-nav ml-auto ml-md-0">
+        <li class="nav-item dropdown no-arrow mx-1" style="color: white">
+
+        </li>
+    </ul>
+</nav>
+
+<br/>
+
+<div class="row">
+    <div class="col-md-6 offset-md-3" align="center">
+        <button class="btn btn-primary" onclick="authn()">Login</button>
+    </div>
+    <div class="col-md-3" align="right">
+
+    </div>
+</div>
+<br/>
+<div id="creds">
+
+</div>
+</body>
+</html>

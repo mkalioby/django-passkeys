@@ -62,6 +62,7 @@ jobs:
       - name: Push changes
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         uses: ad-m/github-push-action@master
+        continue-on-error: true
         with:
           github_token: ${{ secrets.github_token }}
           branch: ${{ github.ref }}
