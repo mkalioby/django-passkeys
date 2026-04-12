@@ -5,7 +5,7 @@
 [![Downloads / Month ](https://pepy.tech/badge/django-passkeys/month)](https://pepy.tech/project/django-passkeys)
 [![build](https://github.com/mkalioby/django-passkeys/actions/workflows/basic_checks.yml/badge.svg)](https://github.com/mkalioby/django-passkeys/actions/workflows/basic_checks.yml)
 ![Coverage](https://raw.githubusercontent.com/mkalioby/django-passkeys/main/coverage.svg)
-[![docs](https://app.readthedocs.org/projects/django-passkeys/badge/?version=v2.0)](https://django-passkeys.readthedocs.io/en/v2.0/)
+[![docs](https://app.readthedocs.org/projects/django-passkeys/badge/?version=v2.0)](https://django-passkeys.readthedocs.io/en/latest/)
 
 ![Django Versions](https://img.shields.io/pypi/frameworkversions/django/django-passkeys)
 ![Python Versions](https://img.shields.io/pypi/pyversions/django-passkeys)
