@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.backends import ModelBackend
 
 from .FIDO2 import auth_complete
@@ -11,11 +12,15 @@ class PasskeyModelBackend(ModelBackend):
             return super().authenticate(request, username=username, password=password, **kwargs)
 
         if request is None:
-            return None
+            if getattr(settings, 'PASSKEYS_ALLOW_EMPTY_RESPONSE', False):
+                return None
+            raise Exception('request is required for passkeys.backend.PasskeyModelBackend')
 
         passkeys = request.POST.get('passkeys')
         if passkeys is None:
-            return None
+            if getattr(settings, 'PASSKEYS_ALLOW_NO_PASSKEY_FIELD', False):
+                return None
+            raise Exception("Can't find 'passkeys' key in request.POST, did you add the hidden input?")
         if passkeys != '':
             return auth_complete(request)
         return None
