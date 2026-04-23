@@ -10,22 +10,25 @@ class test_passkeys(TransactionTestCase):
         session = self.client.session
         self.factory = RequestFactory()
 
-    def test_raiseException(self):
+    def test_request_none_with_credentials_falls_through(self):
+        """When request=None, username/password auth should still work via ModelBackend."""
         from django.contrib.auth import authenticate
-        try:
-             authenticate(request=None,username="test",password="test")
-             self.assertFalse(True)
-        except Exception as e:
-            self.assertEqual(str(e),"request is required for passkeys.backend.PasskeyModelBackend")
+        user = authenticate(request=None, username="test", password="test")
+        self.assertIsNotNone(user)
+        self.assertEqual(user.username, "test")
+
+    def test_request_none_without_credentials_returns_none(self):
+        """When request=None and no credentials, backend should return None."""
+        from django.contrib.auth import authenticate
+        user = authenticate(request=None, username="", password="")
+        self.assertIsNone(user)
 
     def test_not_add_passkeys_field(self):
-        request = self.factory.post("/auth/login/",{"username":"","password":""})
+        """Missing 'passkeys' POST field should return None, not raise."""
+        request = self.factory.post("/auth/login/", {"username": "", "password": ""})
         from django.contrib.auth import authenticate
-        try:
-            user = authenticate(request=request,username="",password="")
-            self.assertFalse(True)
-        except Exception as e:
-            self.assertEqual(str(e),"Can't find 'passkeys' key in request.POST, did you add the hidden input?")
+        user = authenticate(request=request, username="", password="")
+        self.assertIsNone(user)
 
     def test_username_password_failed_login(self):
         self.client.post("/auth/login/",{"username":"test","password":"test123",'passkeys':''})
