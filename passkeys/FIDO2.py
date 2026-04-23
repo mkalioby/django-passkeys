@@ -42,5 +42,7 @@ def auth_begin(request):
 
 def auth_complete(request):
     data = json.loads(request.POST["passkeys"])
-    state = request.session.pop('fido2_state')
+    state = request.session.pop('fido2_state', None)
+    if not state:
+        return None
     return complete_authentication(state, data, request)

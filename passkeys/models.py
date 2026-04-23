@@ -1,10 +1,9 @@
-from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.db import models
 
 
 class UserPasskey(models.Model):
-    user_model = get_user_model()
-    user = models.ForeignKey(user_model,on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     enabled= models.BooleanField(default=True)
     platform = models.CharField(max_length=255,default='')
