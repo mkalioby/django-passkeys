@@ -12,7 +12,7 @@ class PasskeyModelBackend(ModelBackend):
             return super().authenticate(request, username=username, password=password, **kwargs)
 
         if request is None:
-            if getattr(settings, 'PASSKEYS_ALLOW_EMPTY_RESPONSE', False):
+            if getattr(settings, 'PASSKEYS_ALLOW_EMPTY_REQUEST', False):
                 return None
             raise Exception('request is required for passkeys.backend.PasskeyModelBackend')
 

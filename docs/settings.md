@@ -67,3 +67,17 @@ PASSKEYS_API_TOKEN_BACKEND = 'myapp.auth.my_token_backend'
 ```
 
 The callable receives `(user, request)` and must return a `dict`. See [DRF Token Backend](drf-setup.md#token-backend).
+
+### `PASSKEYS_ALLOW_EMPTY_REQUEST`
+
+Default: `False`.
+
+If `True`, allows empty request to passkeys, useful when having multiple authentication backends.
+
+### `PASSKEYS_ALLOW_NO_PASSKEY_FIELD`
+
+Default: `False`.
+
+If `True`, allows request not to have a `passkey` field, useful when having multiple authentication backends.
+
+```python

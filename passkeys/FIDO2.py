@@ -47,5 +47,6 @@ def auth_complete(request):
         return None
     state = request.session.pop('fido2_state', None)
     if not state:
+        print("DEBUG: Passkeys: No FIDO2 state found, check django sessions")
         return None
     return complete_authentication(state, data, request)

@@ -24,7 +24,7 @@ class test_passkeys(TransactionTestCase):
             authenticate(request=None, username="", password="")
         self.assertEqual(str(ctx.exception), "request is required for passkeys.backend.PasskeyModelBackend")
 
-    @override_settings(PASSKEYS_ALLOW_EMPTY_RESPONSE=True)
+    @override_settings(PASSKEYS_ALLOW_EMPTY_REQUEST=True)
     def test_request_none_returns_none_when_setting_enabled(self):
         """request=None returns None instead of raising when PASSKEYS_ALLOW_EMPTY_RESPONSE=True."""
         from django.contrib.auth import authenticate

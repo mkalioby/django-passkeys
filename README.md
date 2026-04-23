@@ -128,3 +128,4 @@ Tidelift will coordinate the fix and disclosure.
 * [smark-1](https://github.com/smark-1)
 * [ThomasWaldmann-1](https://github.com/ThomasWaldmann)
 * [rafaelurben](https://github.com/rafaelurben)
+* [red-one1](https://github.com/red-one1)
