@@ -80,4 +80,3 @@ Default: `False`.
 
 If `True`, allows request not to have a `passkey` field, useful when having multiple authentication backends.
 
-```python
