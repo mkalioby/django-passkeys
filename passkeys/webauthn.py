@@ -80,10 +80,11 @@ def begin_registration(user, request) -> Tuple[dict, dict]:
     server = getServer(request)
     auth_attachment = getattr(settings, 'KEY_ATTACHMENT', None)
     username = user.get_username()
+    display_name = user.get_full_name() if hasattr(user, "get_full_name") else ""
     user_entity = PublicKeyCredentialUserEntity(
         id=urlsafe_b64encode(username.encode("utf8")),
         name=username,
-        display_name=user.get_full_name(),
+        display_name=display_name or username,
     )
     registration_data, state = server.register_begin(
         user_entity, getUserCredentials(user), authenticator_attachment=auth_attachment,
