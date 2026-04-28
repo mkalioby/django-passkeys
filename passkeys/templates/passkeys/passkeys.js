@@ -128,7 +128,6 @@ async function tryLogin(formid)
         else if(err.toString() === "NotAllowedError: An allowCredentials is not allowed with immediate mediation.")
     {
         // window.allow_immediate = false;
-        // window.href = "{%url 'login'%}"
     }
         else {
         console.error("Authentication failed: " + err);
