@@ -66,3 +66,6 @@ include = ["passkeys*"]
 
 [tox]
 skipsdist = true
+[tool.uv.build-backend]
+module-name = "passkeys"
+module-root = ""
