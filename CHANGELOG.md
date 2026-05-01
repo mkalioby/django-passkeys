@@ -1,3 +1,13 @@
+## 2.1
+
+* Fixes: #72, #73 and #74. Thanks to @red-one1
+* Added `PASSKEYS_ALLOW_EMPTY_REQUEST` default False to allow request to be `None`, useful when using multiple authentication backends.
+* Added `PASSKEYS_ALLOW_NO_PASSKEY_FIELD` default False to allow request not to have a `passkey` field, useful when using multiple authentication backends.
+* Fixed: An issue when there is no `get_full_name()` e.g AbstractBaseUser. Thanks to @ganiyevuz for reporting and fixing the issue.
+* Removed a comment out JS code that was causing a Django error. Thanks to @ganiyevuz for reporting and fixing the issue.
+* Upgraded fido2 to v2.2.0
+
+
 ## 2.0.0
 * Breaking Change: Moved templates to `passkeys` folder and renamed the templates. thanks to @ganiyevuz and @smark-1 
   * `PassKeys.html` -> `passkeys/manage.html`

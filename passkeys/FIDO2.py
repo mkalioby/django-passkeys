@@ -41,6 +41,12 @@ def auth_begin(request):
 
 
 def auth_complete(request):
-    data = json.loads(request.POST["passkeys"])
-    state = request.session.pop('fido2_state')
+    try:
+        data = json.loads(request.POST["passkeys"])
+    except (KeyError, json.JSONDecodeError):
+        return None
+    state = request.session.pop('fido2_state', None)
+    if not state:
+        print("DEBUG: Passkeys: No FIDO2 state found, check django sessions")
+        return None
     return complete_authentication(state, data, request)
