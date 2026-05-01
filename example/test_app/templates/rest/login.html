@@ -22,7 +22,7 @@
                 data: {"csrfmiddlewaretoken": "{{ csrf_token }}"},
                 success: async function (data) {
                     window.state_token = data.state_token
-                    user_data = await get_credential(data.options, true)
+                    user_data = await get_credential(data.options, false, true)
                     if (user_data.type == "password") {
                         console.log(user_data)
                         alert("user is logging in with password, not passkey, forward to the ");

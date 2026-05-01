@@ -33,6 +33,7 @@
     }).then(function(attestation) {
         attestation["key_name"] = $("#key_name").val();
       return fetch('{% url 'passkeys:reg_complete' %}', {
+          headers:{'X-CSRFToken': "{{csrf_token}}"},
         method: 'POST',
         body: JSON.stringify(publicKeyCredentialToJSON(attestation))
       });
