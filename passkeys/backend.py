@@ -9,12 +9,13 @@ identifier_field = UserModel.USERNAME_FIELD
 
 
 class PasskeyModelBackend(ModelBackend):
-    def authenticate(self, request, username='', password='', **kwargs):
+    def authenticate(self, request, username=None, password=None, **kwargs):
         # get actual identifier field (e.g. email) instead of username, to allow for custom user models
         identifier = username or kwargs.get(identifier_field)
-        if identifier != '' and password != '':
+        if identifier and password:
             if request is not None:
                 request.session["passkey"] = {'passkey': False}
+
             return super().authenticate(request, username=username, password=password, **kwargs)
 
         if request is None:
