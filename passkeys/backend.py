@@ -1,12 +1,18 @@
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 
 from .FIDO2 import auth_complete
 
+UserModel = get_user_model()
+identifier_field = UserModel.USERNAME_FIELD
+
+
 class PasskeyModelBackend(ModelBackend):
     def authenticate(self, request, username='', password='', **kwargs):
-
-        if username != '' and password != '':
+        # get actual identifier field (e.g. email) instead of username, to allow for custom user models
+        identifier = username or kwargs.get(identifier_field)
+        if identifier != '' and password != '':
             if request is not None:
                 request.session["passkey"] = {'passkey': False}
             return super().authenticate(request, username=username, password=password, **kwargs)
