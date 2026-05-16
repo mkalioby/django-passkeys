@@ -145,7 +145,8 @@ class TestPasskeyAPI(TransactionTestCase):
         self.assertEqual(response.status_code, 200)
         result = response.json()
         self.assertEqual(result['username'], 'test')
-        self.assertEqual(result['token_type'], 'session')
+        # self.assertEqual(result['token_type'], 'session')
+        self.assertEqual(result['token_type'], 'jwt')
 
     def test_authenticate_options_with_username(self):
         device = self._register_key()

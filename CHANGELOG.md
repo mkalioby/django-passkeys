@@ -1,3 +1,7 @@
+## 2.2
+
+* Added Support for AbstractBaseUser that has username field other than username, thanks to @ganiyevuz for reporting and suggesting the fix.
+
 ## 2.1
 
 * Fixes: #72, #73 and #74. Thanks to @red-one1
