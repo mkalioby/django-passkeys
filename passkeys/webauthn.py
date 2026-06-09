@@ -82,7 +82,7 @@ def begin_registration(user, request) -> Tuple[dict, dict]:
     username = user.get_username()
     display_name = user.get_full_name() if hasattr(user, "get_full_name") else username
     user_entity = PublicKeyCredentialUserEntity(
-        id=urlsafe_b64encode(username.encode("utf8")),
+        id=urlsafe_b64encode(str(username).encode("utf8")),
         name=username,
         display_name=display_name,
     )
