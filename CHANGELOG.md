@@ -1,6 +1,7 @@
 ## 2.2
 
 * Added Support for AbstractBaseUser that has username field other than username, thanks to @ganiyevuz for reporting and suggesting the fix.
+* Allowed username to be non-string e.g phone number or telegram id, thanks to @ganiyevuz for reporting and suggesting the fix.
 
 ## 2.1
 
